@@ -157,6 +157,8 @@ Active shell pieces currently tracked in this repo:
 - Window pop helper: [config/archmeros/scripts/archmeros-window-pop.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-window-pop.sh)
 - Window close helper: [config/archmeros/scripts/archmeros-close.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-close.sh)
 - Keyboard indicator helper: [config/archmeros/scripts/archmeros-keyboard.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-keyboard.sh)
+- Transparency preset switcher: [config/archmeros/scripts/archmeros-transparency.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-transparency.sh)
+- Thunar launcher wrapper: [config/archmeros/scripts/archmeros-thunar.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-thunar.sh)
 - Walker launcher wrapper: [config/archmeros/scripts/archmeros-walker.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-walker.sh)
 - Window history cycle helper: [config/archmeros/scripts/archmeros-cycle-window.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-cycle-window.sh)
 - Bash hook: [config/archmeros/shell/archmeros-bash.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/shell/archmeros-bash.sh)
@@ -172,6 +174,35 @@ Wallpaper backend:
 
 - preferred: `swaybg`
 - fallback: `hyprpaper`
+
+## Current Transparency Presets
+
+Hyprland transparency and blur are now sourced from:
+
+- [config/hypr/transparency.conf](/home/zacmero/projects/ArchMerOS/config/hypr/transparency.conf)
+
+Tracked presets:
+
+- [transparency-work-clean.conf](/home/zacmero/projects/ArchMerOS/config/hypr/presets/transparency-work-clean.conf)
+- [transparency-night-cyber.conf](/home/zacmero/projects/ArchMerOS/config/hypr/presets/transparency-night-cyber.conf)
+
+Current recommendation:
+
+- `work-clean`: light transparency, restrained blur, better for coding
+- `night-cyber`: stronger transparency across terminal, code, Thunar, and Walker, with blur carrying readability instead of darkening the whole surface
+
+To switch later:
+
+```bash
+~/.config/archmeros/scripts/archmeros-transparency.sh
+```
+
+or directly:
+
+```bash
+~/.config/archmeros/scripts/archmeros-transparency.sh apply work-clean
+~/.config/archmeros/scripts/archmeros-transparency.sh apply night-cyber
+```
 
 ## Current Wallpaper Resolution
 
@@ -374,6 +405,7 @@ Current behavior:
 - Walker is kept for app/command launching, not for PARA drag-and-drop, until a better picker exists
 - `thunar` is explicitly resized after launch to the same proportions as the `Super+Shift+O` medium pop mode
 - after that it behaves like a normal floating window and can still be tiled normally
+- Walker now uses a repo-owned local `thunar.desktop` override that launches through the same Thunar wrapper
 
 Current known PARA roots:
 
@@ -418,6 +450,7 @@ Completed so far:
 - added a centered floating Walker window rule instead of the oversized framed launch surface
 - corrected the Walker class match to `dev.benz.walker` so the small centered window rule actually applies
 - adjusted Thunar to open in the medium centered proportions used by `Super+Shift+O` via an explicit post-launch resize
+- added a repo-owned local Thunar desktop-entry override so Walker launches use the same medium-centered wrapper
 - removed automatic pinning from the window pop modes so keyboard focus stays more predictable
 - restored focus-follows-mouse and split fast switching into `Alt+Tab` for recent-window toggle and `Super+Tab` for full workspace cycling
 - replaced plain focus cycling with an ArchMerOS cycle helper so spotlighted floating windows actually switch visually

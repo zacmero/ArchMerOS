@@ -15,6 +15,7 @@ declare -A links=(
   ["${config_root}/gtk-3.0"]="${HOME}/.config/gtk-3.0"
   ["${config_root}/gtk-4.0"]="${HOME}/.config/gtk-4.0"
   ["${config_root}/systemd/user"]="${HOME}/.config/systemd/user"
+  ["${repo_root}/local/share/applications/thunar.desktop"]="${HOME}/.local/share/applications/thunar.desktop"
 )
 
 backup_root="${HOME}/.config/archmeros-backups/$(date +%Y%m%d-%H%M%S)"
@@ -22,7 +23,14 @@ made_backup=0
 
 backup_path() {
   local target="$1"
-  local rel="${target#${HOME}/.config/}"
+  local rel
+  if [[ "$target" == "${HOME}/.config/"* ]]; then
+    rel="${target#${HOME}/.config/}"
+  elif [[ "$target" == "${HOME}/.local/share/"* ]]; then
+    rel="local-share/${target#${HOME}/.local/share/}"
+  else
+    rel="$(basename "$target")"
+  fi
   local dest="${backup_root}/${rel}"
   mkdir -p "$(dirname "$dest")"
   mv "$target" "$dest"

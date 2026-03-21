@@ -8,6 +8,7 @@ rofi_theme="$HOME/.config/rofi/launchers/drun.rasi"
 
 selection="$(
   printf '%s\n' \
+    "Apply shell theme" \
     "Default colors" \
     "Auto colors from current wallpapers" \
     "Apply saved preset" \
@@ -22,6 +23,9 @@ if [[ -z "${selection:-}" ]]; then
 fi
 
 case "$selection" in
+  "Apply shell theme")
+    exec "$HOME/.config/archmeros/scripts/archmeros-theme-select.sh"
+    ;;
   "Default colors")
     exec "$theme_script" --apply-default
     ;;

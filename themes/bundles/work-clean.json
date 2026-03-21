@@ -1,0 +1,10 @@
+{
+  "id": "work-clean",
+  "label": "Work Clean",
+  "description": "Default ArchMerOS palette with restrained transparency for coding.",
+  "appearance": {
+    "mode": "preset",
+    "name": "default"
+  },
+  "transparency": "work-clean"
+}

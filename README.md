@@ -315,6 +315,7 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+Alt+W`: open wallpaper picker
 - `Super+Alt+A`: open appearance controller
 - `Super+Alt+S`: open the audio effects UI
+- `Super+Alt+T`: open the shell theme selector
 - `Left Alt+W`: close current app window while keeping `Right Alt` free for ABNT2 characters
 - click the Waybar keyboard indicator: toggle keyboard layout
 - `XF86AudioRaiseVolume`: raise volume
@@ -343,6 +344,7 @@ Direct commands:
 Audio UI command:
 
 - `~/.config/archmeros/scripts/archmeros-audio.sh`
+- Walker/Rofi entry: `ArchMerOS Audio Lab`
 
 ## Current App Launch Note
 
@@ -432,6 +434,36 @@ Current intent:
 - `easyeffects` for system-wide playback processing
 - `lsp-plugins` and `calf` for broader EQ and studio-oriented filters
 - `qpwgraph` for routing inspection when needed
+
+## Shell Themes
+
+ArchMerOS shell themes are now bundle-driven and live in:
+
+- [themes/bundles](/home/zacmero/projects/ArchMerOS/themes/bundles)
+
+Current selector:
+
+- [config/archmeros/scripts/archmeros-theme-select.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-theme-select.sh)
+- [config/rofi/launchers/theme-selector.rasi](/home/zacmero/projects/ArchMerOS/config/rofi/launchers/theme-selector.rasi)
+
+Current theme entries:
+
+- [work-clean.json](/home/zacmero/projects/ArchMerOS/themes/bundles/work-clean.json)
+- [night-cyber.json](/home/zacmero/projects/ArchMerOS/themes/bundles/night-cyber.json)
+
+Theme selector entry points:
+
+- `Super+Alt+T`
+- `~/.config/archmeros/scripts/archmeros-theme-select.sh`
+- Walker/Rofi entry: `ArchMerOS Themes`
+
+To add a future shell theme, create a new bundle JSON in `themes/bundles/` with:
+
+- an `id`
+- a `label`
+- a `description`
+- an `appearance` block
+- a `transparency` preset name
 
 ## Current PARA Rule
 

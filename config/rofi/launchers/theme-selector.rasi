@@ -1,0 +1,77 @@
+configuration {
+  show-icons: false;
+  display-drun: "Theme";
+  matching: "normal";
+}
+
+@import "~/.config/rofi/colors.rasi"
+@import "~/.config/rofi/fonts.rasi"
+
+window {
+  transparency: "real";
+  location: center;
+  anchor: center;
+  fullscreen: false;
+  width: 880px;
+  border: 0px;
+  background-color: transparent;
+}
+
+mainbox {
+  spacing: 14px;
+  padding: 18px;
+  border: 2px solid;
+  border-color: @active;
+  background-color: @background;
+  children: [ "inputbar", "listview" ];
+}
+
+inputbar {
+  border: 2px solid;
+  border-color: @selected;
+  background-color: @background-alt;
+  text-color: @foreground;
+  children: [ "prompt", "entry" ];
+}
+
+prompt {
+  padding: 10px 14px;
+  background-color: @active;
+  text-color: @background;
+}
+
+entry {
+  padding: 10px 14px;
+  background-color: inherit;
+  text-color: inherit;
+  placeholder: "Select a shell theme bundle";
+}
+
+listview {
+  columns: 1;
+  lines: 8;
+  cycle: true;
+  dynamic: true;
+  scrollbar: true;
+  layout: vertical;
+  background-color: transparent;
+}
+
+element {
+  padding: 12px 14px;
+  border: 1px solid;
+  border-color: transparent;
+  background-color: @background-alt;
+  text-color: @foreground;
+}
+
+element selected.normal {
+  border-color: @selected;
+  background-color: @selected;
+  text-color: @background;
+}
+
+element-text {
+  vertical-align: 0.5;
+  horizontal-align: 0.0;
+}

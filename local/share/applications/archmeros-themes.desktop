@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=ArchMerOS Themes
+Comment=Select an ArchMerOS shell theme bundle
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-theme-select.sh
+Icon=preferences-desktop-theme-global
+Terminal=false
+StartupNotify=true
+Categories=Settings;DesktopSettings;Utility;
+Keywords=theme;appearance;transparency;colors;cyberpunk;archmeros;

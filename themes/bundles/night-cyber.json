@@ -1,0 +1,10 @@
+{
+  "id": "night-cyber",
+  "label": "Night Cyber",
+  "description": "Default ArchMerOS palette with stronger transparency and atmosphere.",
+  "appearance": {
+    "mode": "preset",
+    "name": "default"
+  },
+  "transparency": "night-cyber"
+}

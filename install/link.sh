@@ -19,6 +19,8 @@ declare -A links=(
   ["${config_root}/gtk-4.0"]="${HOME}/.config/gtk-4.0"
   ["${config_root}/systemd/user"]="${HOME}/.config/systemd/user"
   ["${repo_root}/local/share/applications/thunar.desktop"]="${HOME}/.local/share/applications/thunar.desktop"
+  ["${repo_root}/local/share/applications/archmeros-audio.desktop"]="${HOME}/.local/share/applications/archmeros-audio.desktop"
+  ["${repo_root}/local/share/applications/archmeros-themes.desktop"]="${HOME}/.local/share/applications/archmeros-themes.desktop"
 )
 
 if [[ -f "${firefox_profiles_ini}" && -f "${config_root}/firefox/user.js" ]]; then

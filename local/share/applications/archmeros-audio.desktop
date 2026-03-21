@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=ArchMerOS Audio Lab
+Comment=Open the system-wide PipeWire effects chain
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-audio.sh
+Icon=easyeffects
+Terminal=false
+StartupNotify=true
+Categories=AudioVideo;Audio;Utility;
+Keywords=audio;eq;equalizer;effects;pipewire;dsp;mix;

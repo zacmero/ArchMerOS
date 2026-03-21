@@ -1,0 +1,29 @@
+{
+  "name": "default",
+  "palette": {
+    "rosewater": "#f6d5ea",
+    "pink": "#ff7edb",
+    "mauve": "#be92ff",
+    "red": "#ff6c9c",
+    "peach": "#ffb86c",
+    "yellow": "#ffd86f",
+    "green": "#8fe388",
+    "teal": "#67e8f9",
+    "blue": "#58d6ff",
+    "lavender": "#a7b7ff",
+    "text": "#d8ddff",
+    "subtext1": "#aab4ea",
+    "subtext0": "#8891c9",
+    "overlay1": "#7782bf",
+    "overlay0": "#626da7",
+    "surface1": "rgba(43, 49, 83, 0.72)",
+    "surface0": "rgba(29, 35, 60, 0.62)",
+    "base": "rgba(13, 17, 30, 0.52)",
+    "mantle": "rgba(9, 12, 22, 0.72)",
+    "crust": "rgba(5, 7, 14, 0.86)",
+    "accent": "#58d6ff",
+    "accent2": "#ff7edb",
+    "accent3": "#be92ff",
+    "warning": "#ffd86f"
+  }
+}

@@ -1,0 +1,22 @@
+# Core ArchMerOS session packages
+hyprland
+waybar
+swaybg
+rofi-wayland
+mako
+thunar
+thunar-volman
+tumbler
+wezterm
+wl-clipboard
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+polkit-kde-agent
+wlogout
+grim
+slurp
+hyprpaper
+python-pillow
+ttf-cascadia-code-nerd
+ttf-jetbrains-mono-nerd
+otf-font-awesome

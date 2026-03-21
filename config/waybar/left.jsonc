@@ -1,0 +1,54 @@
+{
+  "layer": "top",
+  "position": "top",
+  "exclusive": true,
+  "height": 26,
+  "spacing": 0,
+  "margin": "0 0 4 0",
+  "reload_style_on_change": true,
+  "output": "DP-2",
+  "modules-left": [
+    "hyprland/workspaces",
+    "custom/terminal",
+    "tray"
+  ],
+  "modules-center": [],
+  "modules-right": [],
+  "hyprland/workspaces": {
+    "disable-scroll": true,
+    "all-outputs": false,
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "1": "I",
+      "2": "II",
+      "3": "III",
+      "4": "IV",
+      "8": "T",
+      "9": "R"
+    },
+    "sort-by-number": true,
+    "show-special": false,
+    "ignore-workspaces": [
+      "8",
+      "9"
+    ],
+    "persistent-workspaces": {
+      "*": [
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  },
+  "custom/terminal": {
+    "format": "   TERM ",
+    "tooltip": false,
+    "on-click": "~/.config/archmeros/scripts/archmeros-terminal.sh"
+  },
+  "tray": {
+    "icon-size": 16,
+    "spacing": 0
+  }
+}

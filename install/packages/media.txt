@@ -1,0 +1,5 @@
+mpv
+playerctl
+pavucontrol
+imagemagick
+imv

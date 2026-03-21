@@ -1,0 +1,159 @@
+@import url("./colors.css");
+
+* {
+  font-family: CaskaydiaCove Nerd Font, CommitMono Nerd Font, JetBrainsMono Nerd Font, monospace;
+  font-size: 11.35pt;
+  letter-spacing: 0.08em;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+}
+
+window#waybar {
+  background: transparent;
+  color: @text;
+}
+
+tooltip {
+  background: @mantle;
+  border: 2px solid @text;
+}
+
+tooltip label {
+  color: @text;
+}
+
+.modules-left > widget > *,
+.modules-center > widget > *,
+.modules-right > widget > * {
+  background: @base;
+  color: @text;
+  border-top: 2px solid @text;
+  border-bottom: 2px solid @text;
+}
+
+.modules-left > widget:first-child > *,
+.modules-center > widget:first-child > *,
+.modules-right > widget:first-child > * {
+  border-left: 2px solid @text;
+}
+
+.modules-left > widget:last-child > *,
+.modules-center > widget:last-child > *,
+.modules-right > widget:last-child > * {
+  border-right: 2px solid @text;
+}
+
+.modules-left > widget > *:hover,
+.modules-center > widget > *:hover,
+.modules-right > widget > *:hover {
+  background: @surface0;
+  color: @accent;
+  border-top: 2px solid @accent;
+  border-bottom: 2px solid @accent;
+}
+
+#workspaces {
+  margin: 0;
+  border: 0;
+}
+
+#workspaces button {
+  padding: 0 4px;
+  min-width: 26px;
+  background: @base;
+  color: @subtext1;
+  border-top: 2px solid @text;
+  border-bottom: 2px solid @text;
+  box-shadow: inherit;
+  text-shadow: inherit;
+}
+
+#workspaces button:hover {
+  background: @surface0;
+  border-top: 2px solid @accent;
+  border-bottom: 2px solid @accent;
+  color: @accent;
+  font-weight: 700;
+}
+
+#workspaces button.active {
+  background: @accent;
+  color: @mantle;
+  border-top: 2px solid @accent;
+  border-bottom: 2px solid @accent;
+  font-weight: 900;
+}
+
+#workspaces button:first-child {
+  border-left: 2px solid @text;
+}
+
+#workspaces button:first-child:hover,
+#workspaces button:first-child.active {
+  border-left: 2px solid @accent;
+}
+
+#custom-terminal {
+  padding: 0 10px;
+  background: @accent2;
+  color: @mantle;
+  font-weight: 900;
+}
+
+#custom-terminal:hover {
+  color: @mantle;
+  border-top: 2px solid @accent2;
+  border-bottom: 2px solid @accent2;
+}
+
+#tray {
+  padding: 0 0;
+}
+
+#tray > widget {
+  background: @base;
+  color: @text;
+  border-top: 2px solid @text;
+  border-bottom: 2px solid @text;
+}
+
+#tray > widget:hover {
+  background: @surface0;
+  color: @accent;
+  border-top: 2px solid @accent;
+  border-bottom: 2px solid @accent;
+}
+
+#tray > widget > image {
+  padding: 0 7px;
+}
+
+#clock,
+#network,
+#bluetooth,
+#pulseaudio,
+#cpu,
+#memory,
+#battery {
+  padding: 0 8px;
+  font-weight: 700;
+}
+
+#clock:hover,
+#network:hover,
+#bluetooth:hover,
+#pulseaudio:hover,
+#cpu:hover,
+#memory:hover,
+#battery:hover {
+  font-weight: 900;
+}
+
+#battery.warning {
+  color: @warning;
+}
+
+#battery.critical {
+  color: @red;
+}

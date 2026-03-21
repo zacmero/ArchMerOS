@@ -1,0 +1,72 @@
+{
+  "layer": "top",
+  "position": "top",
+  "exclusive": true,
+  "height": 26,
+  "spacing": 0,
+  "margin": "0 0 4 0",
+  "reload_style_on_change": true,
+  "output": "VGA-1",
+  "modules-left": [
+    "hyprland/workspaces"
+  ],
+  "modules-center": [],
+  "modules-right": [
+    "network",
+    "cpu",
+    "memory",
+    "battery"
+  ],
+  "hyprland/workspaces": {
+    "disable-scroll": true,
+    "all-outputs": false,
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "1": "I",
+      "2": "II",
+      "3": "III",
+      "4": "IV",
+      "8": "T",
+      "9": "R"
+    },
+    "sort-by-number": true,
+    "show-special": false,
+    "ignore-workspaces": [
+      "8",
+      "9"
+    ],
+    "persistent-workspaces": {
+      "*": [
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  },
+  "network": {
+    "format-wifi": "▲ {bandwidthUpBytes} ▼ {bandwidthDownBytes}    {essid}",
+    "format-ethernet": "▲ {bandwidthUpBytes} ▼ {bandwidthDownBytes}    ETH",
+    "format-disconnected": "  offline",
+    "tooltip-format": "{ifname}  {ipaddr}/{cidr}",
+    "max-length": 36
+  },
+  "cpu": {
+    "interval": 2,
+    "format": "{usage}% "
+  },
+  "memory": {
+    "interval": 2,
+    "format": "{}% "
+  },
+  "battery": {
+    "interval": 30,
+    "format": "{capacity}% ",
+    "format-charging": "{capacity}% ",
+    "states": {
+      "warning": 30,
+      "critical": 15
+    }
+  }
+}

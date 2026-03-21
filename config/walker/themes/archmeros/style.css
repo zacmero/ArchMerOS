@@ -1,0 +1,46 @@
+* {
+  font-family: "CaskaydiaCove Nerd Font", "CommitMono Nerd Font", monospace;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+}
+
+window {
+  background: rgba(9, 12, 22, 0.72);
+  color: #d8ddff;
+  border: 2px solid #58d6ff;
+  box-shadow: none;
+}
+
+box#input,
+entry {
+  background: rgba(29, 35, 60, 0.62);
+  color: #d8ddff;
+  border: 0;
+}
+
+entry {
+  border-bottom: 2px solid #ff7edb;
+  padding: 14px 16px;
+  caret-color: #58d6ff;
+}
+
+listview {
+  background: transparent;
+  padding: 10px 12px 12px;
+}
+
+listview row {
+  background: transparent;
+  color: #d8ddff;
+  padding: 10px 12px;
+  border-top: 1px solid #626da7;
+}
+
+listview row:selected {
+  background: linear-gradient(90deg, #58d6ff, #ff7edb);
+  color: rgba(9, 12, 22, 0.72);
+}
+
+label#placeholder {
+  color: #aab4ea;
+}

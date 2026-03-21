@@ -1,0 +1,79 @@
+configuration {
+  show-icons: true;
+  icon-theme: "Papirus-Dark";
+  display-drun: "Launch";
+  drun-display-format: "{name}";
+  matching: "normal";
+}
+
+@import "~/.config/rofi/colors.rasi"
+@import "~/.config/rofi/fonts.rasi"
+
+window {
+  transparency: "real";
+  location: center;
+  anchor: center;
+  fullscreen: false;
+  width: 760px;
+  border: 0px;
+  background-color: @background;
+}
+
+mainbox {
+  spacing: 12px;
+  padding: 12px;
+  border: 2px solid;
+  border-color: @selected;
+  background-color: transparent;
+  children: [ "inputbar", "listview" ];
+}
+
+inputbar {
+  border: 2px solid;
+  border-color: @active;
+  background-color: @background-alt;
+  text-color: @foreground;
+  children: [ "prompt", "entry" ];
+}
+
+prompt {
+  padding: 8px 12px;
+  background-color: @selected;
+  text-color: @background;
+}
+
+entry {
+  padding: 8px 12px;
+  background-color: inherit;
+  text-color: inherit;
+  placeholder: "Search...";
+}
+
+listview {
+  columns: 2;
+  lines: 6;
+  cycle: true;
+  dynamic: true;
+  scrollbar: false;
+  layout: vertical;
+  background-color: transparent;
+}
+
+element {
+  padding: 8px 10px;
+  background-color: transparent;
+  text-color: @foreground;
+}
+
+element selected.normal {
+  background-color: @selected;
+  text-color: @background;
+}
+
+element-icon {
+  size: 28px;
+}
+
+element-text {
+  vertical-align: 0.5;
+}

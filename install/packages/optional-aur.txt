@@ -1,0 +1,2 @@
+# Optional packages not currently available in the official Arch repos used here
+walker-bin

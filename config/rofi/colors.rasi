@@ -1,0 +1,30 @@
+* {
+  rosewater:      #F6D5EAFF;
+  pink:           #FF7EDBFF;
+  mauve:          #BE92FFFF;
+  red:            #FF6C9CFF;
+  peach:          #FFB86CFF;
+  yellow:         #FFD86FFF;
+  green:          #8FE388FF;
+  teal:           #67E8F9FF;
+  blue:           #58D6FFFF;
+  lavender:       #A7B7FFFF;
+  text:           #D8DDFFFF;
+  subtext1:       #AAB4EAFF;
+  overlay0:       #626DA7FF;
+  surface0:       rgba(29, 35, 60, 0.62);
+  surface1:       rgba(43, 49, 83, 0.72);
+  base:           rgba(13, 17, 30, 0.52);
+  mantle:         rgba(9, 12, 22, 0.72);
+
+  accent:         #58d6ff;
+
+  background:     @base;
+  background-alt: @mantle;
+  foreground:     @text;
+  alternate-normal-foreground: @subtext1;
+  border-color:   @accent;
+  selected:       @accent;
+  active:         #ff7edb;
+  urgent:         #ff6c9c;
+}

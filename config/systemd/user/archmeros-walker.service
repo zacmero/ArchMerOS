@@ -1,0 +1,13 @@
+[Unit]
+Description=ArchMerOS Walker launcher service
+After=archmeros-elephant.service graphical-session-pre.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/walker --gapplication-service
+Restart=on-failure
+RestartSec=1
+
+[Install]
+WantedBy=default.target

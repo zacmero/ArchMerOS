@@ -94,6 +94,7 @@ Tracked repo config:
 - [config/walker](/home/zacmero/projects/ArchMerOS/config/walker)
 - [config/mako](/home/zacmero/projects/ArchMerOS/config/mako)
 - [config/archmeros](/home/zacmero/projects/ArchMerOS/config/archmeros)
+- [config/easyeffects](/home/zacmero/projects/ArchMerOS/config/easyeffects)
 - [config/gtk-3.0](/home/zacmero/projects/ArchMerOS/config/gtk-3.0)
 - [config/gtk-4.0](/home/zacmero/projects/ArchMerOS/config/gtk-4.0)
 - [config/systemd/user](/home/zacmero/projects/ArchMerOS/config/systemd/user)
@@ -313,6 +314,7 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+Shift+B`: refresh Hyprland shell components
 - `Super+Alt+W`: open wallpaper picker
 - `Super+Alt+A`: open appearance controller
+- `Super+Alt+S`: open the audio effects UI
 - `Left Alt+W`: close current app window while keeping `Right Alt` free for ABNT2 characters
 - click the Waybar keyboard indicator: toggle keyboard layout
 - `XF86AudioRaiseVolume`: raise volume
@@ -337,6 +339,10 @@ Direct commands:
 - `wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+`
 - `wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-`
 - `wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle`
+
+Audio UI command:
+
+- `~/.config/archmeros/scripts/archmeros-audio.sh`
 
 ## Current App Launch Note
 
@@ -405,6 +411,28 @@ Current managed prefs:
 
 The linker attaches this file to the active `default-release` profile when present.
 
+## Audio Stack
+
+ArchMerOS uses PipeWire, so the correct real-time system-wide EQ path is EasyEffects plus plugin packs, not a custom toy DSP app.
+
+Tracked audio package list:
+
+- [install/packages/audio.txt](/home/zacmero/projects/ArchMerOS/install/packages/audio.txt)
+
+Tracked audio launcher:
+
+- [config/archmeros/scripts/archmeros-audio.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-audio.sh)
+
+Tracked audio config root:
+
+- [config/easyeffects](/home/zacmero/projects/ArchMerOS/config/easyeffects)
+
+Current intent:
+
+- `easyeffects` for system-wide playback processing
+- `lsp-plugins` and `calf` for broader EQ and studio-oriented filters
+- `qpwgraph` for routing inspection when needed
+
 ## Current PARA Rule
 
 The Windows Desktop is the shared intersection between Windows and ArchMerOS.
@@ -428,6 +456,7 @@ Current behavior:
 - local Linux files already present in `~/Desktop` are left alone
 - Walker is kept for app/command launching, not for PARA drag-and-drop, until a better picker exists
 - `thunar` is explicitly resized after launch to the same proportions as the `Super+Shift+O` medium pop mode
+- the Thunar wrapper now polls for the real client before resizing so the medium geometry survives reused Thunar processes too
 - after that it behaves like a normal floating window and can still be tiled normally
 - Walker now uses a repo-owned local `thunar.desktop` override that launches through the same Thunar wrapper
 

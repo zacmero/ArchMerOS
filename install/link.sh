@@ -14,6 +14,7 @@ declare -A links=(
   ["${config_root}/walker"]="${HOME}/.config/walker"
   ["${config_root}/mako"]="${HOME}/.config/mako"
   ["${config_root}/archmeros"]="${HOME}/.config/archmeros"
+  ["${config_root}/easyeffects"]="${HOME}/.config/easyeffects"
   ["${config_root}/gtk-3.0"]="${HOME}/.config/gtk-3.0"
   ["${config_root}/gtk-4.0"]="${HOME}/.config/gtk-4.0"
   ["${config_root}/systemd/user"]="${HOME}/.config/systemd/user"

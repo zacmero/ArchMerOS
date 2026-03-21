@@ -1,0 +1,5 @@
+easyeffects
+lsp-plugins-lv2
+lsp-plugins-ladspa
+calf
+qpwgraph

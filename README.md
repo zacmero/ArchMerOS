@@ -48,7 +48,7 @@ Current known state on this workstation:
 - live user configs are symlinked from this repo into `~/.config`
 - Walker is the general launcher
 - Walker providers are installed through Elephant and started as user services from Hyprland
-- `Super+E` opens `thunar` on the real Desktop symlink roots for now
+- `Super+E` syncs the trusted Windows Desktop intersection into `~/Desktop` and opens `thunar`
 - `rofi` remains available as the launcher fallback if Walker fails
 - new login-shell Bash sessions source an ArchMerOS shell hook from `~/.bash_profile`
 - local GTK, cursor, and icon theme assets are deployed under `~/.local/share`
@@ -392,16 +392,25 @@ This keeps `Right Alt` acting as `AltGr` for the ABNT2 layout, including the nat
 
 ## Current PARA Rule
 
-The PARA launcher should never assume the Windows-backed project drive is mounted correctly without checking path existence.
+The Windows Desktop is the shared intersection between Windows and ArchMerOS.
 
-Current PARA entrypoint:
+Current PARA entrypoints:
 
 - [config/archmeros/scripts/archmeros-para.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-para.sh)
+- [config/archmeros/scripts/archmeros-desktop-sync.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-desktop-sync.sh)
 
 Current behavior:
 
-- `Super+E` opens `thunar` on `~/Desktop`
-- this exposes the Windows-backed Desktop symlink roots directly for drag and drop
+- the trusted Windows volume is intended to automount by UUID
+- the stable shared desktop path is `/mnt/windows-desktop`
+- `Super+E` syncs `/mnt/windows-desktop` into `~/Desktop`, then opens `thunar`
+- this keeps current and future Windows Desktop files and folders visible on Linux
+- sync filters out Windows-only shortcut clutter:
+  - `*.lnk`
+  - `desktop.ini`
+  - `Trash`
+  - `softwares`
+- local Linux files already present in `~/Desktop` are left alone
 - Walker is kept for app/command launching, not for PARA drag-and-drop, until a better picker exists
 - `thunar` is explicitly resized after launch to the same proportions as the `Super+Shift+O` medium pop mode
 - after that it behaves like a normal floating window and can still be tiled normally
@@ -413,6 +422,12 @@ Current known PARA roots:
 - `~/Desktop/2. Areas`
 - `~/Desktop/3. Resources`
 - `~/Desktop/4. Archives`
+
+Manual refresh command:
+
+```bash
+~/.config/archmeros/scripts/archmeros-desktop-sync.sh
+```
 
 ## Build Log
 
@@ -433,6 +448,8 @@ Completed so far:
 - added a wallpaper picker command and keybinding
 - added persistent per-monitor wallpaper state and monitor-targeted wallpaper picking
 - corrected mouse drag/resize binds to use `bindm`
+- added a trusted Windows Desktop sync path for `Super+E` based on `/mnt/windows-desktop`
+- added a trusted UUID automount for the Windows Desktop volume at `/mnt/windows-ssd`
 - switched the live wallpaper backend to `swaybg` for reliability
 - added a centered pop-out / pin helper for focused windows
 - split the pop-out sizing into large `Super+O` and medium `Super+Shift+O`

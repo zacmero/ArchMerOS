@@ -4,6 +4,8 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 config_root="${repo_root}/config"
+firefox_root="${HOME}/.mozilla/firefox"
+firefox_profiles_ini="${firefox_root}/profiles.ini"
 
 declare -A links=(
   ["${config_root}/hypr"]="${HOME}/.config/hypr"
@@ -17,6 +19,20 @@ declare -A links=(
   ["${config_root}/systemd/user"]="${HOME}/.config/systemd/user"
   ["${repo_root}/local/share/applications/thunar.desktop"]="${HOME}/.local/share/applications/thunar.desktop"
 )
+
+if [[ -f "${firefox_profiles_ini}" && -f "${config_root}/firefox/user.js" ]]; then
+  firefox_profile_rel="$(awk -F= '
+    /^\[Profile/ { in_profile=1; path=""; name="" }
+    /^\[/ && $0 !~ /^\[Profile/ { in_profile=0 }
+    in_profile && $1=="Name" { name=$2 }
+    in_profile && $1=="Path" { path=$2 }
+    in_profile && name=="default-release" && path!="" { print path; exit }
+  ' "${firefox_profiles_ini}")"
+
+  if [[ -n "${firefox_profile_rel:-}" ]]; then
+    links["${config_root}/firefox/user.js"]="${firefox_root}/${firefox_profile_rel}/user.js"
+  fi
+fi
 
 backup_root="${HOME}/.config/archmeros-backups/$(date +%Y%m%d-%H%M%S)"
 made_backup=0

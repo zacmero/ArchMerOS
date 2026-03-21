@@ -52,6 +52,7 @@ Current known state on this workstation:
 - `rofi` remains available as the launcher fallback if Walker fails
 - new login-shell Bash sessions source an ArchMerOS shell hook from `~/.bash_profile`
 - local GTK, cursor, and icon theme assets are deployed under `~/.local/share`
+- the active Firefox `default-release` profile can be fed from a repo-owned `user.js`
 - `mero_terminal` remains separate and untouched
 
 Current three-monitor intent:
@@ -96,6 +97,7 @@ Tracked repo config:
 - [config/gtk-3.0](/home/zacmero/projects/ArchMerOS/config/gtk-3.0)
 - [config/gtk-4.0](/home/zacmero/projects/ArchMerOS/config/gtk-4.0)
 - [config/systemd/user](/home/zacmero/projects/ArchMerOS/config/systemd/user)
+- [config/firefox](/home/zacmero/projects/ArchMerOS/config/firefox)
 
 Live targets:
 
@@ -390,6 +392,19 @@ Current XKB option policy:
 
 This keeps `Right Alt` acting as `AltGr` for the ABNT2 layout, including the native `br(abnt2)` level-3 symbols on `Q` and `W` such as `/` and `?`.
 
+## Firefox Overrides
+
+Repo-owned Firefox overrides live in:
+
+- [config/firefox/user.js](/home/zacmero/projects/ArchMerOS/config/firefox/user.js)
+
+Current managed prefs:
+
+- `full-screen-api.enabled = true`
+- `full-screen-api.ignore-widgets = false`
+
+The linker attaches this file to the active `default-release` profile when present.
+
 ## Current PARA Rule
 
 The Windows Desktop is the shared intersection between Windows and ArchMerOS.
@@ -450,6 +465,7 @@ Completed so far:
 - corrected mouse drag/resize binds to use `bindm`
 - added a trusted Windows Desktop sync path for `Super+E` based on `/mnt/windows-desktop`
 - added a trusted UUID automount for the Windows Desktop volume at `/mnt/windows-ssd`
+- added a repo-owned Firefox `user.js` override to restore browser fullscreen support
 - switched the live wallpaper backend to `swaybg` for reliability
 - added a centered pop-out / pin helper for focused windows
 - split the pop-out sizing into large `Super+O` and medium `Super+Shift+O`

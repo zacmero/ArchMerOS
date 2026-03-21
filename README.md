@@ -156,6 +156,7 @@ Active shell pieces currently tracked in this repo:
 - Wallpaper picker: [config/archmeros/scripts/archmeros-wallpaper-pick.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-wallpaper-pick.sh)
 - Window pop helper: [config/archmeros/scripts/archmeros-window-pop.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-window-pop.sh)
 - Window close helper: [config/archmeros/scripts/archmeros-close.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-close.sh)
+- Keyboard indicator helper: [config/archmeros/scripts/archmeros-keyboard.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-keyboard.sh)
 - Walker launcher wrapper: [config/archmeros/scripts/archmeros-walker.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-walker.sh)
 - Window history cycle helper: [config/archmeros/scripts/archmeros-cycle-window.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-cycle-window.sh)
 - Bash hook: [config/archmeros/shell/archmeros-bash.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/shell/archmeros-bash.sh)
@@ -269,7 +270,6 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+Shift+Left/Right/Up/Down`: swap windows
 - `Shift + Left Mouse`: drag a window
 - `Shift + Right Mouse`: resize a window
-- `Alt+W`: close current app, or send `Ctrl+W` to Firefox
 - `Super+V`: toggle floating
 - `Super+P`: pseudotile
 - `Super+F`: fullscreen
@@ -280,6 +280,8 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+Shift+B`: refresh Hyprland shell components
 - `Super+Alt+W`: open wallpaper picker
 - `Super+Alt+A`: open appearance controller
+- `Left Alt+W`: close current app window while keeping `Right Alt` free for ABNT2 characters
+- click the Waybar keyboard indicator: toggle keyboard layout
 - `XF86AudioRaiseVolume`: raise volume
 - `XF86AudioLowerVolume`: lower volume
 - `XF86AudioMute`: toggle mute
@@ -350,6 +352,13 @@ Hyprland is currently configured for:
 
 This gives a rotating English / ABNT2 setup while keeping the rest of the session on the same config.
 
+Current XKB option policy:
+
+- `grp:alt_shift_toggle`
+- `lvl3:ralt_switch`
+
+This keeps `Right Alt` acting as `AltGr` for the ABNT2 layout, including the native `br(abnt2)` level-3 symbols on `Q` and `W` such as `/` and `?`.
+
 ## Current PARA Rule
 
 The PARA launcher should never assume the Windows-backed project drive is mounted correctly without checking path existence.
@@ -412,8 +421,10 @@ Completed so far:
 - removed automatic pinning from the window pop modes so keyboard focus stays more predictable
 - restored focus-follows-mouse and split fast switching into `Alt+Tab` for recent-window toggle and `Super+Tab` for full workspace cycling
 - replaced plain focus cycling with an ArchMerOS cycle helper so spotlighted floating windows actually switch visually
+- restored close-window on `Left Alt+W` only, leaving `Right Alt` free for ABNT2 typing
+- made `Right Alt` an explicit XKB level-3 switch so ABNT2 can use its native `AltGr+Q` and `AltGr+W` symbols
+- added a Waybar keyboard indicator with click-to-toggle for the active XKB layout
 - added an ArchMerOS Bash login hook for GUI auto-detach behavior in new WezTerm shells
-- added `Alt+W` close behavior with Firefox-specific `Ctrl+W` forwarding
 
 ## Planned Structure
 

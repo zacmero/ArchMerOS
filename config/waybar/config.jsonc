@@ -16,6 +16,7 @@
   ],
   "modules-right": [
     "group/connectivity",
+    "custom/keyboard",
     "group/system"
   ],
   "hyprland/workspaces": {
@@ -118,6 +119,13 @@
         ""
       ]
     }
+  },
+  "custom/keyboard": {
+    "return-type": "json",
+    "interval": 1,
+    "exec": "~/.config/archmeros/scripts/archmeros-keyboard.sh",
+    "on-click": "~/.config/archmeros/scripts/archmeros-keyboard.sh toggle",
+    "tooltip": true
   },
   "cpu": {
     "interval": 2,

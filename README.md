@@ -112,6 +112,12 @@ Live targets:
 - `~/.config/gtk-4.0`
 - `~/.config/systemd/user`
 
+Tracked system overrides:
+
+- [install/system/etc/modprobe.d/archmeros-bluetooth.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-bluetooth.conf)
+- [install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules](/home/zacmero/projects/ArchMerOS/install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules)
+- [install/system/apply-bluetooth-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bluetooth-system.sh)
+
 ## Current Setup Steps
 
 These are the current machine bring-up steps as of the present ArchMerOS state.
@@ -309,11 +315,13 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+F`: fullscreen
 - `Super+G`: open Telegram
 - `Super+M`: open YouTube Music app
+- `Super+N`: open Todoist and Evernote on workspace `4`
 - `Super+C`: pop focused window out, center it, float it, and pin it
 - `Super+O`: pop focused window into a large near-full centered mode
 - `Super+Shift+O`: pop focused window into a medium centered mode
 - `Super+Shift+P`: open display settings helper
 - `Super+Shift+B`: refresh Hyprland shell components
+- `Super+Shift+C`: open ChatGPT as a centered medium utility app
 - `Super+Alt+W`: open wallpaper picker
 - `Super+Alt+A`: open appearance controller
 - `Super+Alt+S`: open the audio effects UI
@@ -434,6 +442,8 @@ Current launch paths:
 
 - Walker/Rofi entries: `Todoist`, `Evernote`, `ChatGPT`, `YouTube Music`
 - `Super+M`: open `YouTube Music`
+- `Super+Shift+C`: open `ChatGPT`
+- `Super+N`: open `Todoist` and `Evernote` together on workspace `4`
 
 Each app launches in its own isolated Chromium app profile under:
 
@@ -448,6 +458,81 @@ Current native messaging app:
 - `telegram-desktop`
 - `Super+G`: open Telegram
 
+## Bluetooth
+
+Current Bluetooth USB workaround:
+
+- tracked config: [install/system/etc/modprobe.d/archmeros-bluetooth.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-bluetooth.conf)
+- tracked udev rule: [install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules](/home/zacmero/projects/ArchMerOS/install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules)
+- tracked installer: [install/system/apply-bluetooth-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bluetooth-system.sh)
+- live system file: `/etc/modprobe.d/archmeros-bluetooth.conf`
+- live udev rule: `/etc/udev/rules.d/99-archmeros-btusb-power.rules`
+- active options:
+
+```conf
+options btusb enable_autosuspend=n reset=y
+```
+
+Why this exists:
+
+- the CSR USB dongle started failing BLE keyboard pairing after the machine moved to `linux-lts 6.18.18-1` and `bluez 5.86-4` on March 17, 2026
+- the controller was repeatedly falling into `PowerState: off-blocked`
+- disabling `btusb` autosuspend and forcing reset on initialization is the current mitigation
+- ArchMerOS also pins the CSR dongle to `power/control=on` and sets `AutoEnable=true` in BlueZ so the adapter does not idle itself away
+- `blueman-applet` is also started from Hyprland so Bluetooth approval prompts have a desktop agent in-session
+
+Current rollback state:
+
+- downgraded from cache to `bluez 5.86-2`
+- downgraded from cache to `linux-lts 6.12.73-1`
+- downgraded from cache to `linux-firmware 20260110-1`
+- a reboot is required before the downgraded kernel modules and firmware are actually active
+
+What the actual problem was:
+
+- it was not mainly a missing approval popup
+- the CSR Bluetooth dongle was unstable on the newer stack and the controller was repeatedly dropping, re-enumerating, or failing BLE HID reads during keyboard pairing
+- Hyprland also had no Bluetooth desktop agent running, which made approval prompts harder to surface when they did matter
+- a stray `rtbth-dkms` package was also present and was removed during cleanup
+
+What finally fixed it:
+
+1. track and apply the `btusb` workaround:
+
+```conf
+options btusb enable_autosuspend=n reset=y
+```
+
+2. pin the CSR dongle USB power policy to `on` with the tracked udev rule
+3. set BlueZ `AutoEnable=true`
+4. downgrade to the cached pre-regression stack:
+   - `bluez 5.86-2`
+   - `bluez-libs 5.86-2`
+   - `bluez-utils 5.86-2`
+   - `linux-lts 6.12.73-1`
+   - `linux-firmware 20260110-1`
+5. reboot into the downgraded kernel
+6. remove `rtbth-dkms`
+7. start `blueman-applet` from Hyprland
+8. pair from a live terminal `bluetoothctl` agent
+
+Final successful pairing path:
+
+```bash
+bluetoothctl
+agent on
+default-agent
+power on
+scan on
+pair <MAC>
+trust <MAC>
+connect <MAC>
+```
+
+The successful keyboard MAC during recovery was:
+
+- `E3:13:39:DC:A4:86`
+
 ## Fullscreen Behavior
 
 `Super+F` is now handled by:
@@ -458,6 +543,13 @@ Current rule:
 
 - browser windows use Hyprland `fullscreenstate 2 0` so the monitor fullscreen does not force the browser client into presentation-mode-style fullscreen
 - non-browser windows keep the normal Hyprland fullscreen toggle
+
+Current web-app placement rules:
+
+- `YouTube Music` -> workspace `9` on the right monitor
+- `ChatGPT` -> medium-centered floating window
+- `Todoist` -> workspace `4`
+- `Evernote` -> workspace `4`
 
 ## Audio Stack
 

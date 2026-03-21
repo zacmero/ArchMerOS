@@ -17,6 +17,7 @@ grim
 slurp
 hyprpaper
 chromium
+ublock-origin
 telegram-desktop
 python-pillow
 ttf-cascadia-code-nerd

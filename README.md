@@ -149,7 +149,13 @@ This populates:
 
 This helper auto-detects the active Hyprland socket, reloads Hyprland, restarts Waybar, and reapplies the wallpaper in the current graphical session.
 
-5. Restart GTK apps such as `thunar` after theme changes so they pick up the active GTK/icon/cursor settings.
+5. Re-apply the tracked session appearance if new apps still assume a light desktop:
+
+```bash
+~/.config/archmeros/scripts/archmeros-session-appearance.sh
+```
+
+6. Restart GTK apps such as `thunar` after theme changes so they pick up the active GTK/icon/cursor settings.
 
 ## Current Visual Stack
 
@@ -163,6 +169,7 @@ Active shell pieces currently tracked in this repo:
 - Wallpapers: [config/wallpapers](/home/zacmero/projects/ArchMerOS/config/wallpapers)
 - Wallpaper loader: [config/archmeros/scripts/archmeros-wallpaper.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-wallpaper.sh)
 - Wallpaper picker: [config/archmeros/scripts/archmeros-wallpaper-pick.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-wallpaper-pick.sh)
+- Session appearance init: [config/archmeros/scripts/archmeros-session-appearance.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-session-appearance.sh)
 - Window pop helper: [config/archmeros/scripts/archmeros-window-pop.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-window-pop.sh)
 - Window close helper: [config/archmeros/scripts/archmeros-close.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-close.sh)
 - Keyboard indicator helper: [config/archmeros/scripts/archmeros-keyboard.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-keyboard.sh)
@@ -178,6 +185,16 @@ Theme direction currently applied:
 - GTK theme: `catppuccin-frappe-blue-standard+default`
 - icon theme: `Papirus-Dark`
 - cursor theme: `Bibata-Modern-Amber`
+
+Dark-mode policy:
+
+- Hyprland does not provide a universal dark-mode toggle by itself
+- GTK dark mode is set by the tracked GTK settings files
+- GNOME/libadwaita-aware apps are pushed to dark mode by the tracked session appearance script, which sets:
+  - `org.gnome.desktop.interface color-scheme = 'prefer-dark'`
+  - `gtk-theme = 'catppuccin-frappe-blue-standard+default'`
+  - `icon-theme = 'Papirus-Dark'`
+  - `cursor-theme = 'Bibata-Modern-Amber'`
 
 Wallpaper backend:
 
@@ -448,6 +465,11 @@ Current launch paths:
 Each app launches in its own isolated Chromium app profile under:
 
 - `~/.local/share/archmeros/webapps/`
+
+Current YouTube Music extras:
+
+- `uBlock Origin` is loaded from `/usr/lib/ublock-origin`
+- the launcher explicitly places the mapped window on workspace `9` after Chromium creates the client, instead of relying only on WMClass matching
 
 ## Native Apps
 

@@ -16,6 +16,8 @@ wlogout
 grim
 slurp
 hyprpaper
+chromium
+telegram-desktop
 python-pillow
 ttf-cascadia-code-nerd
 ttf-jetbrains-mono-nerd

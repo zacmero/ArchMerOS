@@ -307,6 +307,8 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+V`: toggle floating
 - `Super+P`: pseudotile
 - `Super+F`: fullscreen
+- `Super+G`: open Telegram
+- `Super+M`: open YouTube Music app
 - `Super+C`: pop focused window out, center it, float it, and pin it
 - `Super+O`: pop focused window into a large near-full centered mode
 - `Super+Shift+O`: pop focused window into a medium centered mode
@@ -412,6 +414,50 @@ Current managed prefs:
 - `full-screen-api.ignore-widgets = false`
 
 The linker attaches this file to the active `default-release` profile when present.
+
+## Web Apps
+
+Firefox remains the main browser, but ArchMerOS web apps now use a Chromium-style app host because Firefox does not provide the same Linux app-mode experience.
+
+Tracked launcher:
+
+- [config/archmeros/scripts/archmeros-webapp.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-webapp.sh)
+
+Tracked app entries:
+
+- [todoist.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/todoist.desktop)
+- [evernote.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/evernote.desktop)
+- [chatgpt.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/chatgpt.desktop)
+- [youtube-music.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/youtube-music.desktop)
+
+Current launch paths:
+
+- Walker/Rofi entries: `Todoist`, `Evernote`, `ChatGPT`, `YouTube Music`
+- `Super+M`: open `YouTube Music`
+
+Each app launches in its own isolated Chromium app profile under:
+
+- `~/.local/share/archmeros/webapps/`
+
+## Native Apps
+
+When a service already has a solid Linux desktop client, ArchMerOS prefers the native package over a browser wrapper.
+
+Current native messaging app:
+
+- `telegram-desktop`
+- `Super+G`: open Telegram
+
+## Fullscreen Behavior
+
+`Super+F` is now handled by:
+
+- [config/archmeros/scripts/archmeros-fullscreen.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-fullscreen.sh)
+
+Current rule:
+
+- browser windows use Hyprland `fullscreenstate 2 0` so the monitor fullscreen does not force the browser client into presentation-mode-style fullscreen
+- non-browser windows keep the normal Hyprland fullscreen toggle
 
 ## Audio Stack
 

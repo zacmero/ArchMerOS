@@ -10,6 +10,7 @@ text/x-c++src=nvim.desktop
 text/x-csrc=nvim.desktop
 text/x-makefile=nvim.desktop
 image/png=imv.desktop
+audio/flac=mpv.desktop
 
 [Added Associations]
 image/jpeg=org.xfce.ristretto.desktop;
@@ -24,3 +25,4 @@ text/x-c++src=nvim.desktop;
 text/x-csrc=nvim.desktop;
 text/x-makefile=nvim.desktop;
 image/png=imv.desktop;org.xfce.ristretto.desktop;
+audio/flac=mpv.desktop;

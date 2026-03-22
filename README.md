@@ -725,6 +725,34 @@ Current intent:
 - `lsp-plugins` and `calf` for broader EQ and studio-oriented filters
 - `qpwgraph` for routing inspection when needed
 
+UR44 policy:
+
+- [config/archmeros/scripts/archmeros-audio-policy.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-audio-policy.sh)
+- Hyprland starts this on login to force the machine into the studio path:
+- NVIDIA HDMI audio off
+- Intel onboard audio off
+- UR44 profile set to `pro-audio`
+- default sink set to `alsa_output.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-output-0`
+- default source set to `alsa_input.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-input-0`
+
+March 22, 2026 audio investigation:
+
+- the UR44 is using the correct Linux driver: `snd_usb_audio`
+- the subtle Firefox / YouTube Music pops were not traced to a missing Yamaha driver
+- the strongest system-level problem found was the old UR44 `analog-surround-21` profile, which was exposing an unnecessary `LFE` path for browser playback
+- ArchMerOS switched the interface to `pro-audio`, and the live Firefox stream then dropped back to `FL/FR` only
+- if the pops continue after this cleanup, the next A/B should be:
+- Firefox YouTube Music vs local `mpv`
+- EasyEffects enabled vs bypassed
+- this machine should treat the UR44 as the only active audio path unless you intentionally re-enable another card
+
+Bluetooth note after the March 22, 2026 check:
+
+- the CSR dongle power policy is already pinned to `on`
+- autosuspend is already disabled
+- intermittent keyboard disconnects no longer look like simple USB power saving
+- if the issue returns, the more likely culprit is the CSR controller/session state, not adapter idle power
+
 ## Shell Themes
 
 ArchMerOS shell themes are now bundle-driven and live in:

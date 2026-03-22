@@ -822,14 +822,32 @@ Direct commands:
 Wallpaper picker:
 
 - [config/archmeros/scripts/archmeros-wallpaper-pick.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-wallpaper-pick.sh)
+- [config/archmeros/scripts/archmeros-wallpaper-browser.py](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-wallpaper-browser.py)
 
 Current behavior:
 
-- `Super+Alt+W` selects the target monitor first
-- then picks a wallpaper name from the repo-local wallpaper folder
-- opens a lightweight `imv` preview window before apply
-- lets you `Apply`, `Preview another`, or `Cancel`
-- preview window uses normal ArchMerOS floating/centered window rules
+- `Super+Alt+W` opens a repo-owned wallpaper browser window
+- target now defaults to the currently focused monitor for manual crop-first behavior
+- wallpaper preview updates automatically as you move through the list
+- `Apply`:
+  - on a single monitor target, activates the in-place crop overlay directly in the preview area
+  - drag the crop rectangle to choose the visible area
+  - use the mouse wheel, `+` / `-`, or the on-screen `Zoom In` / `Zoom Out` buttons to resize the crop area
+  - arrow keys nudge the crop area
+  - `Enter` applies the current crop immediately
+  - on `All monitors`, applies the original wallpaper directly
+- generated crops are stored under `config/wallpapers/generated`
+- the crop flow now stays inside the main wallpaper browser instead of opening a second popup
+
+Notes:
+
+- this crop flow is intentionally repo-owned and lightweight
+- backend remains `swaybg`/`hyprpaper` for application only; the crop/fitting step happens before apply
+- single-monitor crop is now manual position + zoom
+- multi-monitor crop remains automatic centered fit because one manual crop cannot satisfy multiple aspect ratios cleanly
+- explicit zoom buttons are present because mouse-wheel delivery can vary between environments
+- when the target is a single monitor, there is no separate crop popup anymore; `Apply` uses the in-place crop overlay directly
+- when the target is `All monitors`, the crop action is intentionally automatic; choose a single monitor target for the manual crop window
 
 ## Build Log
 
@@ -881,7 +899,8 @@ Completed so far:
 - added screenshot shortcuts with repo-owned `grim`/`slurp` capture and clipboard copy
 - added a local-output Waybar taskbar path after workspaces, then commented it out for now while keeping the code in place
 - upgraded `Super+E` to force a fresh Thunar window and place it on the focused workspace/monitor reliably
-- added `imv` preview-confirm flow to the wallpaper picker
+- replaced the wallpaper picker with a repo-owned auto-preview browser window
+- added manual single-monitor wallpaper crop selection and automatic all-monitor crop generation through Pillow
 - upgraded detached terminal-launched GUI apps to promote onto the focused workspace/monitor instead of hiding behind spotlight windows
 
 ## Planned Structure

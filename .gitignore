@@ -1,2 +1,12 @@
-./todo.txt
+todo.txt
+.nvimlog
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.tmp
+*.log
+.DS_Store
 
+# Generated wallpaper artifacts
+config/wallpapers/generated/

@@ -24,6 +24,7 @@ ublock-origin
 telegram-desktop
 firefox-ublock-origin
 python-pillow
+tk
 ttf-cascadia-code-nerd
 ttf-jetbrains-mono-nerd
 otf-font-awesome

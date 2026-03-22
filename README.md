@@ -332,6 +332,8 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+Space`: launcher
 - `Super+E`: PARA hub / file access
 - `Alt+1` to `Alt+5`: switch main workspaces
+- `Alt+KP_1` to `Alt+KP_5`: switch main workspaces from the numpad with NumLock on
+- `Alt+numpad 1-5` also has raw `code:` fallback binds in Hyprland for stubborn keypad mappings
 - `Ctrl+Alt+Left` / `Ctrl+Alt+Right`: cycle workspaces
 - `Super+H/J/K/L`: move focus
 - `Super+Left/Right/Up/Down`: move focus
@@ -364,6 +366,9 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `XF86AudioRaiseVolume`: raise volume
 - `XF86AudioLowerVolume`: lower volume
 - `XF86AudioMute`: toggle mute
+- `XF86AudioPrev`: previous media track
+- `XF86AudioPlay`: play/pause media
+- `XF86AudioNext`: next media track
 - `Super+]`: raise volume
 - `Super+[`: lower volume
 - `Super+\`: toggle mute

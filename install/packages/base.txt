@@ -17,6 +17,7 @@ polkit-kde-agent
 wlogout
 grim
 slurp
+imv
 hyprpaper
 chromium
 ublock-origin

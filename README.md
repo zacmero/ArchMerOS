@@ -323,11 +323,30 @@ Current auto palette rule:
 
 ## Current Waybar Behavior
 
-Waybar is currently back on the stable baseline launch path:
+Waybar is currently on the stable single-config launch path:
 
 - `waybar -c ~/.config/waybar/config.jsonc -s ~/.config/waybar/style.css`
 
 The Bluetooth module is intentionally removed from the top connectivity group because the tray already exposes Bluetooth status. The old Bluetooth number was `num_connections`, meaning the count of connected Bluetooth devices.
+
+Current top bar flow:
+
+- workspaces first
+- taskbar slot reserved immediately after workspaces
+- terminal button and tray on the left section
+- date/time centered
+- connectivity, keyboard layout, and system stats on the right
+
+Taskbar behavior:
+
+- powered by Waybar `wlr/taskbar`
+- currently commented out in [config.jsonc](/home/zacmero/projects/ArchMerOS/config/waybar/config.jsonc)
+- kept in the config for future iteration instead of being deleted
+- intended behavior when re-enabled:
+  - show only windows from the current output
+  - left click: minimize or raise
+  - middle click: close
+  - act as the workspace-local minimize system on the main and side monitors
 
 ## Current Keybindings
 
@@ -337,6 +356,8 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+Return`: open WezTerm
 - `Super+Space`: launcher
 - `Super+E`: PARA hub / file access
+- `Super+Print`: region screenshot
+- `Super+Shift+Print`: full screenshot
 - `Alt+1` to `Alt+5`: switch main workspaces
 - `Alt+KP_1` to `Alt+KP_5`: switch main workspaces from the numpad with NumLock on
 - `Alt+numpad 1-5` also has raw `code:` fallback binds in Hyprland for stubborn keypad mappings
@@ -421,6 +442,12 @@ If you need to launch a GUI app from a terminal without tying it to that termina
 ```
 
 Replace `mousepad` with any GUI command you want to detach.
+
+Detached GUI launches now inherit ArchMerOS window-promotion behavior:
+
+- if a centered spotlight window is active, it is pushed back
+- the newly opened GUI app is promoted onto the currently focused workspace/monitor
+- this is handled by [config/archmeros/scripts/archmeros-launch-detached.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-launch-detached.sh) and [config/archmeros/scripts/archmeros-promote-pid.py](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-promote-pid.py)
 
 ## Current Shell GUI Behavior
 
@@ -750,8 +777,9 @@ Current behavior:
   - `softwares`
 - local Linux files already present in `~/Desktop` are left alone
 - Walker is kept for app/command launching, not for PARA drag-and-drop, until a better picker exists
+- `thunar` is forced to open a new window with `-w` so ArchMerOS can reliably size and place it
 - `thunar` is explicitly resized after launch to the same proportions as the `Super+Shift+O` medium pop mode
-- the Thunar wrapper now polls for the real client before resizing so the medium geometry survives reused Thunar processes too
+- the Thunar wrapper now moves the new window onto the currently focused monitor/workspace before centering it
 - after that it behaves like a normal floating window and can still be tiled normally
 - Walker now uses a repo-owned local `thunar.desktop` override that launches through the same Thunar wrapper
 
@@ -767,6 +795,41 @@ Manual refresh command:
 ```bash
 ~/.config/archmeros/scripts/archmeros-desktop-sync.sh
 ```
+
+## Current Screenshot Flow
+
+Screenshot launcher:
+
+- [config/archmeros/scripts/archmeros-screenshot.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-screenshot.sh)
+
+Current behavior:
+
+- `Super+Print`: interactively select a region with the mouse
+- `Super+Shift+Print`: capture the full screen
+- saved to `~/Pictures/Screenshots`
+- copied to the Wayland clipboard automatically
+- notification shows the saved filename
+
+Direct commands:
+
+```bash
+~/.config/archmeros/scripts/archmeros-screenshot.sh region
+~/.config/archmeros/scripts/archmeros-screenshot.sh full
+```
+
+## Current Wallpaper Picker
+
+Wallpaper picker:
+
+- [config/archmeros/scripts/archmeros-wallpaper-pick.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-wallpaper-pick.sh)
+
+Current behavior:
+
+- `Super+Alt+W` selects the target monitor first
+- then picks a wallpaper name from the repo-local wallpaper folder
+- opens a lightweight `imv` preview window before apply
+- lets you `Apply`, `Preview another`, or `Cancel`
+- preview window uses normal ArchMerOS floating/centered window rules
 
 ## Build Log
 
@@ -815,6 +878,11 @@ Completed so far:
 - made `Right Alt` an explicit XKB level-3 switch so ABNT2 can use its native `AltGr+Q` and `AltGr+W` symbols
 - added a Waybar keyboard indicator with click-to-toggle for the active XKB layout
 - added an ArchMerOS Bash login hook for GUI auto-detach behavior in new WezTerm shells
+- added screenshot shortcuts with repo-owned `grim`/`slurp` capture and clipboard copy
+- added a local-output Waybar taskbar path after workspaces, then commented it out for now while keeping the code in place
+- upgraded `Super+E` to force a fresh Thunar window and place it on the focused workspace/monitor reliably
+- added `imv` preview-confirm flow to the wallpaper picker
+- upgraded detached terminal-launched GUI apps to promote onto the focused workspace/monitor instead of hiding behind spotlight windows
 
 ## Planned Structure
 

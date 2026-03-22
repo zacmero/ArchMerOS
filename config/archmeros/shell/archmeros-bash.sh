@@ -110,8 +110,7 @@ __archmeros_detach_gui_preexec() {
   resolved_command="$(type -P -- "$command_name" 2>/dev/null || true)"
   [[ -n "$resolved_command" ]] || return 0
 
-  setsid "$resolved_command" "${argv[@]:1}" >/tmp/archmeros-gui-detach.log 2>&1 < /dev/null &
-  disown || true
+  ~/.config/archmeros/scripts/archmeros-launch-detached.sh "$resolved_command" "${argv[@]:1}"
   exit
 }
 

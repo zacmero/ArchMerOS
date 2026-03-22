@@ -26,10 +26,17 @@ if ! command -v thunar >/dev/null 2>&1; then
   exec xdg-open "${1:-$HOME/Desktop}"
 fi
 
-focused_monitor="$(hyprctl -j monitors 2>/dev/null | jq -r '.[] | select(.focused == true) | .id' | head -n 1)"
-focused_workspace="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty')"
+monitors_json="$(hyprctl -j monitors 2>/dev/null || printf '[]')"
+focused_monitor="$(printf '%s' "$monitors_json" | jq -r '.[] | select(.focused == true) | .id' | head -n 1)"
+focused_monitor_name="$(printf '%s' "$monitors_json" | jq -r '.[] | select(.focused == true) | .name' | head -n 1)"
+focused_workspace="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty' 2>/dev/null || true)"
+active_window="$(hyprctl activewindow -j 2>/dev/null || printf '{}')"
 
-thunar "$@" >/tmp/archmeros-thunar.log 2>&1 &
+if [[ "$active_window" != "{}" ]] && [[ "$(printf '%s' "$active_window" | jq -r '.floating // false')" == "true" ]]; then
+  hyprctl dispatch alterzorder bottom >/dev/null 2>&1 || true
+fi
+
+thunar -w "$@" >/tmp/archmeros-thunar.log 2>&1 &
 
 address=""
 for _ in $(seq 1 40); do
@@ -42,7 +49,8 @@ if [[ -z "$address" ]]; then
   exit 0
 fi
 
-client="$(hyprctl -j clients 2>/dev/null | jq -r --arg address "$address" '
+clients_json="$(hyprctl -j clients 2>/dev/null || printf '[]')"
+client="$(printf '%s' "$clients_json" | jq -r --arg address "$address" '
   .[]
   | select(.address == $address)
 ')"
@@ -51,8 +59,8 @@ if [[ -z "$client" ]]; then
   exit 0
 fi
 
-monitor_width="$(hyprctl -j monitors 2>/dev/null | jq -r --argjson monitor "${focused_monitor:-0}" '.[] | select(.id == $monitor) | .width' | head -n 1)"
-monitor_height="$(hyprctl -j monitors 2>/dev/null | jq -r --argjson monitor "${focused_monitor:-0}" '.[] | select(.id == $monitor) | .height' | head -n 1)"
+monitor_width="$(printf '%s' "$monitors_json" | jq -r --argjson monitor "${focused_monitor:-0}" '.[] | select(.id == $monitor) | .width' | head -n 1)"
+monitor_height="$(printf '%s' "$monitors_json" | jq -r --argjson monitor "${focused_monitor:-0}" '.[] | select(.id == $monitor) | .height' | head -n 1)"
 
 if [[ -n "${monitor_width:-}" && -n "${monitor_height:-}" ]]; then
   width="$(( monitor_width * 72 / 100 ))"
@@ -66,6 +74,8 @@ if [[ -n "${monitor_width:-}" && -n "${monitor_height:-}" ]]; then
 
   hyprctl -q --batch \
     "dispatch focuswindow address:${address};" \
+    "dispatch movewindow mon:${focused_monitor_name:-HDMI-A-4};" \
+    "dispatch movetoworkspace ${focused_workspace:-1};" \
     "dispatch resizeactive exact $width $height;" \
     "dispatch centerwindow 1;" >/dev/null 2>&1 || true
 fi

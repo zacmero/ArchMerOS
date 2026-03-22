@@ -94,6 +94,40 @@ tooltip label {
   border-left: 2px solid @accent;
 }
 
+#taskbar {
+  padding: 0 3px;
+  border-left: 0;
+  border-right: 0;
+}
+
+#taskbar button {
+  min-width: 28px;
+  padding: 0 4px;
+  margin: 0 1px;
+  background: transparent;
+  color: @subtext1;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+}
+
+#taskbar button:hover {
+  background: @surface0;
+  color: @accent;
+  border-top: 2px solid @accent;
+  border-bottom: 2px solid @accent;
+}
+
+#taskbar button.active {
+  color: @text;
+  border-top: 2px solid @text;
+  border-bottom: 2px solid @text;
+}
+
+#taskbar button.minimized {
+  color: @overlay1;
+  opacity: 0.8;
+}
+
 #custom-terminal {
   padding: 0 10px;
   background: @accent2;

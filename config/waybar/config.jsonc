@@ -8,6 +8,7 @@
   "reload_style_on_change": true,
   "modules-left": [
     "hyprland/workspaces",
+    // "wlr/taskbar",
     "custom/terminal",
     "tray"
   ],
@@ -54,6 +55,21 @@
     "modules": [
       "clock#date",
       "clock#time"
+    ]
+  },
+  "wlr/taskbar": {
+    "all-outputs": false,
+    "format": "{icon}",
+    "icon-size": 15,
+    "tooltip-format": "{name}: {title}",
+    "on-click": "minimize-raise",
+    "on-click-middle": "close",
+    "active-first": false,
+    "ignore-list": [
+      "waybar",
+      "dev.benz.walker",
+      "it.mijorus.smile",
+      "Rofi"
     ]
   },
   "group/connectivity": {

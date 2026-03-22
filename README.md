@@ -751,6 +751,7 @@ March 22, 2026 audio investigation:
 - if the pops continue after this cleanup, the next A/B should be:
 - Firefox YouTube Music vs local `mpv`
 - EasyEffects enabled vs bypassed
+- Firefox hardware acceleration is now disabled in the repo-owned profile configs for both the main browser and the dedicated YouTube Music profile so browser-side GPU scheduling can be ruled out
 - this machine should treat the UR44 as the only active audio path unless you intentionally re-enable another card
 
 Bluetooth note after the March 22, 2026 check:

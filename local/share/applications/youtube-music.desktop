@@ -2,11 +2,11 @@
 Version=1.0
 Type=Application
 Name=YouTube Music
-Comment=YouTube Music in app mode
-Exec=/home/zacmero/.config/archmeros/scripts/archmeros-webapp.sh youtube-music
+Comment=YouTube Music Firefox app shell
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-youtube-music.sh
 Icon=multimedia-player
 Terminal=false
 StartupNotify=true
 Categories=AudioVideo;Audio;Player;
 Keywords=music;youtube;player;streaming;
-StartupWMClass=archmeros-youtube-music
+StartupWMClass=firefox

@@ -25,6 +25,7 @@ declare -A links=(
   ["${repo_root}/local/share/applications/evernote.desktop"]="${HOME}/.local/share/applications/evernote.desktop"
   ["${repo_root}/local/share/applications/chatgpt.desktop"]="${HOME}/.local/share/applications/chatgpt.desktop"
   ["${repo_root}/local/share/applications/youtube-music.desktop"]="${HOME}/.local/share/applications/youtube-music.desktop"
+  ["${repo_root}/local/share/icons/ArchMerOS-Icons"]="${HOME}/.local/share/icons/ArchMerOS-Icons"
 )
 
 if [[ -f "${firefox_profiles_ini}" && -f "${config_root}/firefox/user.js" ]]; then

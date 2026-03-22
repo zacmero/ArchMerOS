@@ -19,6 +19,7 @@ hyprpaper
 chromium
 ublock-origin
 telegram-desktop
+firefox-ublock-origin
 python-pillow
 ttf-cascadia-code-nerd
 ttf-jetbrains-mono-nerd

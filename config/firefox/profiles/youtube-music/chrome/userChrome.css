@@ -1,0 +1,27 @@
+#TabsToolbar,
+#nav-bar,
+#PersonalToolbar,
+#sidebar-box,
+#sidebar-splitter,
+#alltabs-button,
+#firefox-view-button,
+#tracking-protection-icon-container,
+#unified-extensions-button,
+#identity-box,
+.titlebar-buttonbox-container {
+  visibility: collapse !important;
+}
+
+#titlebar {
+  appearance: none !important;
+}
+
+#navigator-toolbox {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#main-window[sizemode="normal"] #navigator-toolbox,
+#main-window[sizemode="maximized"] #navigator-toolbox {
+  min-height: 0 !important;
+}

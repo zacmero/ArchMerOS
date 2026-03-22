@@ -1,6 +1,6 @@
 configuration {
   show-icons: true;
-  icon-theme: "Papirus-Dark";
+  icon-theme: "ArchMerOS-Icons";
   display-drun: "Launch";
   drun-display-format: "{name}";
   matching: "normal";

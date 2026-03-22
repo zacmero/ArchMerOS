@@ -183,8 +183,23 @@ Active shell pieces currently tracked in this repo:
 Theme direction currently applied:
 
 - GTK theme: `catppuccin-frappe-blue-standard+default`
-- icon theme: `Papirus-Dark`
+- icon theme: `ArchMerOS-Icons`
 - cursor theme: `Bibata-Modern-Amber`
+
+Repo-owned icon theme:
+
+- active theme path: [local/share/icons/ArchMerOS-Icons](/home/zacmero/projects/ArchMerOS/local/share/icons/ArchMerOS-Icons)
+- builder: [install/build-icons.py](/home/zacmero/projects/ArchMerOS/install/build-icons.py)
+- base source: vendored `Papirus-Dark`
+- folder palette: Dracula comment
+
+Rebuild command:
+
+```bash
+python3 install/build-icons.py
+./install/link.sh
+~/.config/archmeros/scripts/archmeros-session-appearance.sh
+```
 
 Dark-mode policy:
 
@@ -193,7 +208,7 @@ Dark-mode policy:
 - GNOME/libadwaita-aware apps are pushed to dark mode by the tracked session appearance script, which sets:
   - `org.gnome.desktop.interface color-scheme = 'prefer-dark'`
   - `gtk-theme = 'catppuccin-frappe-blue-standard+default'`
-  - `icon-theme = 'Papirus-Dark'`
+  - `icon-theme = 'ArchMerOS-Icons'`
   - `cursor-theme = 'Bibata-Modern-Amber'`
 
 Wallpaper backend:
@@ -442,11 +457,12 @@ The linker attaches this file to the active `default-release` profile when prese
 
 ## Web Apps
 
-Firefox remains the main browser, but ArchMerOS web apps now use a Chromium-style app host because Firefox does not provide the same Linux app-mode experience.
+Firefox remains the main browser. ArchMerOS still uses isolated Chromium-style web apps for some tools, but YouTube Music now uses a dedicated Firefox app shell because Chromium was a bad ad-blocking host.
 
 Tracked launcher:
 
 - [config/archmeros/scripts/archmeros-webapp.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-webapp.sh)
+- [config/archmeros/scripts/archmeros-youtube-music.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-youtube-music.sh)
 
 Tracked app entries:
 
@@ -462,14 +478,24 @@ Current launch paths:
 - `Super+Shift+C`: open `ChatGPT`
 - `Super+N`: open `Todoist` and `Evernote` together on workspace `4`
 
-Each app launches in its own isolated Chromium app profile under:
+Chromium-backed web apps launch in isolated profiles under:
 
 - `~/.local/share/archmeros/webapps/`
 
-Current YouTube Music extras:
+Current YouTube Music path:
 
-- `uBlock Origin` is loaded from `/usr/lib/ublock-origin`
-- the launcher explicitly places the mapped window on workspace `9` after Chromium creates the client, instead of relying only on WMClass matching
+- `Super+M` launches a dedicated Firefox profile directly on workspace `9`
+- the launcher is [config/archmeros/scripts/archmeros-youtube-music.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-youtube-music.sh)
+- the profile templates are repo-owned:
+  - [config/firefox/profiles/youtube-music/user.js](/home/zacmero/projects/ArchMerOS/config/firefox/profiles/youtube-music/user.js)
+  - [config/firefox/profiles/youtube-music/chrome/userChrome.css](/home/zacmero/projects/ArchMerOS/config/firefox/profiles/youtube-music/chrome/userChrome.css)
+- `firefox-ublock-origin` is installed for the Firefox path
+- the Firefox shell hides browser chrome so YouTube Music behaves like a standalone player window
+
+Current ad-blocking note:
+
+- Chromium 146 was a bad host for classic `uBlock Origin` on YouTube Music
+- `hblock` still helps at the system level, but the practical fix was moving YouTube Music to Firefox instead of Chromium
 
 ## Native Apps
 

@@ -1,0 +1,24 @@
+[Default Applications]
+text/plain=nvim.desktop
+text/markdown=nvim.desktop
+application/x-shellscript=nvim.desktop
+text/x-python=nvim.desktop
+text/x-java=nvim.desktop
+text/x-c=nvim.desktop
+text/x-c++=nvim.desktop
+text/x-c++src=nvim.desktop
+text/x-csrc=nvim.desktop
+text/x-makefile=nvim.desktop
+
+[Added Associations]
+image/jpeg=org.xfce.ristretto.desktop;
+text/plain=nvim.desktop;org.xfce.mousepad.desktop;
+text/markdown=nvim.desktop;
+application/x-shellscript=nvim.desktop;
+text/x-python=nvim.desktop;
+text/x-java=nvim.desktop;
+text/x-c=nvim.desktop;
+text/x-c++=nvim.desktop;
+text/x-c++src=nvim.desktop;
+text/x-csrc=nvim.desktop;
+text/x-makefile=nvim.desktop;

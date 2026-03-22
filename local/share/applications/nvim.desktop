@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Neovim
+GenericName=Text Editor
+Comment=Edit files in Neovim via ArchMerOS terminal
+TryExec=nvim
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-nvim.sh %F
+Terminal=false
+Type=Application
+Keywords=Text;editor;nvim;neovim;vim;
+Icon=nvim
+Categories=Utility;TextEditor;Development;
+StartupNotify=false
+MimeType=text/plain;text/markdown;application/x-shellscript;text/x-python;text/x-java;text/x-c;text/x-c++;text/x-c++src;text/x-csrc;text/x-makefile;

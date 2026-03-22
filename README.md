@@ -331,7 +331,7 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+Return`: open terminal
 - `Super+Space`: launcher
 - `Super+E`: PARA hub / file access
-- `Alt+F1` to `Alt+F4`: switch main workspaces
+- `Alt+1` to `Alt+5`: switch main workspaces
 - `Ctrl+Alt+Left` / `Ctrl+Alt+Right`: cycle workspaces
 - `Super+H/J/K/L`: move focus
 - `Super+Left/Right/Up/Down`: move focus
@@ -347,7 +347,8 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+F`: fullscreen
 - `Super+G`: open Telegram
 - `Super+M`: open YouTube Music app
-- `Super+N`: open Todoist and Evernote on workspace `4`
+- `Super+N`: create a new PARA note in Neovim
+- `Super+Shift+N`: open Todoist and Evernote on workspace `V`
 - `Super+C`: pop focused window out, center it, float it, and pin it
 - `Super+O`: pop focused window into a large near-full centered mode
 - `Super+Shift+O`: pop focused window into a medium centered mode
@@ -476,7 +477,8 @@ Current launch paths:
 - Walker/Rofi entries: `Todoist`, `Evernote`, `ChatGPT`, `YouTube Music`
 - `Super+M`: open `YouTube Music`
 - `Super+Shift+C`: open `ChatGPT`
-- `Super+N`: open `Todoist` and `Evernote` together on workspace `4`
+- `Super+N`: create a new PARA note in Neovim
+- `Super+Shift+N`: open `Todoist` and `Evernote` together on workspace `V`
 
 Chromium-backed web apps launch in isolated profiles under:
 
@@ -505,6 +507,41 @@ Current native messaging app:
 
 - `telegram-desktop`
 - `Super+G`: open Telegram
+
+## Workspace Layout
+
+Center monitor workspaces:
+
+- `1` -> `I`
+- `2` -> `II`
+- `3` -> `III`
+- `4` -> `IV`
+- `5` -> `V`
+
+To add another center workspace later:
+
+- add `workspace = <n>, monitor:HDMI-A-4` in [hyprland.conf](/home/zacmero/projects/ArchMerOS/config/hypr/hyprland.conf)
+- add the `Alt+<n>` and `$mod+<n>` binds in [hyprland.conf](/home/zacmero/projects/ArchMerOS/config/hypr/hyprland.conf)
+- add the Roman numeral label and persistent workspace entry in the Waybar workspace configs
+- reload Hyprland
+
+## Notes And Editor
+
+Repo-owned Neovim path:
+
+- launcher: [archmeros-nvim.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-nvim.sh)
+- desktop entry override: [nvim.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/nvim.desktop)
+- MIME defaults: [mimeapps.list](/home/zacmero/projects/ArchMerOS/config/mimeapps.list)
+
+Fast note flow:
+
+- `Super+N` creates a new file in `~/Desktop`
+- the file opens in Neovim inside WezTerm
+- saving writes directly into the PARA folder
+
+Productivity launcher:
+
+- `Super+Shift+N` opens Todoist and Evernote together on workspace `V`
 
 ## Bluetooth
 
@@ -596,8 +633,8 @@ Current web-app placement rules:
 
 - `YouTube Music` -> workspace `9` on the right monitor
 - `ChatGPT` -> medium-centered floating window
-- `Todoist` -> workspace `4`
-- `Evernote` -> workspace `4`
+- `Todoist` -> workspace `5` / `V`
+- `Evernote` -> workspace `5` / `V`
 
 ## Audio Stack
 

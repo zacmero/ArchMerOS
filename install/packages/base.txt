@@ -9,6 +9,8 @@ thunar-volman
 tumbler
 wezterm
 wl-clipboard
+wtype
+rofimoji
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
 polkit-kde-agent

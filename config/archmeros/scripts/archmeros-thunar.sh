@@ -67,6 +67,5 @@ if [[ -n "${monitor_width:-}" && -n "${monitor_height:-}" ]]; then
   hyprctl -q --batch \
     "dispatch focuswindow address:${address};" \
     "dispatch resizeactive exact $width $height;" \
-    "dispatch centerwindow 1;" \
-    "dispatch alterzorder top;" >/dev/null 2>&1 || true
+    "dispatch centerwindow 1;" >/dev/null 2>&1 || true
 fi

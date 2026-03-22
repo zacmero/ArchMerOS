@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=ArchMerOS Emoji
+GenericName=Emoji Picker
+Comment=Pick and insert emoji
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-emoji.sh
+Icon=face-smile
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=emoji;unicode;picker;
+StartupNotify=false

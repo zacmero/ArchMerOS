@@ -1,0 +1,9 @@
+action = [type]
+selector = rofi
+clipboarder = wl-copy
+typer = wtype
+prompt = Emoji
+hidden-descriptions = true
+selector-args = -theme ~/.config/rofi/launchers/emoji.rasi
+keybinding-copy = Alt+c
+keybinding-clipboard = Alt+v

@@ -52,5 +52,4 @@ hyprctl -q --batch \
   "dispatch togglefloating;" \
   "dispatch movewindow mon:${monitor};" \
   "dispatch resizeactive exact $width $height;" \
-  "dispatch centerwindow 1;" \
-  "dispatch alterzorder top;"
+  "dispatch centerwindow 1;"

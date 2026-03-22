@@ -354,6 +354,7 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+P`: pseudotile
 - `Super+F`: fullscreen
 - `Super+G`: open Telegram
+- `Super+.`: open the emoji picker
 - `Super+M`: open YouTube Music app
 - `Super+N`: create a new PARA note in Neovim
 - `Super+Shift+N`: open Todoist and Evernote on workspace `V`
@@ -432,6 +433,8 @@ Current behavior:
 - when you launch a simple GUI app command from a WezTerm Bash shell, ArchMerOS detaches it with `setsid` and closes that shell
 - this is meant to stop GUI apps from dying when the terminal window closes
 - it only targets simple direct commands, not pipelines or compound shell syntax
+- desktop entries with `Terminal=true` are skipped by the GUI-detach hook, so TUIs like `htop` are not treated as detached GUI apps
+- explicit TUI command names like `htop`, `btop`, `top`, `yazi`, `lazygit`, and `tmux` are also excluded
 - to disable it for one shell session, run:
 
 ```bash
@@ -518,6 +521,21 @@ Current native messaging app:
 
 - `telegram-desktop`
 - `Super+G`: open Telegram
+- Telegram is bound directly to `/usr/bin/Telegram`, which is the real binary shipped by the Arch package on this machine
+
+Emoji picker:
+
+- active backend: `rofimoji` + `rofi` + `wtype`
+- reason: the Flatpak emoji pickers looked better but their copy/paste and focus behavior under this Hyprland setup was unstable
+- layout: compact dark emoji grid with transparent cyberpunk popup styling, using Rofi's icon render path instead of raw text glyph rendering
+- insertion model: ArchMerOS records the currently focused Hyprland window, gets the emoji from `rofimoji --action print`, copies it to the clipboard, explicitly refocuses that window, then types with `wtype`
+- launcher: [config/archmeros/scripts/archmeros-emoji.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-emoji.sh)
+- config: [config/rofimoji.rc](/home/zacmero/projects/ArchMerOS/config/rofimoji.rc)
+- theme: [config/rofi/launchers/emoji.rasi](/home/zacmero/projects/ArchMerOS/config/rofi/launchers/emoji.rasi)
+- bind: `Super+.`
+- `Enter` types the selected emoji into the focused app
+- `Alt+C` copies the selected emoji instead of typing it
+- `Alt+V` inserts via clipboard
 
 ## Workspace Layout
 
@@ -549,6 +567,17 @@ Fast note flow:
 - `Super+N` creates a new file in `~/Desktop`
 - the file opens in Neovim inside WezTerm
 - saving writes directly into the PARA folder
+
+Default text sizing:
+
+- ArchMerOS now pushes a larger baseline into new apps:
+  - `font-name = 'Noto Sans 14'`
+  - `monospace-font-name = 'CaskaydiaCove Nerd Font Mono 14'`
+  - `text-scaling-factor = 1.10`
+- tracked GTK defaults now also use `Noto Sans 14`
+- Hyprland exports:
+  - `QT_SCALE_FACTOR=1.10`
+  - `GDK_DPI_SCALE=1.10`
 
 Productivity launcher:
 

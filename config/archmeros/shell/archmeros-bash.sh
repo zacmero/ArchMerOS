@@ -15,7 +15,7 @@ __archmeros_register_gui_command() {
 }
 
 __archmeros_seed_gui_commands() {
-  local desktop_file exec_line token command_name
+  local desktop_file exec_line terminal_flag token command_name
   local -a app_dirs=(
     "$HOME/.local/share/applications"
     "/usr/share/applications"
@@ -25,6 +25,8 @@ __archmeros_seed_gui_commands() {
     [[ -f "$desktop_file" ]] || continue
     exec_line="$(sed -n 's/^Exec=//p' "$desktop_file" | head -n 1)"
     [[ -n "$exec_line" ]] || continue
+    terminal_flag="$(sed -n 's/^Terminal=//p' "$desktop_file" | head -n 1 | tr '[:upper:]' '[:lower:]')"
+    [[ "$terminal_flag" == "true" ]] && continue
 
     for token in $exec_line; do
       case "$token" in
@@ -97,7 +99,7 @@ __archmeros_detach_gui_preexec() {
 
   local command_name="${argv[0]}"
   case "$command_name" in
-    sudo|doas|command|builtin|exec|time|setsid|nohup|walker|rofi|nvim|vim|vi|hx|helix)
+    sudo|doas|command|builtin|exec|time|setsid|nohup|walker|rofi|nvim|vim|vi|hx|helix|htop|btop|top|fastfetch|yazi|lazygit|gitui|tmux)
       return 0
       ;;
   esac

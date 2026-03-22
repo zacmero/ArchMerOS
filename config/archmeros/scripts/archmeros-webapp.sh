@@ -49,6 +49,26 @@ esac
 profile_root="${XDG_DATA_HOME:-$HOME/.local/share}/archmeros/webapps/${app_id}"
 mkdir -p "$profile_root"
 
+mode="none"
+if command -v hyprctl >/dev/null 2>&1; then
+  active="$(hyprctl activewindow -j 2>/dev/null || printf '{}')"
+  if [[ "$active" != "{}" ]] && [[ "$(printf '%s' "$active" | jq -r '.floating // false')" == "true" ]]; then
+    width="$(printf '%s' "$active" | jq -r '.size[0] // 0')"
+    height="$(printf '%s' "$active" | jq -r '.size[1] // 0')"
+    monitor="$(hyprctl -j monitors 2>/dev/null | jq -r '.[] | select(.focused == true) | .width, .height' | paste -sd' ' -)"
+    monitor_width="$(printf '%s' "$monitor" | awk '{print $1}')"
+    monitor_height="$(printf '%s' "$monitor" | awk '{print $2}')"
+    if [[ -n "${monitor_width:-}" && -n "${monitor_height:-}" && "$monitor_width" != "0" && "$monitor_height" != "0" ]]; then
+      if (( width * 100 / monitor_width >= 85 || height * 100 / monitor_height >= 85 )); then
+        mode="full"
+      else
+        mode="medium"
+      fi
+    fi
+    hyprctl dispatch alterzorder bottom >/dev/null 2>&1 || true
+  fi
+fi
+
 extra_args=()
 
 if [[ "$app_id" == "youtube-music" && -d /usr/lib/ublock-origin ]]; then
@@ -69,14 +89,17 @@ if [[ -n "${target_workspace:-}" ]] && command -v hyprctl >/dev/null 2>&1; then
   app_pid=$!
   disown "$app_pid" || true
   ~/.config/archmeros/scripts/archmeros-place-window.py "$app_id" "$name" "$target_workspace" >/dev/null 2>&1 &
+  python3 "$HOME/.config/archmeros/scripts/archmeros-promote-window.py" "^archmeros-${app_id}$" "$mode" >/tmp/archmeros-promote-${app_id}.log 2>&1 &
   disown || true
   exit 0
 fi
 
-exec "$browser" \
+nohup "$browser" \
   --ozone-platform-hint=auto \
   --class="archmeros-${app_id}" \
   --name="$name" \
   --user-data-dir="$profile_root" \
   "${extra_args[@]}" \
-  --app="$url"
+  --app="$url" >/tmp/archmeros-"${app_id}".log 2>&1 &
+python3 "$HOME/.config/archmeros/scripts/archmeros-promote-window.py" "^archmeros-${app_id}$" "$mode" >/tmp/archmeros-promote-${app_id}.log 2>&1 &
+disown || true

@@ -17,6 +17,7 @@ declare -A links=(
   ["${config_root}/easyeffects"]="${HOME}/.config/easyeffects"
   ["${config_root}/gtk-3.0"]="${HOME}/.config/gtk-3.0"
   ["${config_root}/gtk-4.0"]="${HOME}/.config/gtk-4.0"
+  ["${config_root}/rofimoji.rc"]="${HOME}/.config/rofimoji.rc"
   ["${config_root}/mimeapps.list"]="${HOME}/.config/mimeapps.list"
   ["${config_root}/systemd/user"]="${HOME}/.config/systemd/user"
   ["${repo_root}/local/share/applications/thunar.desktop"]="${HOME}/.local/share/applications/thunar.desktop"
@@ -28,6 +29,7 @@ declare -A links=(
   ["${repo_root}/local/share/applications/evernote.desktop"]="${HOME}/.local/share/applications/evernote.desktop"
   ["${repo_root}/local/share/applications/chatgpt.desktop"]="${HOME}/.local/share/applications/chatgpt.desktop"
   ["${repo_root}/local/share/applications/youtube-music.desktop"]="${HOME}/.local/share/applications/youtube-music.desktop"
+  ["${repo_root}/local/share/applications/archmeros-emoji.desktop"]="${HOME}/.local/share/applications/archmeros-emoji.desktop"
   ["${repo_root}/local/share/icons/ArchMerOS-Icons"]="${HOME}/.local/share/icons/ArchMerOS-Icons"
 )
 

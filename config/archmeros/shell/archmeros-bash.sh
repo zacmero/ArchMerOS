@@ -97,7 +97,7 @@ __archmeros_detach_gui_preexec() {
 
   local command_name="${argv[0]}"
   case "$command_name" in
-    sudo|doas|command|builtin|exec|time|setsid|nohup|walker|rofi)
+    sudo|doas|command|builtin|exec|time|setsid|nohup|walker|rofi|nvim|vim|vi|hx|helix)
       return 0
       ;;
   esac

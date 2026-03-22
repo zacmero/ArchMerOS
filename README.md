@@ -216,6 +216,12 @@ Wallpaper backend:
 - preferred: `swaybg`
 - fallback: `hyprpaper`
 
+Shell launch policy:
+
+- the ArchMerOS Bash hook auto-detaches GUI apps launched from an interactive shell so the terminal can close cleanly when desired
+- terminal editors are explicitly excluded from that detach path
+- `nvim`, `vim`, `vi`, `hx`, and `helix` must stay attached to the current terminal and should never cause the shell to exit when launched normally
+
 ## Current Transparency Presets
 
 Hyprland transparency and blur are now sourced from:
@@ -327,8 +333,8 @@ The Bluetooth module is intentionally removed from the top connectivity group be
 
 These are the bindings that should be treated as current ArchMerOS behavior unless changed deliberately.
 
-- `Ctrl+Alt+T`: open terminal
-- `Super+Return`: open terminal
+- `Ctrl+Alt+T`: open WezTerm
+- `Super+Return`: open WezTerm
 - `Super+Space`: launcher
 - `Super+E`: PARA hub / file access
 - `Alt+1` to `Alt+5`: switch main workspaces

@@ -20,6 +20,7 @@ declare -A links=(
   ["${config_root}/mimeapps.list"]="${HOME}/.config/mimeapps.list"
   ["${config_root}/systemd/user"]="${HOME}/.config/systemd/user"
   ["${repo_root}/local/share/applications/thunar.desktop"]="${HOME}/.local/share/applications/thunar.desktop"
+  ["${repo_root}/local/share/applications/org.wezfurlong.wezterm.desktop"]="${HOME}/.local/share/applications/org.wezfurlong.wezterm.desktop"
   ["${repo_root}/local/share/applications/archmeros-audio.desktop"]="${HOME}/.local/share/applications/archmeros-audio.desktop"
   ["${repo_root}/local/share/applications/archmeros-themes.desktop"]="${HOME}/.local/share/applications/archmeros-themes.desktop"
   ["${repo_root}/local/share/applications/nvim.desktop"]="${HOME}/.local/share/applications/nvim.desktop"

@@ -728,12 +728,18 @@ Current intent:
 UR44 policy:
 
 - [config/archmeros/scripts/archmeros-audio-policy.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-audio-policy.sh)
+- [config/pipewire/pipewire.conf.d/10-archmeros-audio.conf](/home/zacmero/projects/ArchMerOS/config/pipewire/pipewire.conf.d/10-archmeros-audio.conf)
+- [install/system/etc/modprobe.d/archmeros-audio.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-audio.conf)
+- [install/system/apply-audio-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-audio-system.sh)
 - Hyprland starts this on login to force the machine into the studio path:
 - NVIDIA HDMI audio off
 - Intel onboard audio off
 - UR44 profile set to `pro-audio`
 - default sink set to `alsa_output.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-output-0`
 - default source set to `alsa_input.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-input-0`
+- PipeWire quantum raised to `2048` with `1024..4096` bounds for better click/pop resilience under activity
+- PipeWire default rate kept at `48000`, with `96000` allowed as an alternate rate
+- HDA kernel power saving explicitly disabled with `power_save=0` and `power_save_controller=N`
 
 March 22, 2026 audio investigation:
 
@@ -741,6 +747,7 @@ March 22, 2026 audio investigation:
 - the subtle Firefox / YouTube Music pops were not traced to a missing Yamaha driver
 - the strongest system-level problem found was the old UR44 `analog-surround-21` profile, which was exposing an unnecessary `LFE` path for browser playback
 - ArchMerOS switched the interface to `pro-audio`, and the live Firefox stream then dropped back to `FL/FR` only
+- the live system sample rate is `48000 Hz`, which is appropriate for browser/YouTube playback; pushing the whole desktop to `192000 Hz` would not help this use case and could reduce stability
 - if the pops continue after this cleanup, the next A/B should be:
 - Firefox YouTube Music vs local `mpv`
 - EasyEffects enabled vs bypassed

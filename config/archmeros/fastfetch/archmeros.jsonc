@@ -1,0 +1,83 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {
+    "source": "arch",
+    "padding": {
+      "right": 2
+    }
+  },
+  "display": {
+    "separator": ": ",
+    "color": {
+      "keys": "cyan",
+      "title": "bright_cyan",
+      "output": "white",
+      "separator": "bright_black"
+    },
+    "brightColor": true
+  },
+  "modules": [
+    "title",
+    "separator",
+    {
+      "type": "custom",
+      "key": "OS",
+      "format": "ArchMerOS"
+    },
+    "host",
+    {
+      "type": "kernel",
+      "format": "{release}"
+    },
+    "uptime",
+    {
+      "type": "packages",
+      "combined": true
+    },
+    "shell",
+    {
+      "type": "display",
+      "key": "Resolution",
+      "compactType": "original",
+      "format": "{width}x{height} @ {refresh-rate} Hz"
+    },
+    "wm",
+    {
+      "type": "custom",
+      "key": "Theme",
+      "format": "ArchMerOS NightCyber"
+    },
+    {
+      "type": "custom",
+      "key": "Icons",
+      "format": "ArchMerOS-Icons"
+    },
+    "terminal",
+    {
+      "type": "terminalfont",
+      "key": "Font",
+      "format": "{name}{?size} {size}{?}"
+    },
+    "cpu",
+    {
+      "type": "gpu",
+      "key": "GPU",
+      "format": "{name}"
+    },
+    {
+      "type": "memory",
+      "format": "{used} / {total} ({percentage})"
+    },
+    {
+      "type": "swap",
+      "format": "{used} / {total} ({percentage})"
+    },
+    {
+      "type": "disk",
+      "folders": "/",
+      "format": "{size-used} / {size-total} ({size-percentage}) - {filesystem}"
+    },
+    "break",
+    "colors"
+  ]
+}

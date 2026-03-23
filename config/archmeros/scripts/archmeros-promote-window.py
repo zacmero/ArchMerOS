@@ -27,12 +27,21 @@ def dispatch(*args: str):
     subprocess.run(["hyprctl", "dispatch", *args], check=False)
 
 
+def stabilize_focus(address: str):
+    for _ in range(10):
+        dispatch("focuswindow", f"address:{address}")
+        dispatch("bringactivetotop")
+        time.sleep(0.05)
+
+
 def main():
     if len(sys.argv) < 2:
       return 1
 
     class_pattern = re.compile(sys.argv[1])
     mode = sys.argv[2] if len(sys.argv) > 2 else "none"
+    monitor_name = sys.argv[3] if len(sys.argv) > 3 else ""
+    workspace_id = sys.argv[4] if len(sys.argv) > 4 else ""
 
     target = None
     for _ in range(60):
@@ -56,12 +65,21 @@ def main():
 
     dispatch("focuswindow", f"address:{address}")
 
+    if monitor_name:
+        dispatch("movewindow", f"mon:{monitor_name}")
+    if workspace_id:
+        dispatch("movetoworkspacesilent", f"{workspace_id},address:{address}")
+
     if mode not in {"full", "medium"}:
+        stabilize_focus(address)
         return 0
 
     active_monitor = None
     for monitor in monitors():
-        if monitor.get("focused"):
+        if monitor_name and monitor.get("name") == monitor_name:
+            active_monitor = monitor
+            break
+        if not monitor_name and monitor.get("focused"):
             active_monitor = monitor
             break
 
@@ -85,8 +103,11 @@ def main():
         dispatch("togglefloating")
 
     dispatch("movewindow", f"mon:{monitor_name}")
+    if workspace_id:
+        dispatch("movetoworkspacesilent", f"{workspace_id},address:{address}")
     dispatch("resizeactive", "exact", str(target_w), str(target_h))
     dispatch("centerwindow", "1")
+    stabilize_focus(address)
     return 0
 
 

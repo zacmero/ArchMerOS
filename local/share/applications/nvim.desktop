@@ -10,4 +10,4 @@ Keywords=Text;editor;nvim;neovim;vim;
 Icon=nvim
 Categories=Utility;TextEditor;Development;
 StartupNotify=false
-MimeType=text/plain;text/markdown;application/x-shellscript;text/x-python;text/x-java;text/x-c;text/x-c++;text/x-c++src;text/x-csrc;text/x-makefile;
+MimeType=text/plain;text/markdown;application/x-shellscript;application/x-zerosize;inode/x-empty;text/x-python;text/x-java;text/x-c;text/x-c++;text/x-c++src;text/x-csrc;text/x-makefile;

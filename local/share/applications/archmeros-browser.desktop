@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=ArchMerOS Browser Open
+Comment=Open web documents in a promoted browser window
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-browser-open.sh %U
+Terminal=false
+StartupNotify=true
+Categories=Network;WebBrowser;
+MimeType=application/pdf;text/html;application/xhtml+xml;application/xml;text/xml;
+Icon=chromium

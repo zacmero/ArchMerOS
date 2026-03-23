@@ -448,6 +448,7 @@ Detached GUI launches now inherit ArchMerOS window-promotion behavior:
 - if a centered spotlight window is active, it is pushed back
 - the newly opened GUI app is promoted onto the currently focused workspace/monitor
 - this is handled by [config/archmeros/scripts/archmeros-launch-detached.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-launch-detached.sh) and [config/archmeros/scripts/archmeros-promote-pid.py](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-promote-pid.py)
+- focus is reasserted briefly after launch so apps opened from a floating source window do not instantly lose focus back to the launcher
 
 ## Current Shell GUI Behavior
 
@@ -588,12 +589,21 @@ Repo-owned Neovim path:
 - launcher: [archmeros-nvim.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-nvim.sh)
 - desktop entry override: [nvim.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/nvim.desktop)
 - MIME defaults: [mimeapps.list](/home/zacmero/projects/ArchMerOS/config/mimeapps.list)
+- WezTerm launcher: [archmeros-wezterm.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-wezterm.sh)
 
 Fast note flow:
 
 - `Super+N` creates a new file in `~/Desktop`
 - the file opens in Neovim inside WezTerm
 - saving writes directly into the PARA folder
+- zero-byte files are also mapped to Neovim through `application/x-zerosize` and `inode/x-empty`, so fresh notes do not fall through to Mousepad
+
+Current editor focus behavior:
+
+- text/code files opened from Thunar resolve to the repo-owned `nvim.desktop`
+- `nvim.desktop` launches Neovim through WezTerm, and that WezTerm instance is started through the same detached-launch promotion path used by other floating app flows
+- this keeps the new editor window as the real active front window instead of letting Thunar keep focus behind it
+- the intended close behavior after opening a file from Thunar is: close the editor window first, not the Thunar source window
 
 Default text sizing:
 
@@ -818,6 +828,12 @@ Current behavior:
 - the Thunar wrapper now moves the new window onto the currently focused monitor/workspace before centering it
 - after that it behaves like a normal floating window and can still be tiled normally
 - Walker now uses a repo-owned local `thunar.desktop` override that launches through the same Thunar wrapper
+- files opened from that popped PARA window now keep the same front-of-focus workflow:
+  - images open through repo-owned `imv.desktop`
+  - audio/video open through repo-owned `mpv.desktop`
+  - PDFs and HTML documents open through repo-owned `archmeros-browser.desktop`
+  - text/code files open through repo-owned `nvim.desktop`
+- those desktop overrides all route through ArchMerOS launch promotion so the opened file appears as the new front card on the active workspace/monitor instead of hiding behind Thunar
 
 Current known PARA roots:
 

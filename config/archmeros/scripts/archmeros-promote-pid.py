@@ -18,6 +18,13 @@ def dispatch(*args: str):
     subprocess.run(["hyprctl", "dispatch", *args], check=False)
 
 
+def stabilize_focus(address: str):
+    for _ in range(10):
+        dispatch("focuswindow", f"address:{address}")
+        dispatch("bringactivetotop")
+        time.sleep(0.05)
+
+
 def main() -> int:
     if len(sys.argv) < 2:
         return 1
@@ -55,7 +62,7 @@ def main() -> int:
         dispatch("movetoworkspace", str(workspace_id))
 
     if mode not in {"full", "medium"}:
-        dispatch("focuswindow", f"address:{address}")
+        stabilize_focus(address)
         return 0
 
     width = int(target.get("monitorWidth", 0) or 0)
@@ -73,7 +80,7 @@ def main() -> int:
                 break
 
     if width <= 0 or height <= 0:
-        dispatch("focuswindow", f"address:{address}")
+        stabilize_focus(address)
         return 0
 
     if mode == "full":
@@ -88,7 +95,7 @@ def main() -> int:
 
     dispatch("resizeactive", "exact", str(target_w), str(target_h))
     dispatch("centerwindow", "1")
-    dispatch("focuswindow", f"address:{address}")
+    stabilize_focus(address)
     return 0
 
 

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Termius
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-termius.sh %U
+Terminal=false
+Type=Application
+Icon=com.termius.Termius
+StartupWMClass=Termius
+Comment=Desktop SSH Client
+MimeType=x-scheme-handler/termius;
+Categories=Utility;
+Keywords=ssh;terminal;remote;sftp;
+X-Flatpak=com.termius.Termius

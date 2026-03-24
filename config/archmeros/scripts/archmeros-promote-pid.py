@@ -5,6 +5,9 @@ import subprocess
 import sys
 import time
 
+FULL_THRESHOLD = 85
+MEDIUM_THRESHOLD = 64
+
 
 def clients():
     try:
@@ -16,6 +19,26 @@ def clients():
 
 def dispatch(*args: str):
     subprocess.run(["hyprctl", "dispatch", *args], check=False)
+
+
+def size_mode(width: int, height: int, monitor_width: int, monitor_height: int) -> str:
+    if width <= 0 or height <= 0 or monitor_width <= 0 or monitor_height <= 0:
+        return "none"
+    if width * 100 >= monitor_width * FULL_THRESHOLD or height * 100 >= monitor_height * FULL_THRESHOLD:
+        return "full"
+    if width * 100 >= monitor_width * MEDIUM_THRESHOLD or height * 100 >= monitor_height * MEDIUM_THRESHOLD:
+        return "medium"
+    return "none"
+
+
+def target_size(mode: str, monitor_width: int, monitor_height: int) -> tuple[int, int] | None:
+    if monitor_width <= 0 or monitor_height <= 0:
+        return None
+    if mode == "full":
+        return (monitor_width * 96 // 100, monitor_height * 92 // 100)
+    if mode == "medium":
+        return (monitor_width * 72 // 100, monitor_height * 76 // 100)
+    return None
 
 
 def stabilize_focus(address: str):
@@ -61,6 +84,14 @@ def main() -> int:
     if workspace_id:
         dispatch("movetoworkspace", str(workspace_id))
 
+    if mode == "inherit":
+        mode = size_mode(
+            int(target.get("size", [0, 0])[0] or 0),
+            int(target.get("size", [0, 0])[1] or 0),
+            int(target.get("monitorWidth", 0) or 0),
+            int(target.get("monitorHeight", 0) or 0),
+        )
+
     if mode not in {"full", "medium"}:
         stabilize_focus(address)
         return 0
@@ -83,12 +114,11 @@ def main() -> int:
         stabilize_focus(address)
         return 0
 
-    if mode == "full":
-        target_w = width * 96 // 100
-        target_h = height * 92 // 100
-    else:
-        target_w = width * 72 // 100
-        target_h = height * 76 // 100
+    size = target_size(mode, width, height)
+    if size is None:
+        stabilize_focus(address)
+        return 0
+    target_w, target_h = size
 
     if not target.get("floating"):
         dispatch("togglefloating")

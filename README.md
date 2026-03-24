@@ -736,6 +736,7 @@ Current intent:
 - `easyeffects` for system-wide playback processing
 - `lsp-plugins` and `calf` for broader EQ and studio-oriented filters
 - `qpwgraph` for routing inspection when needed
+- [config/archmeros/scripts/archmeros-audio-debug.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-audio-debug.sh) for live PipeWire and ALSA buffer inspection while reproducing crackle/pop events
 
 UR44 policy:
 

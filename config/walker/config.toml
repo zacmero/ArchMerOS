@@ -9,7 +9,7 @@ disable_mouse = false
 hide_quick_activation = false
 hide_action_hints = false
 hide_action_hints_dmenu = true
-app_launch_prefix = ""
+app_launch_prefix = "/home/zacmero/.config/archmeros/scripts/archmeros-detach.sh"
 terminal = "wezterm start --always-new-process --"
 
 [shell]

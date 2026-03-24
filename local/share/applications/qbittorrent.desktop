@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=qBittorrent
+GenericName=BitTorrent Client
+Comment=Download and share files over BitTorrent
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-qbittorrent.sh %U
+Terminal=false
+StartupNotify=true
+Categories=Network;FileTransfer;P2P;Qt;
+MimeType=application/x-bittorrent;x-scheme-handler/magnet;
+Icon=qbittorrent
+StartupWMClass=qbittorrent

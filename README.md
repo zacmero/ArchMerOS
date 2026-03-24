@@ -533,8 +533,10 @@ Current YouTube Music path:
 - the profile templates are repo-owned:
   - [config/firefox/profiles/youtube-music/user.js](/home/zacmero/projects/ArchMerOS/config/firefox/profiles/youtube-music/user.js)
   - [config/firefox/profiles/youtube-music/chrome/userChrome.css](/home/zacmero/projects/ArchMerOS/config/firefox/profiles/youtube-music/chrome/userChrome.css)
+  - [config/firefox/profiles/youtube-music/chrome/userContent.css](/home/zacmero/projects/ArchMerOS/config/firefox/profiles/youtube-music/chrome/userContent.css)
 - `firefox-ublock-origin` is installed for the Firefox path
 - the Firefox shell hides browser chrome so YouTube Music behaves like a standalone player window
+- the dedicated profile also carries a site-only brightness override for `music.youtube.com` so the narrow player view keeps the album art more visible instead of collapsing into a dark blur
 
 Current ad-blocking note:
 

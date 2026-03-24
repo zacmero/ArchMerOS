@@ -1,0 +1,28 @@
+@-moz-document domain("music.youtube.com") {
+  /* Brighten the narrow player view without flattening the whole app. */
+  ytmusic-player-page #background,
+  ytmusic-player-page #background-image,
+  ytmusic-player-page .background-image,
+  ytmusic-player-page .image,
+  ytmusic-player-page tp-yt-paper-dialog #background,
+  ytmusic-player-page tp-yt-paper-dialog #background-image {
+    opacity: 0.9 !important;
+    filter: brightness(1.28) saturate(1.12) !important;
+  }
+
+  ytmusic-player-page #scrim,
+  ytmusic-player-page .gradient-overlay,
+  ytmusic-player-page .background-gradient,
+  ytmusic-player-page .content-gradient,
+  ytmusic-player-page tp-yt-paper-dialog #scrim {
+    opacity: 0.12 !important;
+    background: rgba(0, 0, 0, 0.12) !important;
+  }
+
+  ytmusic-player-page #img,
+  ytmusic-player-page yt-img-shadow img,
+  ytmusic-player-page .thumbnail,
+  ytmusic-player-page .image img {
+    filter: brightness(1.08) saturate(1.08) !important;
+  }
+}

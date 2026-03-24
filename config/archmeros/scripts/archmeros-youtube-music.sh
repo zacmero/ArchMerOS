@@ -12,6 +12,7 @@ mkdir -p "$chrome_root"
 
 install -m 0644 "${template_root}/user.js" "${profile_root}/user.js"
 install -m 0644 "${template_root}/chrome/userChrome.css" "${chrome_root}/userChrome.css"
+install -m 0644 "${template_root}/chrome/userContent.css" "${chrome_root}/userContent.css"
 
 exec env MOZ_ENABLE_WAYLAND=1 firefox \
   --new-instance \

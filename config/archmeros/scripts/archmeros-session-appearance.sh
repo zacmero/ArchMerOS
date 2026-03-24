@@ -17,7 +17,7 @@ set_pref() {
 set_pref org.gnome.desktop.interface color-scheme "'prefer-dark'"
 set_pref org.gnome.desktop.interface gtk-theme "'catppuccin-frappe-blue-standard+default'"
 set_pref org.gnome.desktop.interface icon-theme "'ArchMerOS-Icons'"
-set_pref org.gnome.desktop.interface cursor-theme "'Bibata-Modern-Amber'"
+set_pref org.gnome.desktop.interface cursor-theme "'Bibata-Modern-Classic'"
 set_pref org.gnome.desktop.interface font-name "'Noto Sans 14'"
 set_pref org.gnome.desktop.interface monospace-font-name "'CaskaydiaCove Nerd Font Mono 14'"
 set_pref org.gnome.desktop.interface text-scaling-factor "1.10"

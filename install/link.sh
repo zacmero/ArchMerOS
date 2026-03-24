@@ -16,6 +16,7 @@ declare -A links=(
   ["${config_root}/archmeros"]="${HOME}/.config/archmeros"
   ["${config_root}/easyeffects"]="${HOME}/.config/easyeffects"
   ["${config_root}/pipewire"]="${HOME}/.config/pipewire"
+  ["${config_root}/wireplumber"]="${HOME}/.config/wireplumber"
   ["${config_root}/gtk-3.0"]="${HOME}/.config/gtk-3.0"
   ["${config_root}/gtk-4.0"]="${HOME}/.config/gtk-4.0"
   ["${config_root}/rofimoji.rc"]="${HOME}/.config/rofimoji.rc"

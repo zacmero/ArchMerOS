@@ -741,6 +741,7 @@ UR44 policy:
 
 - [config/archmeros/scripts/archmeros-audio-policy.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-audio-policy.sh)
 - [config/pipewire/pipewire.conf.d/10-archmeros-audio.conf](/home/zacmero/projects/ArchMerOS/config/pipewire/pipewire.conf.d/10-archmeros-audio.conf)
+- [config/wireplumber/wireplumber.conf.d/10-archmeros-ur44-no-suspend.conf](/home/zacmero/projects/ArchMerOS/config/wireplumber/wireplumber.conf.d/10-archmeros-ur44-no-suspend.conf)
 - [install/system/etc/modprobe.d/archmeros-audio.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-audio.conf)
 - [install/system/apply-audio-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-audio-system.sh)
 - Hyprland starts this on login to force the machine into the studio path:
@@ -751,6 +752,7 @@ UR44 policy:
 - default source set to `alsa_input.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-input-0`
 - PipeWire quantum raised to `2048` with `1024..4096` bounds for better click/pop resilience under activity
 - PipeWire default rate kept at `48000`, with `96000` allowed as an alternate rate
+- WirePlumber keeps the UR44 nodes awake with `session.suspend-timeout-seconds = 0` so playback start/stop transitions do not wake the interface from idle
 - HDA kernel power saving explicitly disabled with `power_save=0` and `power_save_controller=N`
 
 March 22, 2026 audio investigation:

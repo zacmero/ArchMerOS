@@ -8,6 +8,8 @@ user_pref("browser.tabs.firefox-view", false);
 user_pref("browser.newtabpage.enabled", false);
 user_pref("browser.shell.checkDefaultBrowser", false);
 user_pref("browser.aboutConfig.showWarning", false);
+user_pref("reader.parse-on-load.enabled", false);
+user_pref("media.webspeech.synth.enabled", false);
 user_pref("layers.acceleration.disabled", true);
 user_pref("gfx.webrender.all", false);
 user_pref("media.hardware-video-decoding.enabled", false);

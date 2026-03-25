@@ -745,6 +745,7 @@ UR44 policy:
 - [config/wireplumber/wireplumber.conf.d/10-archmeros-ur44-no-suspend.conf](/home/zacmero/projects/ArchMerOS/config/wireplumber/wireplumber.conf.d/10-archmeros-ur44-no-suspend.conf)
 - [install/system/etc/modprobe.d/archmeros-audio.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-audio.conf)
 - [install/system/apply-audio-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-audio-system.sh)
+- [docs/ur44-stability.md](/home/zacmero/projects/ArchMerOS/docs/ur44-stability.md)
 - Hyprland starts this on login to force the machine into the studio path:
 - NVIDIA HDMI audio off
 - Intel onboard audio off
@@ -754,6 +755,7 @@ UR44 policy:
 - PipeWire quantum raised to `2048` with `1024..4096` bounds for better click/pop resilience under activity
 - PipeWire default rate kept at `48000`, with `96000` allowed as an alternate rate
 - WirePlumber keeps the UR44 nodes awake with `session.suspend-timeout-seconds = 0` so playback start/stop transitions do not wake the interface from idle
+- the repo now carries the modern equivalent of the older `main.lua.d/50-alsa-config.lua` tuning: the UR44 nodes are forced to `api.alsa.period-size = 1024` and `api.alsa.headroom = 8192` through `wireplumber.conf.d`
 - HDA kernel power saving explicitly disabled with `power_save=0` and `power_save_controller=N`
 
 March 22, 2026 audio investigation:

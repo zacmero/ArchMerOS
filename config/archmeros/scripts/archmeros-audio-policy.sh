@@ -14,6 +14,9 @@ wait_for_audio() {
 
 wait_for_audio || exit 0
 
+default_sink="alsa_output.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-output-0"
+default_source="alsa_input.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-input-0"
+
 find_wpctl_id() {
   local section="$1"
   wpctl status 2>/dev/null | awk -v target="$section" '
@@ -37,15 +40,10 @@ pactl set-card-profile alsa_card.usb-Yamaha_Corporation_Steinberg_UR44-01 pro-au
 
 sleep 0.4
 
-pactl set-default-sink alsa_output.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-output-0 >/dev/null 2>&1 || true
-pactl set-default-source alsa_input.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-input-0 >/dev/null 2>&1 || true
+pactl set-default-sink "$default_sink" >/dev/null 2>&1 || true
+pactl set-default-source "$default_source" >/dev/null 2>&1 || true
 
-sink_id="$(find_wpctl_id sink || true)"
 source_id="$(find_wpctl_id source || true)"
-
-if [[ -n "${sink_id}" ]]; then
-  wpctl set-default "${sink_id}" >/dev/null 2>&1 || true
-fi
 
 if [[ -n "${source_id}" ]]; then
   wpctl set-default "${source_id}" >/dev/null 2>&1 || true

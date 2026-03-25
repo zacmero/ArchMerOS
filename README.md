@@ -117,6 +117,9 @@ Tracked system overrides:
 - [install/system/etc/modprobe.d/archmeros-bluetooth.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-bluetooth.conf)
 - [install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules](/home/zacmero/projects/ArchMerOS/install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules)
 - [install/system/apply-bluetooth-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bluetooth-system.sh)
+- [install/system/apply-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-system.sh)
+- [install/system/apply-bootloader-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bootloader-system.sh)
+- [docs/bootloader.md](/home/zacmero/projects/ArchMerOS/docs/bootloader.md)
 
 ## Current Setup Steps
 
@@ -141,7 +144,19 @@ This populates:
 
 3. Log into the Hyprland session from the display manager.
 
-4. From inside a Hyprland terminal, refresh the shell components with the tracked helper:
+4. Apply the tracked system-level defaults once as root:
+
+```bash
+sudo bash install/system/apply-system.sh
+```
+
+This currently applies:
+
+- audio system defaults
+- bluetooth system defaults
+- ArchMerOS bootloader defaults
+
+5. From inside a Hyprland terminal, refresh the shell components with the tracked helper:
 
 ```bash
 ~/.config/archmeros/scripts/archmeros-refresh-shell.sh
@@ -149,13 +164,13 @@ This populates:
 
 This helper auto-detects the active Hyprland socket, reloads Hyprland, restarts Waybar, and reapplies the wallpaper in the current graphical session.
 
-5. Re-apply the tracked session appearance if new apps still assume a light desktop:
+6. Re-apply the tracked session appearance if new apps still assume a light desktop:
 
 ```bash
 ~/.config/archmeros/scripts/archmeros-session-appearance.sh
 ```
 
-6. Restart GTK apps such as `thunar` after theme changes so they pick up the active GTK/icon/cursor settings.
+7. Restart GTK apps such as `thunar` after theme changes so they pick up the active GTK/icon/cursor settings.
 
 ## Current Visual Stack
 

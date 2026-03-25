@@ -17,6 +17,7 @@ Planned actions:
 - verify required binaries
 - optionally install Hyprland stack later
 - deploy tracked configs by symlink via install/link.sh
+- apply tracked system defaults later via install/system/apply-system.sh
 
 Current status:
 - bootstrap scaffolding only

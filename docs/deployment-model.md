@@ -42,6 +42,24 @@ It only makes ArchMerOS-owned tools resolve their config from this repository. X
 
 This means the system can safely host both sessions during migration.
 
+## System Defaults
+
+Session links are not the whole install surface.
+
+System-level ArchMerOS defaults should be applied through:
+
+```bash
+sudo bash install/system/apply-system.sh
+```
+
+That entrypoint currently applies:
+
+- audio system defaults
+- bluetooth system defaults
+- bootloader defaults
+
+Bootloader details live in `docs/bootloader.md`.
+
 ## Installation Phases
 
 ### Phase 1

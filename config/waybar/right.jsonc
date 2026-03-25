@@ -19,7 +19,7 @@
   ],
   "hyprland/workspaces": {
     "disable-scroll": true,
-    "all-outputs": false,
+    "all-outputs": true,
     "on-click": "activate",
     "format": "{icon}",
     "format-icons": {
@@ -28,6 +28,8 @@
       "3": "III",
       "4": "IV",
       "5": "V",
+      "6": "VI",
+      "7": "VII",
       "8": "T",
       "9": "R"
     },

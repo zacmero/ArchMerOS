@@ -1,0 +1,326 @@
+package main
+
+import (
+	"fmt"
+	"image/color"
+	"os"
+	"os/exec"
+	"strings"
+	"time"
+
+	"github.com/Nomadcxx/sysc-greet/internal/themes"
+	"github.com/Nomadcxx/sysc-greet/internal/wallpaper"
+	"github.com/charmbracelet/lipgloss/v2"
+)
+
+// Theme Management - Extracted during Phase 6 refactoring
+// This file contains theme application, wallpaper management, and animation color helpers
+
+// applyTheme sets the color scheme for the entire application based on theme name
+// CHANGED 2025-10-01 - Theme support with proper color palettes
+// CHANGED 2025-10-11 - Added testMode parameter
+// CHANGED 2025-12-28 - Added custom theme support
+func applyTheme(themeName string, testMode bool) {
+	// Check if this is a custom theme
+	if theme, ok := themes.CustomThemes[strings.ToLower(themeName)]; ok {
+		// Apply custom theme colors
+		BgBase = theme.BgBase
+		BgElevated = theme.BgElevated
+		BgSubtle = theme.BgSubtle
+		BgActive = theme.BgActive
+		Primary = theme.Primary
+		Secondary = theme.Secondary
+		Accent = theme.Accent
+		Warning = theme.Warning
+		Danger = theme.Danger
+		FgPrimary = theme.FgPrimary
+		FgSecondary = theme.FgSecondary
+		FgMuted = theme.FgMuted
+		FgSubtle = theme.FgSubtle
+
+		// Set border colors from custom theme
+		BorderDefault = theme.BorderDefault
+		BorderFocus = theme.BorderFocus
+
+		// Set wallpaper for custom theme
+		setThemeWallpaper(themeName, testMode)
+		return
+	}
+
+	switch strings.ToLower(themeName) {
+	case "gruvbox":
+		// Gruvbox Dark theme
+		// All backgrounds same to prevent bleed
+		BgBase = lipgloss.Color("#282828")
+		BgElevated = BgBase
+		BgSubtle = BgBase
+		Primary = lipgloss.Color("#fe8019")
+		Secondary = lipgloss.Color("#8ec07c")
+		Accent = lipgloss.Color("#fabd2f")
+		FgPrimary = lipgloss.Color("#ebdbb2")
+		FgSecondary = lipgloss.Color("#d5c4a1")
+		FgMuted = lipgloss.Color("#bdae93")
+
+	case "material":
+		// Material Dark theme
+		BgBase = lipgloss.Color("#263238")
+		BgElevated = BgBase
+		BgSubtle = BgBase
+		Primary = lipgloss.Color("#80cbc4")
+		Secondary = lipgloss.Color("#64b5f6")
+		Accent = lipgloss.Color("#ffab40")
+		FgPrimary = lipgloss.Color("#eceff1")
+		FgSecondary = lipgloss.Color("#cfd8dc")
+		FgMuted = lipgloss.Color("#90a4ae")
+
+	case "nord":
+		// Nord theme
+		BgBase = lipgloss.Color("#2e3440")
+		BgElevated = BgBase
+		BgSubtle = BgBase
+		Primary = lipgloss.Color("#81a1c1")
+		Secondary = lipgloss.Color("#88c0d0")
+		Accent = lipgloss.Color("#8fbcbb")
+		FgPrimary = lipgloss.Color("#eceff4")
+		FgSecondary = lipgloss.Color("#e5e9f0")
+		FgMuted = lipgloss.Color("#d8dee9")
+
+	case "dracula":
+		// Dracula theme
+		// All backgrounds same to prevent bleed
+		BgBase = lipgloss.Color("#282a36")
+		BgElevated = BgBase
+		BgSubtle = BgBase
+		Primary = lipgloss.Color("#bd93f9")
+		Secondary = lipgloss.Color("#8be9fd")
+		Accent = lipgloss.Color("#50fa7b")
+		FgPrimary = lipgloss.Color("#f8f8f2")
+		FgSecondary = lipgloss.Color("#f1f2f6")
+		FgMuted = lipgloss.Color("#6272a4")
+
+	case "catppuccin":
+		// Catppuccin Mocha theme
+		BgBase = lipgloss.Color("#1e1e2e")
+		BgElevated = BgBase
+		BgSubtle = BgBase
+		Primary = lipgloss.Color("#cba6f7")
+		Secondary = lipgloss.Color("#89b4fa")
+		Accent = lipgloss.Color("#a6e3a1")
+		FgPrimary = lipgloss.Color("#cdd6f4")
+		FgSecondary = lipgloss.Color("#bac2de")
+		FgMuted = lipgloss.Color("#a6adc8")
+
+	case "tokyo night":
+		// Tokyo Night theme
+		BgBase = lipgloss.Color("#1a1b26")
+		BgElevated = BgBase
+		BgSubtle = BgBase
+		Primary = lipgloss.Color("#7aa2f7")
+		Secondary = lipgloss.Color("#bb9af7")
+		Accent = lipgloss.Color("#9ece6a")
+		FgPrimary = lipgloss.Color("#c0caf5")
+		FgSecondary = lipgloss.Color("#a9b1d6")
+		FgMuted = lipgloss.Color("#565f89")
+
+	case "solarized":
+		// Solarized Dark theme
+		BgBase = lipgloss.Color("#002b36")
+		BgElevated = BgBase
+		BgSubtle = BgBase
+		Primary = lipgloss.Color("#268bd2")
+		Secondary = lipgloss.Color("#2aa198")
+		Accent = lipgloss.Color("#859900")
+		FgPrimary = lipgloss.Color("#fdf6e3")
+		FgSecondary = lipgloss.Color("#eee8d5")
+		FgMuted = lipgloss.Color("#93a1a1")
+
+	case "monochrome":
+		// Monochrome theme (black/white/gray)
+		BgBase = lipgloss.Color("#1a1a1a") // Dark background
+		BgElevated = BgBase
+		BgSubtle = BgBase
+		Primary = lipgloss.Color("#ffffff")     // White primary
+		Secondary = lipgloss.Color("#cccccc")   // Light gray
+		Accent = lipgloss.Color("#888888")      // Medium gray
+		FgPrimary = lipgloss.Color("#ffffff")   // White text
+		FgSecondary = lipgloss.Color("#cccccc") // Light gray text
+		FgMuted = lipgloss.Color("#666666")     // Dark gray muted
+
+	case "transishardjob":
+		// TransIsHardJob - Transgender flag colors theme
+		BgBase = lipgloss.Color("#1a1a1a")      // Dark background
+		BgElevated = BgBase                     // Elevated surface
+		BgSubtle = BgBase                       // Subtle background
+		Primary = lipgloss.Color("#5BCEFA")     // Trans flag light blue
+		Secondary = lipgloss.Color("#F5A9B8")   // Trans flag pink
+		Accent = lipgloss.Color("#FFFFFF")      // Trans flag white
+		FgPrimary = lipgloss.Color("#FFFFFF")   // White text
+		FgSecondary = lipgloss.Color("#F5A9B8") // Pink text
+		FgMuted = lipgloss.Color("#5BCEFA")     // Light blue muted
+
+	case "rama":
+		// RAMA theme - Inspired by RAMA keyboard aesthetics
+		BgBase = lipgloss.Color("#2b2d42")      // Space cadet
+		BgElevated = BgBase                     // Keep consistent
+		BgSubtle = BgBase                       // Keep consistent
+		Primary = lipgloss.Color("#ef233c")     // Red Pantone
+		Secondary = lipgloss.Color("#d90429")   // Fire engine red
+		Accent = lipgloss.Color("#ef233c")      // Red Pantone (for menu highlight contrast)
+		FgPrimary = lipgloss.Color("#edf2f4")   // Anti-flash white
+		FgSecondary = lipgloss.Color("#8d99ae") // Cool gray
+		FgMuted = lipgloss.Color("#8d99ae")     // Cool gray
+
+	case "eldritch":
+		// Eldritch theme
+		BgBase = lipgloss.Color("#212337")
+		BgElevated = BgBase
+		BgSubtle = BgBase
+		Primary = lipgloss.Color("#37f499")
+		Secondary = lipgloss.Color("#04d1f9")
+		Accent = lipgloss.Color("#a48cf2")
+		FgPrimary = lipgloss.Color("#ebfafa")
+		FgSecondary = lipgloss.Color("#ABB4DA")
+		FgMuted = lipgloss.Color("#7081d0")
+
+	case "dark":
+		// DARK theme - True black and true white minimalism
+		BgBase = lipgloss.Color("#000000")      // True black
+		BgElevated = BgBase                     // Keep pure black
+		BgSubtle = BgBase                       // Keep pure black
+		Primary = lipgloss.Color("#ffffff")     // True white
+		Secondary = lipgloss.Color("#ffffff")   // True white
+		Accent = lipgloss.Color("#808080")      // Mid gray accent
+		FgPrimary = lipgloss.Color("#ffffff")   // True white
+		FgSecondary = lipgloss.Color("#cccccc") // Light gray
+		FgMuted = lipgloss.Color("#666666")     // Dark gray
+
+	default: // "default"
+		// Original Crush-inspired theme
+		BgBase = lipgloss.Color("#1a1a1a")
+		BgElevated = BgBase
+		BgSubtle = BgBase
+		Primary = lipgloss.Color("#8b5cf6")
+		Secondary = lipgloss.Color("#06b6d4")
+		Accent = lipgloss.Color("#10b981")
+		FgPrimary = lipgloss.Color("#f8fafc")
+		FgSecondary = lipgloss.Color("#cbd5e1")
+		FgMuted = lipgloss.Color("#94a3b8")
+	}
+
+	// Update border colors based on new primary
+	BorderFocus = Primary
+
+	// CHANGED 2025-10-10 - Set theme-aware wallpaper via swww
+	setThemeWallpaper(themeName, testMode)
+}
+
+// setThemeWallpaper sets a theme-specific wallpaper using gSlapper (preferred) or swww (fallback)
+func setThemeWallpaper(themeName string, testMode bool) {
+	logDebug("setThemeWallpaper called: theme=%s testMode=%v", themeName, testMode)
+
+	// Never run wallpaper commands in test mode to avoid disrupting user's wallpapers
+	if testMode {
+		return
+	}
+
+	// Normalize theme name for filename
+	themeFile := strings.ToLower(strings.ReplaceAll(themeName, " ", "-"))
+	wallpaperPath := fmt.Sprintf("%s/wallpapers/sysc-greet-%s.png", dataDir, themeFile)
+
+	// Check if wallpaper exists
+	if _, err := os.Stat(wallpaperPath); err != nil {
+		logDebug("Wallpaper not found: %s", wallpaperPath)
+		return
+	}
+
+	logDebug("Setting wallpaper: %s", wallpaperPath)
+
+	// Use goroutine to avoid blocking the UI
+	go func() {
+		// Wait for gSlapper socket if not ready yet (race with compositor startup)
+		if !wallpaper.IsGSlapperRunning() {
+			logDebug("gSlapper socket not ready, waiting...")
+			for i := 0; i < 20; i++ {
+				time.Sleep(250 * time.Millisecond)
+				if wallpaper.IsGSlapperRunning() {
+					logDebug("gSlapper socket ready after %dms", (i+1)*250)
+					break
+				}
+			}
+		}
+
+		// Try gSlapper IPC
+		if wallpaper.IsGSlapperRunning() {
+			if err := wallpaper.ChangeWallpaper(wallpaperPath); err == nil {
+				logDebug("Wallpaper set via gSlapper IPC: %s", wallpaperPath)
+				return // Success via IPC
+			}
+			logDebug("gSlapper IPC failed, falling through to restart")
+		} else {
+			logDebug("gSlapper not running after waiting 5s")
+		}
+
+		// Check if gSlapper is available
+		if _, err := exec.LookPath("gslapper"); err == nil {
+			// Kill any existing gSlapper process and restart with wallpaper
+			exec.Command("pkill", "-f", "gslapper").Run()
+			time.Sleep(100 * time.Millisecond) // Brief pause for process cleanup
+
+			// Start gSlapper with wallpaper and IPC socket
+			// Use -f to fork so the greeter doesn't wait for gslapper
+			// "fill" is default for images, no need to specify
+			cmd := exec.Command("gslapper", "-f", "-I", wallpaper.GSlapperSocket, "*", wallpaperPath)
+			cmd.Stdout = nil
+			cmd.Stderr = nil
+			if err := cmd.Start(); err == nil {
+				logDebug("Wallpaper set via gSlapper restart: %s", wallpaperPath)
+				return // Success
+			}
+			logDebug("gSlapper restart failed")
+		}
+
+		// Fallback to swww if gSlapper unavailable/failed
+		if _, err := exec.LookPath("swww"); err != nil {
+			// Neither gSlapper nor swww available, skip silently
+			return
+		}
+
+		// First ensure swww-daemon is running
+		daemonCmd := exec.Command("swww-daemon")
+		daemonCmd.Stdout = nil
+		daemonCmd.Stderr = nil
+		_ = daemonCmd.Start()
+
+		// Give daemon a moment to start if it wasn't running
+		time.Sleep(100 * time.Millisecond)
+
+		// Set wallpaper on all monitors
+		cmd := exec.Command("swww", "img", wallpaperPath, "--transition-type", "fade", "--transition-duration", "0.5")
+		cmd.Stdout = nil
+		cmd.Stderr = nil
+		_ = cmd.Run()
+		logDebug("Wallpaper set via swww fallback: %s", wallpaperPath)
+	}()
+}
+
+// getAnimatedColor cycles through primary brand colors for animations
+func (m model) getAnimatedColor() color.Color {
+	colors := []color.Color{Primary, Secondary, Accent}
+	index := (m.animationFrame / 20) % len(colors)
+	return colors[index]
+}
+
+// getAnimatedBorderColor cycles through border colors for animated borders
+func (m model) getAnimatedBorderColor() color.Color {
+	colors := []color.Color{BorderDefault, Primary, Secondary}
+	index := (m.borderFrame / 5) % len(colors)
+	return colors[index]
+}
+
+// getFocusColor returns the appropriate color based on focus state
+func (m model) getFocusColor(target FocusState) color.Color {
+	if m.focusState == target {
+		return Primary
+	}
+	return FgSecondary
+}

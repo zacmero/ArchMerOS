@@ -54,6 +54,7 @@ Current known state on this workstation:
 - local GTK, cursor, and icon theme assets are deployed under `~/.local/share`
 - the active Firefox `default-release` profile can be fed from a repo-owned `user.js`
 - `mero_terminal` remains separate and untouched
+- the repo-tracked `sysc-greet` design is now the official ArchMerOS greeter default for the future `greetd` migration path
 
 Current three-monitor intent:
 
@@ -119,6 +120,8 @@ Tracked system overrides:
 - [install/system/apply-bluetooth-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bluetooth-system.sh)
 - [install/system/apply-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-system.sh)
 - [install/system/apply-bootloader-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bootloader-system.sh)
+- [install/build-sysc-greet.sh](/home/zacmero/projects/ArchMerOS/install/build-sysc-greet.sh)
+- [docs/login-greeter.md](/home/zacmero/projects/ArchMerOS/docs/login-greeter.md)
 - [docs/bootloader.md](/home/zacmero/projects/ArchMerOS/docs/bootloader.md)
 
 ## Current Setup Steps
@@ -155,6 +158,11 @@ This currently applies:
 - audio system defaults
 - bluetooth system defaults
 - ArchMerOS bootloader defaults
+
+Greeter theme status:
+
+- the future ArchMerOS `greetd` default is documented in [docs/login-greeter.md](/home/zacmero/projects/ArchMerOS/docs/login-greeter.md)
+- current default design direction is `archmeros` theme + `ascii-rain` background + `pour` logo
 
 5. From inside a Hyprland terminal, refresh the shell components with the tracked helper:
 

@@ -1,0 +1,14 @@
+name = "archmeros"
+
+[colors]
+bg_base = "#1a1b26"
+bg_active = "#24283b"
+primary = "#7aa2f7"
+secondary = "#bb9af7"
+accent = "#ff4fd8"
+warning = "#e0af68"
+danger = "#f7768e"
+fg_primary = "#c0caf5"
+fg_secondary = "#a9b1d6"
+fg_muted = "#565f89"
+border_focus = "#ff4fd8"

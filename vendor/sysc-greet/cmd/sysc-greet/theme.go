@@ -320,7 +320,7 @@ func (m model) getAnimatedBorderColor() color.Color {
 // getFocusColor returns the appropriate color based on focus state
 func (m model) getFocusColor(target FocusState) color.Color {
 	if m.focusState == target {
-		return Primary
+		return Accent
 	}
 	return FgSecondary
 }

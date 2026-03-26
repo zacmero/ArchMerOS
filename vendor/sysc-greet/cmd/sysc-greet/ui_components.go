@@ -207,7 +207,7 @@ func (m model) renderInputField(value string, focused bool, masked bool) string 
 	}
 	return lipgloss.NewStyle().
 		Background(BgBase).
-		Foreground(FgPrimary).
+		Foreground(lipgloss.Color("#6ef7a8")).
 		Padding(0, 1).
 		Render(displayValue)
 }

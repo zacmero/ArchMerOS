@@ -126,6 +126,7 @@ Tracked system overrides:
 - [install/build-sysc-greet.sh](/home/zacmero/projects/ArchMerOS/install/build-sysc-greet.sh)
 - [docs/login-greeter.md](/home/zacmero/projects/ArchMerOS/docs/login-greeter.md)
 - [docs/bootloader.md](/home/zacmero/projects/ArchMerOS/docs/bootloader.md)
+- [docs/waybar.md](/home/zacmero/projects/ArchMerOS/docs/waybar.md)
 
 ## Current Setup Steps
 

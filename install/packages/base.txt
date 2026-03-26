@@ -1,5 +1,6 @@
 # Core ArchMerOS session packages
 hyprland
+greetd
 waybar
 swaybg
 rofi-wayland
@@ -14,6 +15,7 @@ rofimoji
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
 polkit-kde-agent
+kitty
 wlogout
 grim
 slurp

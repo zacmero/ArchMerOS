@@ -1,7 +1,5 @@
 # Login Greeter
 
-ArchMerOS is currently still running **LightDM** as the live display manager.
-
 `sysc-greet` is now vendored into the repository for safe local design work first:
 
 - source: `vendor/sysc-greet`
@@ -11,7 +9,7 @@ ArchMerOS is currently still running **LightDM** as the live display manager.
 
 ## Official Default
 
-The current ArchMerOS greeter theme tracked in this repository is now the official default for future ArchMerOS `greetd` rollout work.
+The current ArchMerOS greeter theme tracked in this repository is now the official ArchMerOS login default.
 
 Default behavior baked into the vendored greeter:
 
@@ -35,22 +33,15 @@ The repo-owned theme state lives in:
 
 ## Safety Boundary
 
-Nothing in this document switches the machine to `greetd` yet.
+The repo now includes a real system apply path for switching from `lightdm` to `greetd`.
 
-The current workflow is:
-
-1. Build the vendored greeter against the ArchMerOS-owned data directory.
-2. Run it in `--test` mode inside the current desktop session.
-3. Iterate on theme, ASCII, layout, and animations there.
-4. Only after validation, add a real `greetd` migration step.
-
-If a future live greeter migration fails:
+If a live greeter migration fails:
 
 - use `Ctrl+Alt+F3` to reach a TTY
 - disable `greetd`
 - re-enable `lightdm`
 
-Expected rollback commands for the later migration stage:
+Rollback commands:
 
 ```bash
 sudo systemctl disable greetd
@@ -99,8 +90,12 @@ Current tracked greeter assets live here:
 - `config/greetd/sysc-greet/share/themes/archmeros.toml`
 - `config/greetd/sysc-greet/share/ascii_configs/hyprland.conf`
 - `config/greetd/sysc-greet/share/ascii_configs/xfce.conf`
+- `config/greetd/sysc-greet/share/ascii_configs/screensaver.conf`
 - `config/greetd/sysc-greet/kitty-greeter.conf`
 - `config/greetd/sysc-greet/hyprland-greeter-config.conf`
+- `install/system/apply-greeter-system.sh`
+- `install/system/etc/greetd/config.toml`
+- `install/system/etc/polkit-1/rules.d/85-greeter.rules`
 
 The current first-pass palette is:
 
@@ -109,12 +104,22 @@ The current first-pass palette is:
 - magenta accent
 - white main text
 
-## Next Stage
+## System Apply
 
-Once the local test version feels correct, the next system step is:
+To make the ArchMerOS greeter the real login default on a machine:
 
-1. install `greetd`
-2. create the `greeter` user
-3. copy the tracked configs into `/etc/greetd/`
-4. switch from `lightdm` to `greetd`
-5. keep TTY rollback ready during the first live boot tests
+```bash
+sudo bash install/system/apply-greeter-system.sh
+```
+
+That script currently:
+
+1. installs `greetd` and `kitty`
+2. builds the ArchMerOS-owned `sysc-greet` binary with a system data path
+3. installs the tracked theme and ASCII assets under `/usr/local/share/archmeros/sysc-greet/share`
+4. installs `/etc/greetd/config.toml`
+5. installs the tracked Hyprland and kitty greeter configs into `/etc/greetd/`
+6. creates or updates the `greeter` user with `video,render,input`
+7. installs the greeter polkit rule
+8. disables `lightdm`
+9. enables `greetd`

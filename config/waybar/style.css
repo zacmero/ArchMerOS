@@ -167,6 +167,7 @@ tooltip label {
 #network,
 #bluetooth,
 #pulseaudio,
+#custom-keyboard,
 #cpu,
 #memory,
 #battery {
@@ -178,10 +179,19 @@ tooltip label {
 #network:hover,
 #bluetooth:hover,
 #pulseaudio:hover,
+#custom-keyboard:hover,
 #cpu:hover,
 #memory:hover,
 #battery:hover {
   font-weight: 900;
+}
+
+#custom-keyboard {
+  min-width: 62px;
+}
+
+#pulseaudio {
+  padding: 0 12px 0 8px;
 }
 
 #battery.warning {

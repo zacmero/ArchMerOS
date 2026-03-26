@@ -34,4 +34,4 @@ case "$active_keymap" in
     ;;
 esac
 
-printf '{"text":"⌨ %s","tooltip":"%s\\nClick to toggle keyboard layout"}\n' "$short_label" "$active_keymap"
+printf '{"text":"  %s","tooltip":"%s\\nClick to toggle keyboard layout"}\n' "$short_label" "$active_keymap"

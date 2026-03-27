@@ -31,5 +31,10 @@ if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
   fi
 fi
 
+python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" \
+  track-launch general telegramdesktop telegram telegram -- \
+  "$HOME/.config/archmeros/scripts/archmeros-telegram.sh" \
+  >/tmp/archmeros-reopen-track-telegram.log 2>&1 || true
+
 nohup "$telegram_bin" >/tmp/archmeros-telegram.log 2>&1 &
 disown || true

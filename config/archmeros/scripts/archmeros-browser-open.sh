@@ -14,6 +14,11 @@ if [[ -z "$browser" ]]; then
   exec xdg-open "$@"
 fi
 
+python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" \
+  track-launch general "" "" "$browser" -- \
+  "$HOME/.config/archmeros/scripts/archmeros-browser-open.sh" "$@" \
+  >/tmp/archmeros-reopen-track-browser.log 2>&1 || true
+
 mode="none"
 monitor_name=""
 workspace_id=""

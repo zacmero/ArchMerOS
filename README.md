@@ -421,8 +421,14 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+N`: create a new PARA note in Neovim
 - `Super+Shift+N`: open Todoist and Evernote on workspace `V`
 - `Super+C`: pop focused window out, center it, float it, and pin it
-- `Super+O`: pop focused window into a large near-full centered mode
-- `Super+Shift+O`: pop focused window into a medium centered mode
+- `Super+\``: pop focused window into a large near-full centered mode
+- `Alt+\``: same large pop/maximize flow as `Super+\``
+- `Super+Shift+\``: pop focused window into a medium centered mode
+- `Alt+Shift+\``: same medium pop/maximize flow as `Super+Shift+\``
+- `Super+O`: reopen the most recently closed folder window
+- `Super+Shift+O`: reopen the most recently closed tracked window/app/file
+
+The reopen stacks keep the last 20 folder closes and the last 20 general closes, and a Hyprland `socket2` listener records real window-close events so mouse-close and app-quit paths are tracked too.
 - `Super+Shift+P`: open display settings helper
 - `Super+Shift+B`: refresh Hyprland shell components
 - `Super+Shift+C`: open ChatGPT as a centered medium utility app
@@ -973,7 +979,7 @@ Completed so far:
 - added a repo-owned Firefox `user.js` override to restore browser fullscreen support
 - switched the live wallpaper backend to `swaybg` for reliability
 - added a centered pop-out / pin helper for focused windows
-- split the pop-out sizing into large `Super+O` and medium `Super+Shift+O`
+- split the pop-out sizing into large `Super+\`` and medium `Super+Shift+\``
 - imported Omarchy-style focus, cycle, and mouse window controls
 - deployed local GTK, cursor, and icon assets into the user profile
 - added a repo-owned appearance controller with default, auto, and preset modes
@@ -1002,6 +1008,8 @@ Completed so far:
 - replaced the wallpaper picker with a repo-owned auto-preview browser window
 - added manual single-monitor wallpaper crop selection and automatic all-monitor crop generation through Pillow
 - upgraded detached terminal-launched GUI apps to promote onto the focused workspace/monitor instead of hiding behind spotlight windows
+- added a reopen-history flow with 20-slot stacks for closed folder windows and general tracked windows, using `Super+O` and `Super+Shift+O`
+- added a lightweight Hyprland `socket2` reopen listener so real close events are captured without relying only on the close keybinds
 
 ## Planned Structure
 

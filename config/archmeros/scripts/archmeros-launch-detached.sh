@@ -4,6 +4,13 @@ set -euo pipefail
 
 [[ $# -gt 0 ]] || exit 1
 
+process_name="$(basename -- "$1" 2>/dev/null || printf '%s' "$1")"
+
+python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" \
+  track-launch general "" "" "$process_name" -- \
+  "$HOME/.config/archmeros/scripts/archmeros-launch-detached.sh" "$@" \
+  >/tmp/archmeros-reopen-track-general.log 2>&1 || true
+
 mode="none"
 monitor_name=""
 workspace_id=""

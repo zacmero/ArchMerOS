@@ -31,6 +31,11 @@ if ! command -v thunar >/dev/null 2>&1; then
   exec xdg-open "${1:-$HOME/Desktop}"
 fi
 
+python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" \
+  track-launch folder thunar "" thunar -- \
+  "$HOME/.config/archmeros/scripts/archmeros-thunar.sh" "$@" \
+  >/tmp/archmeros-reopen-track-thunar.log 2>&1 || true
+
 monitors_json="$(hyprctl -j monitors 2>/dev/null || printf '[]')"
 focused_monitor="$(printf '%s' "$monitors_json" | jq -r '.[] | select(.focused == true) | .id' | head -n 1)"
 focused_monitor_name="$(printf '%s' "$monitors_json" | jq -r '.[] | select(.focused == true) | .name' | head -n 1)"

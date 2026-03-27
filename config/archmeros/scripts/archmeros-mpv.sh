@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" \
+  track-launch general mpv "" mpv -- \
+  "$HOME/.config/archmeros/scripts/archmeros-mpv.sh" "$@" \
+  >/tmp/archmeros-reopen-track-mpv.log 2>&1 || true
+
 mode="none"
 monitor_name=""
 workspace_id=""

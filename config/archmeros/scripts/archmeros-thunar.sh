@@ -14,9 +14,14 @@ find_thunar_address() {
       [
         .[]
         | select(((.class // .initialClass // "") | ascii_downcase) == "thunar")
-        | select((.workspace.id // -1) == $workspace or (.monitor // -1) == $monitor)
+        | . + {
+            score:
+              (if (.workspace.id // -1) == $workspace then 20 else 0 end) +
+              (if (.monitor // -1) == $monitor then 10 else 0 end) +
+              (.focusHistoryID // -1)
+          }
       ]
-      | sort_by(.focusHistoryID // -1)
+      | sort_by(.score)
       | last
       | .address // empty
     '

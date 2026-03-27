@@ -479,9 +479,11 @@ func initialModel(config Config, screensaverMode bool) model {
 	curatedSessions := []sessions.Session{}
 	if hyprManaged != nil {
 		hyprManaged.Name = "HyprMero"
+		hyprManaged.Exec = "/usr/local/bin/archmeros-start-hyprmero"
 		curatedSessions = append(curatedSessions, *hyprManaged)
 	} else if hyprFallback != nil {
 		hyprFallback.Name = "HyprMero"
+		hyprFallback.Exec = "/usr/local/bin/archmeros-start-hyprmero"
 		curatedSessions = append(curatedSessions, *hyprFallback)
 	}
 	if xfceX11 != nil {
@@ -749,8 +751,8 @@ func initialModel(config Config, screensaverMode bool) model {
 							Height:                 asciiHeight,
 							Text:                   ascii,
 							PourDirection:          "down",
-							PourSpeed:              4,
-							MovementSpeed:          0.18,
+							PourSpeed:              8,
+							MovementSpeed:          0.36,
 							Gap:                    1,
 							StartingColor:          "#ffffff",
 							FinalGradientStops:     pourColors,
@@ -819,8 +821,8 @@ func initialModel(config Config, screensaverMode bool) model {
 						Height:                 asciiHeight,
 						Text:                   ascii,
 						PourDirection:          "down",
-						PourSpeed:              4,
-						MovementSpeed:          0.18,
+						PourSpeed:              8,
+						MovementSpeed:          0.36,
 						Gap:                    1,
 						StartingColor:          "#ffffff",
 						FinalGradientStops:     pourColors,
@@ -2034,8 +2036,8 @@ func (m model) handleKeyInput(msg tea.KeyMsg) (model, tea.Cmd) {
 									Height:                 asciiHeight,
 									Text:                   ascii,
 									PourDirection:          "down",
-									PourSpeed:              4,
-									MovementSpeed:          0.18,
+						PourSpeed:              8,
+						MovementSpeed:          0.36,
 									Gap:                    1,
 									StartingColor:          "#ffffff",
 									FinalGradientStops:     pourColors,

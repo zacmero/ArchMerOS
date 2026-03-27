@@ -2,9 +2,9 @@
 vt = 1
 
 [default_session]
-command = "start-hyprland -- -c /etc/greetd/hyprland-greeter-config.conf"
+command = "/usr/local/bin/archmeros-greeter-session"
 user = "greeter"
 
 [initial_session]
-command = "start-hyprland -- -c /etc/greetd/hyprland-greeter-config.conf"
+command = "/usr/local/bin/archmeros-greeter-session"
 user = "greeter"

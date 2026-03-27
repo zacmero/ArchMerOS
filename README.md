@@ -168,6 +168,7 @@ Greeter theme status:
 
 - the live ArchMerOS login-manager default is documented in [docs/login-greeter.md](/home/zacmero/projects/ArchMerOS/docs/login-greeter.md)
 - current default design direction is `archmeros` theme + `ascii-rain` background + `pour` logo
+- the tracked greetd apply path now installs quiet wrapper launchers so fresh ArchMerOS installs do not leak greeter/session startup logs onto the TTY
 
 5. From inside a Hyprland terminal, refresh the shell components with the tracked helper:
 

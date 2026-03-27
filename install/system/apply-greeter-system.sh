@@ -40,6 +40,10 @@ install -Dm644 "${repo_root}/config/greetd/sysc-greet/kitty-greeter.conf" \
   "${greetd_dir}/kitty-greeter.conf"
 install -Dm644 "${repo_root}/config/greetd/sysc-greet/hyprland-greeter-config.conf" \
   "${greetd_dir}/hyprland-greeter-config.conf"
+install -Dm755 "${repo_root}/config/greetd/sysc-greet/archmeros-greeter-session.sh" \
+  /usr/local/bin/archmeros-greeter-session
+install -Dm755 "${repo_root}/config/greetd/sysc-greet/archmeros-start-hyprmero.sh" \
+  /usr/local/bin/archmeros-start-hyprmero
 install -Dm644 "${repo_root}/install/system/etc/greetd/config.toml" \
   "${greetd_dir}/config.toml"
 install -Dm644 "${repo_root}/install/system/etc/polkit-1/rules.d/85-greeter.rules" \

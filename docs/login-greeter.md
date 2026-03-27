@@ -93,6 +93,8 @@ Current tracked greeter assets live here:
 - `config/greetd/sysc-greet/share/ascii_configs/screensaver.conf`
 - `config/greetd/sysc-greet/kitty-greeter.conf`
 - `config/greetd/sysc-greet/hyprland-greeter-config.conf`
+- `config/greetd/sysc-greet/archmeros-greeter-session.sh`
+- `config/greetd/sysc-greet/archmeros-start-hyprmero.sh`
 - `install/system/apply-greeter-system.sh`
 - `install/system/etc/greetd/config.toml`
 - `install/system/etc/polkit-1/rules.d/85-greeter.rules`
@@ -117,9 +119,11 @@ That script currently:
 1. installs `greetd` and `kitty`
 2. builds the ArchMerOS-owned `sysc-greet` binary with a system data path
 3. installs the tracked theme and ASCII assets under `/usr/local/share/archmeros/sysc-greet/share`
-4. installs `/etc/greetd/config.toml`
-5. installs the tracked Hyprland and kitty greeter configs into `/etc/greetd/`
-6. creates or updates the `greeter` user with `video,render,input`
-7. installs the greeter polkit rule
-8. disables `lightdm`
-9. enables `greetd`
+4. installs quiet wrapper launchers for the greeter session and `HyprMero`
+5. installs `/etc/greetd/config.toml`
+6. installs the tracked Hyprland and kitty greeter configs into `/etc/greetd/`
+7. redirects greeter and `HyprMero` stdout/stderr into log files instead of leaving them on the TTY
+8. creates or updates the `greeter` user with `video,render,input`
+9. installs the greeter polkit rule
+10. disables `lightdm`
+11. enables `greetd`

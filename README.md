@@ -205,6 +205,7 @@ Active shell pieces currently tracked in this repo:
 - Transparency preset switcher: [config/archmeros/scripts/archmeros-transparency.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-transparency.sh)
 - Thunar launcher wrapper: [config/archmeros/scripts/archmeros-thunar.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-thunar.sh)
 - Walker launcher wrapper: [config/archmeros/scripts/archmeros-walker.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-walker.sh)
+- Telegram focus/launch wrapper: [config/archmeros/scripts/archmeros-telegram.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-telegram.sh)
 - Window history cycle helper: [config/archmeros/scripts/archmeros-cycle-window.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-cycle-window.sh)
 - Bash hook: [config/archmeros/shell/archmeros-bash.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/shell/archmeros-bash.sh)
 - Walker service units: [config/systemd/user/archmeros-elephant.service](/home/zacmero/projects/ArchMerOS/config/systemd/user/archmeros-elephant.service), [config/systemd/user/archmeros-walker.service](/home/zacmero/projects/ArchMerOS/config/systemd/user/archmeros-walker.service)
@@ -220,6 +221,17 @@ Repo-owned icon theme:
 - active theme path: [local/share/icons/ArchMerOS-Icons](/home/zacmero/projects/ArchMerOS/local/share/icons/ArchMerOS-Icons)
 - builder: [install/build-icons.py](/home/zacmero/projects/ArchMerOS/install/build-icons.py)
 - base source: vendored `Papirus-Dark`
+
+## Launch Wrapper Pattern
+
+For apps that should jump to an existing window instead of spawning duplicates, ArchMerOS can route desktop launches through repo-owned wrappers.
+
+Current example:
+
+- Telegram desktop override: [org.telegram.desktop.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/org.telegram.desktop.desktop)
+- Telegram focus/launch logic: [archmeros-telegram.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-telegram.sh)
+
+This pattern is intended as the reference for future app-specific focus-or-launch integrations.
 - folder palette: Dracula comment
 
 Rebuild command:

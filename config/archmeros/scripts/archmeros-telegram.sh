@@ -2,10 +2,33 @@
 
 set -euo pipefail
 
-telegram_bin="/usr/bin/telegram-desktop"
+telegram_bin="$(command -v Telegram || command -v telegram-desktop || true)"
 
-if command -v hyprctl >/dev/null 2>&1 && pgrep -x telegram-desktop >/dev/null 2>&1; then
-  hyprctl dispatch focuswindow "class:^(TelegramDesktop|org.telegram.desktop)$" >/dev/null 2>&1 && exit 0
+if [[ -z "${telegram_bin:-}" ]]; then
+  printf 'archmeros-telegram: Telegram binary not found\n' >&2
+  exit 1
+fi
+
+if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+  telegram_window="$(
+    hyprctl clients -j 2>/dev/null \
+      | jq -r '
+          map(select(.class == "TelegramDesktop" or .class == "org.telegram.desktop"))
+          | first
+          | if . == null then empty else "\(.workspace.id)\t\(.address)" end
+        ' 2>/dev/null || true
+  )"
+
+  if [[ -n "${telegram_window:-}" ]]; then
+    workspace_id="${telegram_window%%$'\t'*}"
+    address="${telegram_window#*$'\t'}"
+
+    if [[ -n "${workspace_id:-}" && -n "${address:-}" ]]; then
+      hyprctl dispatch workspace "${workspace_id}" >/dev/null 2>&1 || true
+      hyprctl dispatch focuswindow "address:${address}" >/dev/null 2>&1 || true
+      exit 0
+    fi
+  fi
 fi
 
 nohup "$telegram_bin" >/tmp/archmeros-telegram.log 2>&1 &

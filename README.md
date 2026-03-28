@@ -321,6 +321,8 @@ The wallpaper picker now asks for a target first:
 - `All monitors`
 - or one specific monitor such as `DP-2`, `HDMI-A-4`, or `VGA-1`
 
+The same launcher now also opens the ArchMerOS screensaver section, so wallpaper and idle-screen styling live behind the same keybinding.
+
 ## Current Appearance Control
 
 ArchMerOS now has a repo-owned appearance controller:
@@ -933,6 +935,9 @@ Wallpaper picker:
 Current behavior:
 
 - `Super+Alt+W` opens a repo-owned wallpaper browser window
+- the same window now includes an ArchMerOS screensaver section for live session screensaver styling
+- the screensaver section can also disable the animated screensaver entirely while keeping monitor standby / DPMS idle-off active
+- the same launcher now also exposes wallpaper rotation controls for random per-monitor cycling from `config/wallpapers`
 - target now defaults to the currently focused monitor for manual crop-first behavior
 - wallpaper preview updates automatically as you move through the list
 - `Apply`:
@@ -953,6 +958,10 @@ Notes:
 - multi-monitor crop remains automatic centered fit because one manual crop cannot satisfy multiple aspect ratios cleanly
 - explicit zoom buttons are present because mouse-wheel delivery can vary between environments
 - when the target is a single monitor, there is no separate crop popup anymore; `Apply` uses the in-place crop overlay directly
+- the screensaver section writes a user override to `~/.config/archmeros/screensaver/screensaver.conf`
+- live session screensaver triggering is handled by `hypridle`, while the animated screen itself is launched through `archmeros-screensaver.sh`
+- wallpaper rotation uses `hyprpaper` for random per-monitor directory cycling
+- the current wallpaper backend does not provide a subtle fade transition, so rotation uses hard cuts for now
 - when the target is `All monitors`, the crop action is intentionally automatic; choose a single monitor target for the manual crop window
 
 ## Build Log
@@ -1010,6 +1019,8 @@ Completed so far:
 - upgraded detached terminal-launched GUI apps to promote onto the focused workspace/monitor instead of hiding behind spotlight windows
 - added a reopen-history flow with 20-slot stacks for closed folder windows and general tracked windows, using `Super+O` and `Super+Shift+O`
 - added a lightweight Hyprland `socket2` reopen listener so real close events are captured without relying only on the close keybinds
+- added a session screensaver path driven by `hypridle` and the repo-owned `sysc-greet` screensaver launcher
+- extended the wallpaper picker with a screensaver section so wallpaper and screensaver styling stay under the same ArchMerOS launcher flow
 
 ## Planned Structure
 

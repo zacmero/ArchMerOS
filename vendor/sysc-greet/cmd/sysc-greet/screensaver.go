@@ -39,11 +39,15 @@ func loadScreensaverConfig() ScreensaverConfig {
 	}
 
 	// Try to load from config file
-	paths := []string{
-		dataDir + "/ascii_configs/screensaver.conf",
+	paths := []string{}
+	if overridePath := strings.TrimSpace(os.Getenv("ARCHMEROS_SCREENSAVER_CONFIG")); overridePath != "" {
+		paths = append(paths, overridePath)
+	}
+	paths = append(paths,
+		dataDir+"/ascii_configs/screensaver.conf",
 		"ascii_configs/screensaver.conf",
 		"screensaver.conf",
-	}
+	)
 
 	var file *os.File
 	var err error

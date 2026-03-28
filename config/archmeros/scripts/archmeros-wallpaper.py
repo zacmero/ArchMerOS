@@ -21,6 +21,7 @@ LEGACY_STATE_FILE = STATE_DIR / "current-wallpaper"
 LOG_FILE = Path("/tmp/archmeros-wallpaper.log")
 APPEARANCE_STATE_FILE = STATE_DIR / "appearance.json"
 THEME_SCRIPT = REPO_ROOT / "config" / "archmeros" / "scripts" / "archmeros-theme.py"
+DEFAULT_ROTATION_INTERVAL = 300
 
 
 def run(command: list[str], check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -161,9 +162,32 @@ def escape_hyprpaper_path(path: str) -> str:
 def apply_state(state: dict) -> None:
     mode = state.get("mode", "fill")
     mappings = state["monitors"]
+    rotation_enabled = bool(state.get("rotation_enabled", False))
+    rotation_interval = max(60, int(state.get("rotation_interval", DEFAULT_ROTATION_INTERVAL) or DEFAULT_ROTATION_INTERVAL))
 
     subprocess.run(["pkill", "-x", "swaybg"], check=False)
     subprocess.run(["pkill", "-x", "hyprpaper"], check=False)
+
+    if rotation_enabled:
+        config_file = Path("/tmp/archmeros-hyprpaper.conf")
+        lines = ["ipc = on", "splash = false", ""]
+        wallpaper_dir = str(WALLPAPER_DIR.resolve())
+        for monitor in mappings:
+            lines.extend(
+                [
+                    "wallpaper {",
+                    f"    monitor = {monitor}",
+                    f"    path = {wallpaper_dir}",
+                    "    fit_mode = cover",
+                    f"    timeout = {rotation_interval}",
+                    "    order = random",
+                    "}",
+                    "",
+                ]
+            )
+        config_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        start_detached(["hyprpaper", "-c", str(config_file)], Path("/tmp/archmeros-hyprpaper.log"))
+        return
 
     if shutil.which("swaybg"):
         command = ["swaybg"]
@@ -231,6 +255,9 @@ def main() -> int:
     parser.add_argument("--list-monitors", action="store_true", help="List detected monitor names")
     parser.add_argument("--show-state", action="store_true", help="Print the current wallpaper state")
     parser.add_argument("--no-theme-sync", action="store_true", help="Do not refresh auto appearance mode")
+    parser.add_argument("--enable-rotation", action="store_true", help="Enable random wallpaper rotation")
+    parser.add_argument("--disable-rotation", action="store_true", help="Disable random wallpaper rotation")
+    parser.add_argument("--rotation-interval", type=int, help="Wallpaper rotation interval in seconds")
     args = parser.parse_args()
 
     if args.list_monitors:
@@ -238,6 +265,19 @@ def main() -> int:
         return 0
 
     state = load_state()
+
+    if args.enable_rotation or args.disable_rotation or args.rotation_interval is not None:
+        if args.enable_rotation:
+            state["rotation_enabled"] = True
+        if args.disable_rotation:
+            state["rotation_enabled"] = False
+        if args.rotation_interval is not None:
+            state["rotation_interval"] = max(60, args.rotation_interval)
+        save_state(state)
+        apply_state(state)
+        if args.show_state:
+            print(json.dumps(state, indent=2))
+        return 0
 
     if args.wallpaper:
         resolved = str(resolve_wallpaper(args.wallpaper))

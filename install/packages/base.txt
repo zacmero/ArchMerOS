@@ -1,5 +1,6 @@
 # Core ArchMerOS session packages
 hyprland
+hypridle
 greetd
 waybar
 swaybg

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -19,12 +20,145 @@ WALLPAPER_DIR = REPO_ROOT / "config" / "wallpapers"
 GENERATED_DIR = WALLPAPER_DIR / "generated"
 WALLPAPER_CONTROLLER = REPO_ROOT / "config" / "archmeros" / "scripts" / "archmeros-wallpaper.py"
 WALLPAPER_CROPPER = REPO_ROOT / "config" / "archmeros" / "scripts" / "archmeros-wallpaper-crop.py"
+SCREENSAVER_DEFAULT_CONFIG = REPO_ROOT / "config" / "greetd" / "sysc-greet" / "share" / "ascii_configs" / "screensaver.conf"
+SCREENSAVER_OVERRIDE_DIR = Path.home() / ".config" / "archmeros" / "screensaver"
+SCREENSAVER_OVERRIDE_CONFIG = SCREENSAVER_OVERRIDE_DIR / "screensaver.conf"
+SCREENSAVER_LAUNCHER = REPO_ROOT / "config" / "archmeros" / "scripts" / "archmeros-screensaver.sh"
+WALLPAPER_STATE_FILE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "archmeros" / "wallpapers.json"
+SCREENSAVER_KEY_ORDER = [
+    "idle_timeout",
+    "time_format",
+    "date_format",
+    "clock_style",
+    "animate_on_start",
+    "animation_type",
+    "animation_speed",
+]
+SCREENSAVER_EFFECTS = {
+    "beams": "Beams",
+    "print": "Print",
+    "colorcycle": "Color Cycle",
+    "none": "Static",
+}
 
 PREVIEW_SIZE = (780, 440)
+DEFAULT_ROTATION_INTERVAL_SECONDS = 300
 
 
 def run(command: list[str]) -> str:
     return subprocess.check_output(command, text=True).strip()
+
+
+def parse_screensaver_config(path: Path) -> tuple[dict[str, str], str]:
+    try:
+        text = path.read_text()
+    except Exception:
+        return {}, ""
+
+    lines = text.splitlines()
+    settings: dict[str, str] = {}
+    ascii_start = len(lines)
+    for index, line in enumerate(lines):
+        stripped = line.strip()
+        if line.startswith("ascii_1="):
+            ascii_start = index
+            break
+        if not stripped or stripped.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        settings[key.strip()] = value.strip()
+
+    ascii_block = "\n".join(lines[ascii_start:]).strip("\n")
+    return settings, ascii_block
+
+
+def load_screensaver_settings() -> dict[str, str]:
+    default_settings, _ = parse_screensaver_config(SCREENSAVER_DEFAULT_CONFIG)
+    override_settings, _ = parse_screensaver_config(SCREENSAVER_OVERRIDE_CONFIG)
+    merged = default_settings.copy()
+    merged.update(override_settings)
+    return merged
+
+
+def write_screensaver_settings(overrides: dict[str, str]) -> None:
+    default_settings, ascii_block = parse_screensaver_config(SCREENSAVER_DEFAULT_CONFIG)
+    merged = default_settings.copy()
+    merged.update(overrides)
+    SCREENSAVER_OVERRIDE_DIR.mkdir(parents=True, exist_ok=True)
+    lines = [f"{key}={merged.get(key, '')}" for key in SCREENSAVER_KEY_ORDER]
+    body = "\n".join(lines).rstrip() + "\n\n" + ascii_block.rstrip() + "\n"
+    SCREENSAVER_OVERRIDE_CONFIG.write_text(body)
+
+
+def launch_screensaver_preview() -> None:
+    subprocess.Popen(
+        [str(SCREENSAVER_LAUNCHER)],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,
+    )
+
+
+def load_rotation_settings() -> dict[str, int | bool]:
+    try:
+        state = json.loads(WALLPAPER_STATE_FILE.read_text())
+    except Exception:
+        state = {}
+    interval = int(state.get("rotation_interval", DEFAULT_ROTATION_INTERVAL_SECONDS) or DEFAULT_ROTATION_INTERVAL_SECONDS)
+    return {
+        "enabled": bool(state.get("rotation_enabled", False)),
+        "interval": max(60, interval),
+    }
+
+
+def apply_rotation_settings(enabled: bool, interval_seconds: int) -> None:
+    command = [
+        "python3",
+        str(WALLPAPER_CONTROLLER),
+        "--rotation-interval",
+        str(max(60, int(interval_seconds))),
+        "--enable-rotation" if enabled else "--disable-rotation",
+    ]
+    subprocess.run(command, check=True)
+
+
+def place_window_on_parent(window: tk.Toplevel, parent: tk.Misc, width: int, height: int, parent_title: str) -> None:
+    client = hypr_client_for_title(parent_title)
+    if client:
+        at = client.get("at") or [0, 0]
+        size = client.get("size") or [width, height]
+        parent_x = int(at[0] or 0)
+        parent_y = int(at[1] or 0)
+        parent_width = int(size[0] or width)
+        parent_height = int(size[1] or height)
+    else:
+        parent.update_idletasks()
+        window.update_idletasks()
+        parent_x = parent.winfo_rootx()
+        parent_y = parent.winfo_rooty()
+        parent_width = max(parent.winfo_width(), parent.winfo_reqwidth())
+        parent_height = max(parent.winfo_height(), parent.winfo_reqheight())
+    x = max(0, parent_x + (parent_width - width) // 2)
+    y = max(0, parent_y + (parent_height - height) // 2)
+    window.geometry(f"{width}x{height}+{x}+{y}")
+
+
+def hypr_clients() -> list[dict]:
+    try:
+        return json.loads(run(["hyprctl", "-j", "clients"]))
+    except Exception:
+        return []
+
+
+def hypr_client_for_title(parent_title: str) -> dict | None:
+    pid = os.getpid()
+    for client in hypr_clients():
+        if int(client.get("pid", 0) or 0) != pid:
+            continue
+        if client.get("title") == parent_title:
+            return client
+    return None
 
 
 def monitors() -> dict[str, tuple[int, int]]:
@@ -273,6 +407,266 @@ class CropWindow(tk.Toplevel):
         self.parent.destroy()
 
 
+class ScreensaverStudio(tk.Toplevel):
+    def __init__(self, parent: "WallpaperBrowser"):
+        super().__init__(parent)
+        self.parent = parent
+        self.withdraw()
+        self.title("ArchMerOS Screensaver Studio")
+        self.configure(bg="#171a24")
+        self.geometry("780x620")
+        self.minsize(740, 600)
+        self.transient(parent)
+        self.focus_force()
+
+        settings = load_screensaver_settings()
+        self.enabled_var = tk.BooleanVar(value=settings.get("enabled", "true").lower() != "false")
+        self.effect_var = tk.StringVar(value=settings.get("animation_type", "beams"))
+        self.speed_var = tk.IntVar(value=int(settings.get("animation_speed", "2") or 2))
+        self.animate_var = tk.BooleanVar(value=settings.get("animate_on_start", "true").lower() == "true")
+
+        shell = tk.Frame(self, bg="#171a24")
+        shell.pack(fill="both", expand=True, padx=18, pady=18)
+
+        header = tk.Frame(shell, bg="#171a24")
+        header.pack(fill="x", pady=(0, 14))
+        tk.Label(header, text="SCREENSAVER", bg="#171a24", fg="#7cb8ff", font=("Cascadia Code", 20, "bold")).pack(anchor="w")
+        tk.Label(
+            header,
+            text="This is the live session screensaver layer. It uses the same ArchMerOS logo system as the greeter, but triggers from desktop idle.",
+            bg="#171a24",
+            fg="#c6d0f5",
+            justify="left",
+            wraplength=680,
+        ).pack(anchor="w", pady=(8, 0))
+
+        effect_frame = tk.Frame(shell, bg="#171a24")
+        effect_frame.pack(fill="x", pady=(0, 16))
+        tk.Label(effect_frame, text="Animation", bg="#171a24", fg="#7cb8ff").pack(anchor="w", pady=(0, 8))
+
+        chips = tk.Frame(effect_frame, bg="#171a24")
+        chips.pack(fill="x")
+        self.effect_buttons: dict[str, tk.Button] = {}
+        for key, label in SCREENSAVER_EFFECTS.items():
+            button = tk.Button(
+                chips,
+                text=label,
+                command=lambda value=key: self._select_effect(value),
+                bg="#252a37",
+                fg="#c6d0f5",
+                activebackground="#34284a",
+                activeforeground="#ff7ad9",
+                relief="flat",
+                padx=14,
+                pady=10,
+            )
+            button.pack(side="left", padx=(0, 8))
+            self.effect_buttons[key] = button
+
+        speed_frame = tk.Frame(shell, bg="#171a24")
+        speed_frame.pack(fill="x", pady=(0, 16))
+        tk.Label(speed_frame, text="Animation speed", bg="#171a24", fg="#7cb8ff").pack(anchor="w", pady=(0, 8))
+        scale_row = tk.Frame(speed_frame, bg="#171a24")
+        scale_row.pack(fill="x")
+        self.speed_scale = tk.Scale(
+            scale_row,
+            from_=1,
+            to=8,
+            orient="horizontal",
+            variable=self.speed_var,
+            bg="#171a24",
+            fg="#c6d0f5",
+            highlightthickness=0,
+            troughcolor="#252a37",
+            activebackground="#ff7ad9",
+        )
+        self.speed_scale.pack(side="left", fill="x", expand=True)
+        self.speed_label = tk.Label(scale_row, text="", bg="#171a24", fg="#9adf76", width=10)
+        self.speed_label.pack(side="left", padx=(12, 0))
+
+        flags = tk.Frame(shell, bg="#171a24")
+        flags.pack(fill="x", pady=(0, 18))
+        self.animate_check = tk.Checkbutton(
+            flags,
+            text="Animate on start",
+            variable=self.animate_var,
+            bg="#171a24",
+            fg="#c6d0f5",
+            selectcolor="#252a37",
+            activebackground="#171a24",
+            activeforeground="#c6d0f5",
+        )
+        self.animate_check.pack(anchor="w")
+        self.enabled_check = tk.Checkbutton(
+            flags,
+            text="Disable screensaver, keep monitor standby only",
+            variable=self.enabled_var,
+            onvalue=False,
+            offvalue=True,
+            bg="#171a24",
+            fg="#c6d0f5",
+            selectcolor="#252a37",
+            activebackground="#171a24",
+            activeforeground="#c6d0f5",
+        )
+        self.enabled_check.pack(anchor="w", pady=(8, 0))
+        tk.Label(
+            flags,
+            text="Idle trigger is currently 5 minutes through hypridle. DPMS powers the screens off after one more minute.",
+            bg="#171a24",
+            fg="#8e96c8",
+            justify="left",
+            wraplength=680,
+        ).pack(anchor="w", pady=(8, 0))
+
+        preview_shell = tk.Frame(shell, bg="#11131a", highlightthickness=1, highlightbackground="#384664")
+        preview_shell.pack(fill="x", pady=(0, 18))
+        tk.Label(preview_shell, text="Live path", bg="#11131a", fg="#7cb8ff", font=("Cascadia Code", 11, "bold")).pack(anchor="w", padx=12, pady=(12, 6))
+        tk.Label(
+            preview_shell,
+            text="Apply writes a user override at ~/.config/archmeros/screensaver/screensaver.conf. Preview launches the same session screensaver command hypridle uses.",
+            bg="#11131a",
+            fg="#c6d0f5",
+            justify="left",
+            wraplength=660,
+        ).pack(anchor="w", padx=12, pady=(0, 12))
+
+        buttons = tk.Frame(shell, bg="#171a24")
+        buttons.pack(fill="x")
+        tk.Button(buttons, text="Close", command=self.destroy, bg="#252a37", fg="#c6d0f5", relief="flat").pack(side="right")
+        tk.Button(buttons, text="Apply", command=self._apply, bg="#4c7adf", fg="#11131a", relief="flat").pack(side="right", padx=(0, 8))
+        tk.Button(buttons, text="Preview", command=self._preview, bg="#34284a", fg="#ff7ad9", relief="flat").pack(side="left")
+
+        self.speed_var.trace_add("write", lambda *_args: self._refresh_state())
+        self._refresh_state()
+        place_window_on_parent(self, parent, 780, 620, "ArchMerOS Wallpaper Picker")
+        self.deiconify()
+        self.lift()
+
+    def _select_effect(self, effect: str) -> None:
+        self.effect_var.set(effect)
+        self._refresh_state()
+
+    def _refresh_state(self) -> None:
+        effect = self.effect_var.get()
+        for key, button in self.effect_buttons.items():
+            active = key == effect
+            button.configure(
+                bg="#34284a" if active else "#252a37",
+                fg="#ff7ad9" if active else "#c6d0f5",
+            )
+        self.speed_label.configure(text=f"{self.speed_var.get()}x")
+
+    def _settings_payload(self) -> dict[str, str]:
+        return {
+            "enabled": "true" if self.enabled_var.get() else "false",
+            "animate_on_start": "true" if self.animate_var.get() else "false",
+            "animation_type": self.effect_var.get(),
+            "animation_speed": str(self.speed_var.get()),
+        }
+
+    def _apply(self) -> None:
+        write_screensaver_settings(self._settings_payload())
+        messagebox.showinfo("ArchMerOS Screensaver", "Screensaver settings applied.")
+
+    def _preview(self) -> None:
+        write_screensaver_settings(self._settings_payload())
+        launch_screensaver_preview()
+
+
+class RotationStudio(tk.Toplevel):
+    def __init__(self, parent: "WallpaperBrowser"):
+        super().__init__(parent)
+        self.parent = parent
+        self.withdraw()
+        self.title("ArchMerOS Wallpaper Rotation")
+        self.configure(bg="#171a24")
+        self.geometry("760x500")
+        self.minsize(720, 480)
+        self.transient(parent)
+        self.focus_force()
+
+        settings = load_rotation_settings()
+        self.enabled_var = tk.BooleanVar(value=bool(settings["enabled"]))
+        self.interval_var = tk.IntVar(value=max(1, int(settings["interval"]) // 60))
+
+        shell = tk.Frame(self, bg="#171a24")
+        shell.pack(fill="both", expand=True, padx=18, pady=18)
+
+        header = tk.Frame(shell, bg="#171a24")
+        header.pack(fill="x", pady=(0, 16))
+        tk.Label(header, text="WALLPAPER ROTATION", bg="#171a24", fg="#7cb8ff", font=("Cascadia Code", 19, "bold")).pack(anchor="w")
+        tk.Label(
+            header,
+            text="This mode rotates random images from the repo wallpaper folder across the three monitors. Each monitor gets its own random order.",
+            bg="#171a24",
+            fg="#c6d0f5",
+            justify="left",
+            wraplength=680,
+        ).pack(anchor="w", pady=(8, 0))
+
+        options = tk.Frame(shell, bg="#171a24")
+        options.pack(fill="x", pady=(0, 18))
+        tk.Checkbutton(
+            options,
+            text="Enable random wallpaper rotation",
+            variable=self.enabled_var,
+            bg="#171a24",
+            fg="#c6d0f5",
+            selectcolor="#252a37",
+            activebackground="#171a24",
+            activeforeground="#c6d0f5",
+        ).pack(anchor="w")
+
+        tk.Label(options, text="Interval", bg="#171a24", fg="#7cb8ff").pack(anchor="w", pady=(18, 8))
+        interval_row = tk.Frame(options, bg="#171a24")
+        interval_row.pack(fill="x")
+        tk.Scale(
+            interval_row,
+            from_=1,
+            to=30,
+            orient="horizontal",
+            variable=self.interval_var,
+            bg="#171a24",
+            fg="#c6d0f5",
+            highlightthickness=0,
+            troughcolor="#252a37",
+            activebackground="#7cb8ff",
+        ).pack(side="left", fill="x", expand=True)
+        self.interval_label = tk.Label(interval_row, text="", bg="#171a24", fg="#9adf76", width=12)
+        self.interval_label.pack(side="left", padx=(12, 0))
+
+        info = tk.Frame(shell, bg="#11131a", highlightthickness=1, highlightbackground="#384664")
+        info.pack(fill="x", pady=(0, 18))
+        tk.Label(info, text="Backend note", bg="#11131a", fg="#7cb8ff", font=("Cascadia Code", 11, "bold")).pack(anchor="w", padx=12, pady=(12, 6))
+        tk.Label(
+            info,
+            text="ArchMerOS can do random per-monitor rotation cleanly with hyprpaper. The current wallpaper backend does not provide a subtle fade transition, so rotation uses hard cuts for now.",
+            bg="#11131a",
+            fg="#c6d0f5",
+            justify="left",
+            wraplength=660,
+        ).pack(anchor="w", padx=12, pady=(0, 12))
+
+        buttons = tk.Frame(shell, bg="#171a24")
+        buttons.pack(fill="x")
+        tk.Button(buttons, text="Close", command=self.destroy, bg="#252a37", fg="#c6d0f5", relief="flat").pack(side="right")
+        tk.Button(buttons, text="Apply", command=self._apply, bg="#4c7adf", fg="#11131a", relief="flat").pack(side="right", padx=(0, 8))
+
+        self.interval_var.trace_add("write", lambda *_args: self._refresh_state())
+        self._refresh_state()
+        place_window_on_parent(self, parent, 760, 500, "ArchMerOS Wallpaper Picker")
+        self.deiconify()
+        self.lift()
+
+    def _refresh_state(self) -> None:
+        self.interval_label.configure(text=f"{self.interval_var.get()} min")
+
+    def _apply(self) -> None:
+        apply_rotation_settings(self.enabled_var.get(), self.interval_var.get() * 60)
+        messagebox.showinfo("ArchMerOS Rotation", "Wallpaper rotation settings applied.")
+
+
 class WallpaperBrowser(tk.Tk):
     def __init__(self) -> None:
         super().__init__(className="archmeros-wallpaper")
@@ -323,6 +717,27 @@ class WallpaperBrowser(tk.Tk):
             self.target.current(0)
         self.target.pack(anchor="w", pady=(0, 12))
         self.target.bind("<<ComboboxSelected>>", self._on_target)
+
+        tk.Button(
+            left,
+            text="Screensaver Studio",
+            command=self._open_screensaver_studio,
+            bg="#34284a",
+            fg="#ff7ad9",
+            relief="flat",
+            padx=12,
+            pady=8,
+        ).pack(anchor="w", pady=(0, 14))
+        tk.Button(
+            left,
+            text="Wallpaper Rotation",
+            command=self._open_rotation_studio,
+            bg="#253447",
+            fg="#7cb8ff",
+            relief="flat",
+            padx=12,
+            pady=8,
+        ).pack(anchor="w", pady=(0, 14))
 
         tk.Label(left, text="Wallpapers", bg="#171a24", fg="#7cb8ff").pack(anchor="w", pady=(0, 6))
         list_frame = tk.Frame(left, bg="#171a24")
@@ -392,6 +807,12 @@ class WallpaperBrowser(tk.Tk):
 
     def _selected_target(self) -> str:
         return self.target.get() or "All monitors"
+
+    def _open_screensaver_studio(self) -> None:
+        ScreensaverStudio(self)
+
+    def _open_rotation_studio(self) -> None:
+        RotationStudio(self)
 
     def _selected_path(self) -> Path | None:
         selection = self.listbox.curselection()

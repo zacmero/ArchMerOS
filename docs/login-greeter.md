@@ -123,7 +123,22 @@ That script currently:
 5. installs `/etc/greetd/config.toml`
 6. installs the tracked Hyprland and kitty greeter configs into `/etc/greetd/`
 7. redirects greeter and `HyprMero` stdout/stderr into log files instead of leaving them on the TTY
-8. creates or updates the `greeter` user with `video,render,input`
-9. installs the greeter polkit rule
-10. disables `lightdm`
-11. enables `greetd`
+8. launches the greeter with a direct `Hyprland -c ...` wrapper instead of `start-hyprland`, and pre-creates the greeter XDG cache/config/state dirs
+9. creates or updates the `greeter` user with `video,render,input`
+10. installs the greeter polkit rule
+11. disables `lightdm`
+12. enables `greetd`
+
+## NVIDIA Stability Note
+
+On the current ArchMerOS stack, the greetd Hyprland greeter is intentionally started through the repo wrapper:
+
+- `config/greetd/sysc-greet/archmeros-greeter-session.sh`
+
+That wrapper exports a real greeter `HOME` plus `XDG_CACHE_HOME`, `XDG_CONFIG_HOME`, `XDG_STATE_HOME`, and `XDG_DATA_HOME`, creates those directories, and then launches:
+
+```bash
+Hyprland -c /etc/greetd/hyprland-greeter-config.conf
+```
+
+This is deliberate. It avoids the more fragile `start-hyprland` path that was causing black-screen greeter failures after the NVIDIA driver migration.

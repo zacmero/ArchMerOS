@@ -84,7 +84,7 @@ if [[ -n "${monitor_width:-}" && -n "${monitor_height:-}" ]]; then
 
   hyprctl -q --batch \
     "dispatch focuswindow address:${address};" \
-    "dispatch movewindow mon:${focused_monitor_name:-HDMI-A-4};" \
+    "dispatch movewindow mon:${focused_monitor_name:-HDMI-A-1};" \
     "dispatch movetoworkspace ${focused_workspace:-1};" \
     "dispatch resizeactive exact $width $height;" \
     "dispatch centerwindow 1;" >/dev/null 2>&1 || true

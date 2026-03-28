@@ -8,7 +8,7 @@ template_root="${script_dir}/../../firefox/profiles/youtube-music"
 profile_root="${XDG_DATA_HOME:-$HOME/.local/share}/archmeros/firefox/youtube-music"
 chrome_root="${profile_root}/chrome"
 workspace_id="9"
-target_monitor="DP-3"
+target_monitor="DP-2"
 
 mkdir -p "$chrome_root"
 

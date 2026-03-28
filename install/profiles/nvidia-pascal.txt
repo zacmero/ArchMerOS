@@ -1,0 +1,3 @@
+# NVIDIA Pascal / GTX 10xx workstation support from the official repos
+egl-wayland
+libva-nvidia-driver

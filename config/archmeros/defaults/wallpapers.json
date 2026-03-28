@@ -1,8 +1,8 @@
 {
   "mode": "fill",
   "monitors": {
-    "DP-2": "a_person_wearing_headphones.png",
-    "HDMI-A-4": "a_motorcycle_parked_outside_a_restaurant.jpg",
-    "DP-3": "a_woman_standing_in_front_of_a_window.jpg"
+    "DP-3": "a_person_wearing_headphones.png",
+    "HDMI-A-1": "a_motorcycle_parked_outside_a_restaurant.jpg",
+    "DP-2": "a_woman_standing_in_front_of_a_window.jpg"
   }
 }

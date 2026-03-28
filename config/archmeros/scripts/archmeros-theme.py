@@ -200,9 +200,9 @@ def build_auto_palette() -> dict:
     if not candidates:
         return defaults
 
-    center_candidates = per_wallpaper.get("HDMI-A-4") or candidates
-    left_candidates = per_wallpaper.get("DP-2") or candidates
-    right_candidates = per_wallpaper.get("DP-3") or candidates
+    center_candidates = per_wallpaper.get("HDMI-A-1") or candidates
+    left_candidates = per_wallpaper.get("DP-3") or candidates
+    right_candidates = per_wallpaper.get("DP-2") or candidates
 
     accent_rgb = boost_color(choose_accent(center_candidates, []), 0.72, 0.88)
     accent_hue = colorsys.rgb_to_hsv(*(channel / 255 for channel in accent_rgb))[0]

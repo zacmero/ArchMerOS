@@ -1,0 +1,5 @@
+# NVIDIA Pascal / GTX 10xx proprietary driver stack from the AUR
+nvidia-580xx-dkms
+nvidia-580xx-utils
+nvidia-580xx-settings
+opencl-nvidia-580xx

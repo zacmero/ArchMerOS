@@ -54,7 +54,7 @@ def active_monitors() -> list[str]:
     if names:
         return names
 
-    return ["DP-2", "HDMI-A-4", "DP-3"]
+    return ["DP-3", "HDMI-A-1", "DP-2"]
 
 
 def load_defaults() -> dict:

@@ -118,15 +118,19 @@ Tracked system overrides:
 - [install/system/etc/modprobe.d/archmeros-bluetooth.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-bluetooth.conf)
 - [install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules](/home/zacmero/projects/ArchMerOS/install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules)
 - [install/system/apply-bluetooth-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bluetooth-system.sh)
+- [install/system/apply-nvidia-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-nvidia-system.sh)
 - [install/system/apply-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-system.sh)
 - [install/system/apply-bootloader-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bootloader-system.sh)
 - [install/system/apply-greeter-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-greeter-system.sh)
 - [install/system/etc/greetd/config.toml](/home/zacmero/projects/ArchMerOS/install/system/etc/greetd/config.toml)
+- [install/system/etc/modprobe.d/archmeros-nvidia.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-nvidia.conf)
+- [install/system/etc/dracut.conf.d/archmeros-nvidia.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/dracut.conf.d/archmeros-nvidia.conf)
 - [install/system/etc/polkit-1/rules.d/85-greeter.rules](/home/zacmero/projects/ArchMerOS/install/system/etc/polkit-1/rules.d/85-greeter.rules)
 - [install/build-sysc-greet.sh](/home/zacmero/projects/ArchMerOS/install/build-sysc-greet.sh)
 - [docs/login-greeter.md](/home/zacmero/projects/ArchMerOS/docs/login-greeter.md)
 - [docs/bootloader.md](/home/zacmero/projects/ArchMerOS/docs/bootloader.md)
 - [docs/waybar.md](/home/zacmero/projects/ArchMerOS/docs/waybar.md)
+- [docs/nvidia-pascal.md](/home/zacmero/projects/ArchMerOS/docs/nvidia-pascal.md)
 
 ## Current Setup Steps
 
@@ -163,6 +167,15 @@ This currently applies:
 - bluetooth system defaults
 - ArchMerOS bootloader defaults
 - ArchMerOS greetd/sysc-greet login defaults
+
+Optional host profile for this GTX 1060 workstation:
+
+```bash
+yay -S --needed nvidia-580xx-dkms nvidia-580xx-utils nvidia-580xx-settings opencl-nvidia-580xx egl-wayland libva-nvidia-driver
+sudo bash install/system/apply-nvidia-system.sh
+```
+
+That Pascal/NVIDIA path is documented in [docs/nvidia-pascal.md](/home/zacmero/projects/ArchMerOS/docs/nvidia-pascal.md).
 
 Greeter theme status:
 
@@ -319,7 +332,7 @@ or use the keybinding:
 The wallpaper picker now asks for a target first:
 
 - `All monitors`
-- or one specific monitor such as `DP-2`, `HDMI-A-4`, or `DP-3`
+- or one specific monitor such as `DP-3`, `HDMI-A-1`, or `DP-2`
 
 The same launcher now also opens the ArchMerOS screensaver section, so wallpaper and idle-screen styling live behind the same keybinding.
 
@@ -618,6 +631,12 @@ Emoji picker:
 
 ## Workspace Layout
 
+Current monitor layout:
+
+- left: `DP-3`
+- center: `HDMI-A-1`
+- right: `DP-2`
+
 Center monitor workspaces:
 
 - `1` -> `I`
@@ -628,7 +647,7 @@ Center monitor workspaces:
 
 To add another center workspace later:
 
-- add `workspace = <n>, monitor:HDMI-A-4` in [hyprland.conf](/home/zacmero/projects/ArchMerOS/config/hypr/hyprland.conf)
+- add `workspace = <n>, monitor:HDMI-A-1` in [hyprland.conf](/home/zacmero/projects/ArchMerOS/config/hypr/hyprland.conf)
 - add the `Alt+<n>` and `$mod+<n>` binds in [hyprland.conf](/home/zacmero/projects/ArchMerOS/config/hypr/hyprland.conf)
 - add the Roman numeral label and persistent workspace entry in the Waybar workspace configs
 - reload Hyprland

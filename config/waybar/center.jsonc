@@ -6,7 +6,7 @@
   "spacing": 0,
   "margin": "0 0 4 0",
   "reload_style_on_change": true,
-  "output": "HDMI-A-4",
+  "output": "HDMI-A-1",
   "modules-left": [
     "hyprland/workspaces"
   ],
@@ -29,6 +29,7 @@
       "5": "V",
       "6": "VI",
       "7": "VII",
+      "10": "X",
       "8": "T",
       "9": "R"
     },
@@ -36,7 +37,8 @@
     "show-special": false,
     "ignore-workspaces": [
       "8",
-      "9"
+      "9",
+      "10"
     ],
     "persistent-workspaces": {
       "*": [

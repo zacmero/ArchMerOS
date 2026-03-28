@@ -49,7 +49,14 @@ install -Dm644 "${repo_root}/install/system/etc/greetd/config.toml" \
 install -Dm644 "${repo_root}/install/system/etc/polkit-1/rules.d/85-greeter.rules" \
   "${polkit_rule_path}"
 
-install -d /var/lib/greeter /var/cache/sysc-greet /var/lib/greeter/Pictures/wallpapers
+install -d \
+  /var/lib/greeter \
+  /var/cache/sysc-greet \
+  /var/lib/greeter/Pictures/wallpapers \
+  /var/lib/greeter/.config/dconf \
+  /var/lib/greeter/.cache \
+  /var/lib/greeter/.local/state \
+  /var/lib/greeter/.local/share
 if ! id greeter >/dev/null 2>&1; then
   useradd -M -G video,render,input -s /usr/bin/nologin greeter
 else

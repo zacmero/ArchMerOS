@@ -6,7 +6,7 @@
   "spacing": 0,
   "margin": "0 0 4 0",
   "reload_style_on_change": true,
-  "output": "DP-3",
+  "output": "DP-2",
   "modules-left": [
     "hyprland/workspaces"
   ],
@@ -30,6 +30,7 @@
       "5": "V",
       "6": "VI",
       "7": "VII",
+      "10": "X",
       "8": "T",
       "9": "R"
     },
@@ -37,7 +38,8 @@
     "show-special": false,
     "ignore-workspaces": [
       "8",
-      "9"
+      "9",
+      "10"
     ],
     "persistent-workspaces": {
       "*": [

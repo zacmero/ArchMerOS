@@ -66,15 +66,15 @@ start_bar() {
 restart_waybar() {
   pkill -x waybar >/dev/null 2>&1 || true
 
-  if monitor_visible "DP-2"; then
+  if monitor_visible "DP-3"; then
     start_bar "${HOME}/.config/waybar/left.jsonc" "left"
   fi
 
-  if monitor_visible "HDMI-A-4"; then
+  if monitor_visible "HDMI-A-1"; then
     start_bar "${HOME}/.config/waybar/center.jsonc" "center"
   fi
 
-  if monitor_visible "DP-3"; then
+  if monitor_visible "DP-2"; then
     start_bar "${HOME}/.config/waybar/right.jsonc" "right"
   fi
 }

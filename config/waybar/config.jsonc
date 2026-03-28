@@ -33,6 +33,7 @@
       "5": "V",
       "6": "VI",
       "7": "VII",
+      "10": "X",
       "8": "T",
       "9": "R"
     },
@@ -40,7 +41,8 @@
     "show-special": false,
     "ignore-workspaces": [
       "8",
-      "9"
+      "9",
+      "10"
     ],
     "persistent-workspaces": {
       "*": [

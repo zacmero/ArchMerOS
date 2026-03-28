@@ -319,7 +319,7 @@ or use the keybinding:
 The wallpaper picker now asks for a target first:
 
 - `All monitors`
-- or one specific monitor such as `DP-2`, `HDMI-A-4`, or `VGA-1`
+- or one specific monitor such as `DP-2`, `HDMI-A-4`, or `DP-3`
 
 The same launcher now also opens the ArchMerOS screensaver section, so wallpaper and idle-screen styling live behind the same keybinding.
 
@@ -960,6 +960,7 @@ Notes:
 - when the target is a single monitor, there is no separate crop popup anymore; `Apply` uses the in-place crop overlay directly
 - the screensaver section writes a user override to `~/.config/archmeros/screensaver/screensaver.conf`
 - live session screensaver triggering is handled by `hypridle`, while the animated screen itself is launched through `archmeros-screensaver.sh`
+- session screensaver input exits straight back to the current desktop session; it does not drop into a login prompt
 - wallpaper rotation uses `hyprpaper` for random per-monitor directory cycling
 - the current wallpaper backend does not provide a subtle fade transition, so rotation uses hard cuts for now
 - when the target is `All monitors`, the crop action is intentionally automatic; choose a single monitor target for the manual crop window

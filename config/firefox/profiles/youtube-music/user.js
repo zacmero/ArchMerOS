@@ -4,6 +4,8 @@ user_pref("browser.tabs.drawInTitlebar", false);
 user_pref("browser.uidensity", 1);
 user_pref("browser.startup.homepage", "https://music.youtube.com/");
 user_pref("browser.startup.page", 1);
+user_pref("browser.sessionstore.resume_from_crash", false);
+user_pref("browser.sessionstore.max_resumed_crashes", 0);
 user_pref("browser.tabs.firefox-view", false);
 user_pref("browser.newtabpage.enabled", false);
 user_pref("browser.shell.checkDefaultBrowser", false);

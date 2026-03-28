@@ -74,7 +74,7 @@ restart_waybar() {
     start_bar "${HOME}/.config/waybar/center.jsonc" "center"
   fi
 
-  if monitor_visible "VGA-1"; then
+  if monitor_visible "DP-3"; then
     start_bar "${HOME}/.config/waybar/right.jsonc" "right"
   fi
 }

@@ -5,7 +5,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/Nomadcxx/sysc-greet/internal/animations"
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -304,8 +303,6 @@ func renderScreensaverView(m model, termWidth, termHeight int) string {
 
 // handleScreensaverInput handles input in screensaver mode
 func handleScreensaverInput(m model, msg tea.KeyMsg) (model, tea.Cmd) {
-	// Exit screensaver on any key press
-	m.mode = ModeLogin
-	m.idleTimer = time.Now()
-	return m, nil
+	// Exit the standalone screensaver process on any key press.
+	return m, tea.Quit
 }

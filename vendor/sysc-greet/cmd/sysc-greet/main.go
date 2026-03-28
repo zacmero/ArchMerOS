@@ -1254,9 +1254,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.MouseMsg:
 		// CHANGED 2025-10-12 - Exit screensaver and reset idle timer on mouse movement
 		if m.mode == ModeScreensaver {
-			m.mode = ModeLogin
-			m.idleTimer = time.Now()
-			return m, nil
+			return m, tea.Quit
 		}
 		// Reset idle timer on any mouse input in normal modes
 		m.idleTimer = time.Now()
@@ -2572,6 +2570,8 @@ func main() {
 		opts = append(opts, tea.WithAltScreen())
 		if !config.TestMode {
 			opts = append(opts, tea.WithMouseCellMotion())
+		} else if screensaverTestMode {
+			opts = append(opts, tea.WithMouseAllMotion())
 		}
 	}
 

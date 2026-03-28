@@ -6,7 +6,7 @@
   "spacing": 0,
   "margin": "0 0 4 0",
   "reload_style_on_change": true,
-  "output": "VGA-1",
+  "output": "DP-3",
   "modules-left": [
     "hyprland/workspaces"
   ],

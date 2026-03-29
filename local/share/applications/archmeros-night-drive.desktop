@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=ArchMerOS Night Drive
+Comment=Open the animated ArchMerOS terminal cockpit
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-night-drive.sh
+Icon=archmeros-night-drive
+Terminal=false
+StartupNotify=true
+Categories=Utility;System;
+Keywords=archmeros;terminal;tui;cyberpunk;wezterm;dashboard;

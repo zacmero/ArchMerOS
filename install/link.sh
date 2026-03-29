@@ -29,6 +29,7 @@ declare -A links=(
   ["${repo_root}/local/share/applications/org.wezfurlong.wezterm.desktop"]="${HOME}/.local/share/applications/org.wezfurlong.wezterm.desktop"
   ["${repo_root}/local/share/applications/archmeros-audio.desktop"]="${HOME}/.local/share/applications/archmeros-audio.desktop"
   ["${repo_root}/local/share/applications/archmeros-themes.desktop"]="${HOME}/.local/share/applications/archmeros-themes.desktop"
+  ["${repo_root}/local/share/applications/archmeros-night-drive.desktop"]="${HOME}/.local/share/applications/archmeros-night-drive.desktop"
   ["${repo_root}/local/share/applications/nvim.desktop"]="${HOME}/.local/share/applications/nvim.desktop"
   ["${repo_root}/local/share/applications/todoist.desktop"]="${HOME}/.local/share/applications/todoist.desktop"
   ["${repo_root}/local/share/applications/evernote.desktop"]="${HOME}/.local/share/applications/evernote.desktop"

@@ -5,7 +5,7 @@ Inherits=Papirus-Dark,breeze-dark,hicolor
 Example=folder
 FollowsColorScheme=true
 
-Directories=16x16/places,22x22/places,24x24/places,32x32/places,48x48/places,64x64/places,96x96/places,128x128/places
+Directories=16x16/places,22x22/places,24x24/places,32x32/places,48x48/places,64x64/places,96x96/places,128x128/places,scalable/apps
 ScaledDirectories=16x16@2x/places,22x22@2x/places,24x24@2x/places,32x32@2x/places,48x48@2x/places,64x64@2x/places
 
 [16x16/places]
@@ -83,3 +83,10 @@ Context=Places
 Size=64
 Scale=2
 Type=Fixed
+
+[scalable/apps]
+Context=Applications
+Size=128
+MinSize=16
+MaxSize=512
+Type=Scalable

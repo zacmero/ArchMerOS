@@ -118,6 +118,8 @@ Tracked system overrides:
 - [install/system/etc/modprobe.d/archmeros-bluetooth.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-bluetooth.conf)
 - [install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules](/home/zacmero/projects/ArchMerOS/install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules)
 - [install/system/apply-bluetooth-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bluetooth-system.sh)
+- [install/system/apply-keyboard-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-keyboard-system.sh)
+- [install/system/etc/udev/hwdb.d/90-archmeros-zx-k22.hwdb](/home/zacmero/projects/ArchMerOS/install/system/etc/udev/hwdb.d/90-archmeros-zx-k22.hwdb)
 - [install/system/apply-nvidia-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-nvidia-system.sh)
 - [install/system/apply-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-system.sh)
 - [install/system/apply-bootloader-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bootloader-system.sh)
@@ -165,6 +167,7 @@ This currently applies:
 
 - audio system defaults
 - bluetooth system defaults
+- keyboard hwdb overrides
 - ArchMerOS bootloader defaults
 - ArchMerOS greetd/sysc-greet login defaults
 
@@ -451,7 +454,7 @@ The reopen stacks keep the last 20 folder closes and the last 20 general closes,
 - `Super+Alt+A`: open appearance controller
 - `Super+Alt+S`: open the audio effects UI
 - `Super+Alt+T`: open the shell theme selector
-- `Left Alt+W`: close current app window while keeping `Right Alt` free for ABNT2 characters
+- `Super+Q`: close current app window
 - click the Waybar keyboard indicator: toggle keyboard layout
 - `XF86AudioRaiseVolume`: raise volume
 - `XF86AudioLowerVolume`: lower volume
@@ -1027,7 +1030,7 @@ Completed so far:
 - removed automatic pinning from the window pop modes so keyboard focus stays more predictable
 - restored focus-follows-mouse and split fast switching into `Alt+Tab` for recent-window toggle and `Super+Tab` for full workspace cycling
 - replaced plain focus cycling with an ArchMerOS cycle helper so spotlighted floating windows actually switch visually
-- restored close-window on `Left Alt+W` only, leaving `Right Alt` free for ABNT2 typing
+- dropped the `Alt+W` close binding because it conflicted with `Right Alt` / `AltGr` behavior on the current Hyprland stack
 - made `Right Alt` an explicit XKB level-3 switch so ABNT2 can use its native `AltGr+Q` and `AltGr+W` symbols
 - added a Waybar keyboard indicator with click-to-toggle for the active XKB layout
 - added an ArchMerOS Bash login hook for GUI auto-detach behavior in new WezTerm shells

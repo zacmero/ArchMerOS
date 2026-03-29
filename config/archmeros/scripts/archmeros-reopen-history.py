@@ -91,28 +91,39 @@ def clients() -> list[dict]:
     return data if isinstance(data, list) else []
 
 
-def track_launch(kind: str, class_name: str, class_prefix: str, process: str, command: list[str]) -> int:
+def track_launch(
+    kind: str,
+    class_name: str,
+    class_prefix: str,
+    process: str,
+    command: list[str],
+    title_contains: str = "",
+) -> int:
     item = {
         "ts": time.time(),
         "kind": kind,
         "class": normalize(class_name),
         "class_prefix": normalize(class_prefix),
         "process": normalize(process),
+        "title_contains": normalize(title_contains),
         "command": command,
     }
     append_capped(LAUNCHES_PATH, item, MAX_LAUNCHES)
     return 0
 
 
-def resolve_command_from_values(klass: str, pid: int) -> tuple[list[str], str]:
+def resolve_command_from_values(klass: str, pid: int, title: str) -> tuple[list[str], str]:
     argv = read_cmdline(pid) if pid > 0 else []
     proc = process_name(argv)
+    normalized_title = normalize(title)
 
     launches = load_json(LAUNCHES_PATH)
     best_item = None
     best_score = -1
     for item in reversed(launches):
         score = 0
+        if item.get("title_contains") and item["title_contains"] in normalized_title:
+            score += 150
         if item.get("class") and item["class"] == klass:
             score += 120
         if item.get("class_prefix") and klass.startswith(item["class_prefix"]):
@@ -140,12 +151,13 @@ def resolve_command_from_values(klass: str, pid: int) -> tuple[list[str], str]:
 def build_history_item(window: dict) -> dict:
     klass = normalize(window.get("class"))
     pid = int(window.get("pid") or 0)
-    command, kind = resolve_command_from_values(klass, pid)
+    title = window.get("title", "")
+    command, kind = resolve_command_from_values(klass, pid, title)
     return {
         "ts": time.time(),
         "kind": kind,
         "class": klass,
-        "title": window.get("title", ""),
+        "title": title,
         "command": command,
         "address": normalize_address(window.get("address")),
     }
@@ -174,7 +186,8 @@ def record_close() -> int:
         return 0
 
     klass = normalize(window.get("class"))
-    if klass == "firefox":
+    title = normalize(window.get("title"))
+    if klass == "firefox" and "youtube music" not in title and "music.youtube.com" not in title:
         return 0
 
     append_history_item(build_history_item(window))
@@ -218,6 +231,21 @@ def snapshot_windows() -> dict[str, dict]:
 def hypr_socket2_path() -> Path | None:
     signature = os.environ.get("HYPRLAND_INSTANCE_SIGNATURE")
     runtime = os.environ.get("XDG_RUNTIME_DIR")
+    if not signature or not runtime:
+        try:
+            proc = subprocess.run(
+                ["hyprctl", "-j", "instances"],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            data = json.loads(proc.stdout or "[]")
+            if isinstance(data, list) and data:
+                first = data[0]
+                signature = signature or str(first.get("instance") or "")
+                runtime = runtime or f"/run/user/{os.getuid()}"
+        except Exception:
+            pass
     if not signature or not runtime:
         return None
     return Path(runtime) / "hypr" / signature / ".socket2.sock"
@@ -280,8 +308,16 @@ def main(argv: list[str]) -> int:
         class_name = argv[3]
         class_prefix = argv[4]
         process = argv[5]
+        title_contains = ""
+        idx = 6
+        while idx < sep:
+            if argv[idx] == "--title-contains" and idx + 1 < sep:
+                title_contains = argv[idx + 1]
+                idx += 2
+                continue
+            return 1
         command = argv[sep + 1 :]
-        return track_launch(kind, class_name, class_prefix, process, command)
+        return track_launch(kind, class_name, class_prefix, process, command, title_contains)
 
     if action == "record-close":
         return record_close()

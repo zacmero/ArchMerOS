@@ -92,6 +92,11 @@ if [[ -e "${profile_root}/.parentlock" || -L "${profile_root}/lock" ]]; then
   clear_broken_session_state
 fi
 
+python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" \
+  track-launch general firefox firefox firefox --title-contains "youtube music" -- \
+  "$HOME/.config/archmeros/scripts/archmeros-youtube-music.sh" \
+  >/tmp/archmeros-reopen-track-youtube-music.log 2>&1 || true
+
 nohup env MOZ_ENABLE_WAYLAND=1 firefox \
   --new-instance \
   --profile "${profile_root}" \

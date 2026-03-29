@@ -79,6 +79,25 @@ fi
 
 set_side_dpms off
 
+if command -v wezterm >/dev/null 2>&1; then
+  log "launch wezterm"
+  cmd=("$binary_path" "--test" "--theme" "$theme_name" "--screensaver")
+  env "${env_args[@]}" \
+    wezterm start \
+      --always-new-process \
+      --class ArchMerOS-Screensaver \
+      --cwd "$HOME" \
+      --config enable_tab_bar=false \
+      --config use_fancy_tab_bar=false \
+      --config window_decorations=NONE \
+      /bin/bash \
+      -lc \
+      'exec "$@" 2>>"$0"' \
+      "$log_path" \
+      "${cmd[@]}"
+  exit $?
+fi
+
 if command -v kitty >/dev/null 2>&1; then
   log "launch kitty"
   cmd=("$binary_path" "--test" "--theme" "$theme_name" "--screensaver")

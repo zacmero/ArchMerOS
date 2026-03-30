@@ -35,6 +35,10 @@ case "$app_id" in
     name="ChatGPT"
     url="https://chatgpt.com/"
     ;;
+  gemini)
+    name="Gemini"
+    url="https://gemini.google.com/"
+    ;;
   youtube-music)
     name="YouTube Music"
     url="https://music.youtube.com/"

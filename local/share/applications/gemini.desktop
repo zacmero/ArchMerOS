@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Gemini
+Comment=Google Gemini in app mode
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-webapp.sh gemini
+Icon=utilities-terminal
+Terminal=false
+StartupNotify=true
+Categories=Utility;Development;
+Keywords=gemini;google;assistant;ai;
+StartupWMClass=archmeros-gemini

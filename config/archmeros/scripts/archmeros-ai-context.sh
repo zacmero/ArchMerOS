@@ -8,6 +8,26 @@ if ! command -v hyprctl >/dev/null 2>&1 || ! command -v wezterm >/dev/null 2>&1 
   exit 1
 fi
 
+wezterm_cli() {
+  local output=""
+  if output="$(timeout 1s wezterm cli "$@" 2>/dev/null)" && [[ -n "$output" ]]; then
+    printf '%s\n' "$output"
+    return 0
+  fi
+
+  local socket_dir="/run/user/$(id -u)/wezterm"
+  local socket=""
+  while IFS= read -r socket; do
+    output="$(WEZTERM_UNIX_SOCKET="$socket" timeout 1s wezterm cli "$@" 2>/dev/null || true)"
+    if [[ -n "$output" ]]; then
+      printf '%s\n' "$output"
+      return 0
+    fi
+  done < <(find "$socket_dir" -maxdepth 1 -type s -name 'gui-sock-*' 2>/dev/null | sort -r)
+
+  return 1
+}
+
 active_class="$(
   hyprctl activewindow -j 2>/dev/null \
     | jq -r '.class // empty' 2>/dev/null \
@@ -22,11 +42,11 @@ case "$active_class" in
     ;;
 esac
 
-clients_json="$(timeout 1s wezterm cli list-clients --format json 2>/dev/null || printf '[]')"
+clients_json="$(wezterm_cli list-clients --format json || printf '[]')"
 pane_id="$(printf '%s' "$clients_json" | jq -r 'map(select(.focused_pane_id? != null)) | .[0].focused_pane_id // empty' 2>/dev/null || true)"
 
 if [[ -z "$pane_id" ]]; then
-  list_json="$(timeout 1s wezterm cli list --format json 2>/dev/null || printf '[]')"
+  list_json="$(wezterm_cli list --format json || printf '[]')"
   pane_id="$(printf '%s' "$list_json" | jq -r '
     [
       .. | objects
@@ -39,7 +59,7 @@ fi
 
 [[ -n "$pane_id" ]] || exit 1
 
-context_text="$(timeout 1s wezterm cli get-text --pane-id "$pane_id" --start-line "-${lines}" --end-line -1 2>/dev/null || true)"
+context_text="$(wezterm_cli get-text --pane-id "$pane_id" --start-line "-${lines}" --end-line -1 || true)"
 context_text="${context_text//$'\0'/}"
 [[ -n "${context_text//[$'\t\r\n ']}" ]] || exit 1
 

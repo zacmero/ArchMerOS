@@ -38,11 +38,20 @@ fi
 
 clear
 printf 'ARCHMEROS AI HUD\n'
-printf 'Esc/close the window when done. Ctrl+D exits the chat cleanly.\n\n'
+printf 'Ctrl+D exits the chat cleanly. Close the window with your normal close shortcut.\n\n'
 
 if [[ -n "$context_file" && -s "$context_file" ]]; then
   printf 'Loaded context from the last focused WezTerm pane.\n\n'
-  exec aichat "${model_args[@]}" --file "$context_file"
+  session_name="archmeros-hud-$(date +%Y%m%d-%H%M%S)"
+  preload_prompt="Use the attached terminal context as background context. Briefly confirm you loaded it, then wait for my next question."
+
+  if ! aichat "${model_args[@]}" --session "$session_name" --empty-session --save-session --file "$context_file" "$preload_prompt"; then
+    printf '\nContext preload failed. Starting an interactive session anyway.\n\n' >&2
+  else
+    printf '\nContext loaded. Continuing in interactive session.\n\n'
+  fi
+
+  exec aichat "${model_args[@]}" --session "$session_name"
 fi
 
 printf 'No terminal context detected. Starting a clean AI session.\n\n'

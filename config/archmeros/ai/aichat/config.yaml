@@ -4,7 +4,7 @@ top_p: 0.95
 
 stream: true
 save: true
-keybindings: vi
+keybindings: emacs
 editor: nvim
 wrap: auto
 wrap_code: true

@@ -172,6 +172,7 @@ while true; do
       | sort -u \
       | fzf \
           --ansi \
+          --no-mouse \
           --delimiter=$'\t' \
           --with-nth=1,3 \
           --layout=reverse \

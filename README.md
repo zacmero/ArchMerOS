@@ -48,6 +48,7 @@ Current known state on this workstation:
 - live user configs are symlinked from this repo into `~/.config`
 - Walker is the general launcher
 - Walker providers are installed through Elephant and started as user services from Hyprland
+- `mako` notifications use ArchMerOS timeout rules, and app notifications are dismissed automatically when their app regains focus
 - `Super+E` syncs the trusted Windows Desktop intersection into `~/Desktop` and opens `thunar`
 - `rofi` remains available as the launcher fallback if Walker fails
 - new login-shell Bash sessions source an ArchMerOS shell hook from `~/.bash_profile`

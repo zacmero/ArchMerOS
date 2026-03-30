@@ -1,0 +1,29 @@
+xkb_keymap {
+    xkb_keycodes {
+        include "evdev+aliases(qwerty)"
+    };
+
+    xkb_types {
+        include "complete"
+    };
+
+    xkb_compat {
+        include "complete"
+    };
+
+    xkb_symbols {
+        include "pc+br(abnt2)+us:2+group(alt_shift_toggle)+level3(ralt_switch)"
+
+        // Keep BR ABNT2 ]/} on BKSL, but expose AltGr+] as bar.
+        key <BKSL> {
+            type[group1] = "FOUR_LEVEL",
+            symbols[group1] = [ bracketright, braceright, bar, brokenbar ],
+            type[group2] = "TWO_LEVEL",
+            symbols[group2] = [ backslash, bar ]
+        };
+    };
+
+    xkb_geometry {
+        include "pc(pc105)"
+    };
+};

@@ -6,6 +6,19 @@ set -euo pipefail
 
 process_name="$(basename -- "$1" 2>/dev/null || printf '%s' "$1")"
 
+json_or_default() {
+  local raw="${1:-}"
+  local fallback="${2:-}"
+  case "$raw" in
+    \[*|\{*)
+      printf '%s\n' "$raw"
+      ;;
+    *)
+      printf '%s\n' "$fallback"
+      ;;
+  esac
+}
+
 python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" \
   track-launch general "" "" "$process_name" -- \
   "$HOME/.config/archmeros/scripts/archmeros-launch-detached.sh" "$@" \
@@ -22,10 +35,11 @@ if [[ -n "${ARCHMEROS_FORCE_POP_MODE:-}" ]]; then
 fi
 
 if command -v hyprctl >/dev/null 2>&1; then
-  monitors_json="$(hyprctl -j monitors 2>/dev/null || printf '[]')"
+  monitors_json="$(json_or_default "$(hyprctl -j monitors 2>/dev/null || true)" '[]')"
   monitor_name="$(printf '%s' "$monitors_json" | jq -r '.[] | select(.focused == true) | .name' | head -n 1)"
-  workspace_id="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty' 2>/dev/null || true)"
-  active="$(hyprctl activewindow -j 2>/dev/null || printf '{}')"
+  workspace_json="$(json_or_default "$(hyprctl activeworkspace -j 2>/dev/null || true)" '{}')"
+  workspace_id="$(printf '%s' "$workspace_json" | jq -r '.id // empty' 2>/dev/null || true)"
+  active="$(json_or_default "$(hyprctl activewindow -j 2>/dev/null || true)" '{}')"
 
   if [[ "$mode" == "none" && "$active" != "{}" ]]; then
     width="$(printf '%s' "$active" | jq -r '.size[0] // 0')"

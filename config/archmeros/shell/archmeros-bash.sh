@@ -4,6 +4,10 @@
 [[ -n "${ARCHMEROS_BASH_HOOK_LOADED:-}" ]] && return 0
 export ARCHMEROS_BASH_HOOK_LOADED=1
 
+if command -v aichat >/dev/null 2>&1; then
+  alias ai='aichat'
+fi
+
 shopt -s extdebug
 
 declare -gA __archmeros_gui_commands=()

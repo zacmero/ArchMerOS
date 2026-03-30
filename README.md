@@ -50,6 +50,7 @@ Current known state on this workstation:
 - Walker providers are installed through Elephant and started as user services from Hyprland
 - `mako` notifications use ArchMerOS timeout rules, and app notifications are dismissed automatically when their app regains focus
 - `Super+E` syncs the trusted Windows Desktop intersection into `~/Desktop` and opens `thunar`
+- `Super+A` opens the ArchMerOS floating `aichat` HUD, and `Super+Shift+A` opens the Fabric browser overlay
 - `rofi` remains available as the launcher fallback if Walker fails
 - new login-shell Bash sessions source an ArchMerOS shell hook from `~/.bash_profile`
 - local GTK, cursor, and icon theme assets are deployed under `~/.local/share`
@@ -135,6 +136,7 @@ Tracked system overrides:
 - [docs/bootloader.md](/home/zacmero/projects/ArchMerOS/docs/bootloader.md)
 - [docs/waybar.md](/home/zacmero/projects/ArchMerOS/docs/waybar.md)
 - [docs/nvidia-pascal.md](/home/zacmero/projects/ArchMerOS/docs/nvidia-pascal.md)
+- [docs/ai-flow.md](/home/zacmero/projects/ArchMerOS/docs/ai-flow.md)
 
 ## Current Setup Steps
 
@@ -231,6 +233,9 @@ Active shell pieces currently tracked in this repo:
 - Walker launcher wrapper: [config/archmeros/scripts/archmeros-walker.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-walker.sh)
 - Telegram focus/launch wrapper: [config/archmeros/scripts/archmeros-telegram.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-telegram.sh)
 - Window history cycle helper: [config/archmeros/scripts/archmeros-cycle-window.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-cycle-window.sh)
+- AI HUD launcher: [config/archmeros/scripts/archmeros-ai-float.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-ai-float.sh)
+- AI context capture: [config/archmeros/scripts/archmeros-ai-context.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-ai-context.sh)
+- Fabric browser: [config/archmeros/scripts/archmeros-fabric-browser.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-fabric-browser.sh)
 - Bash hook: [config/archmeros/shell/archmeros-bash.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/shell/archmeros-bash.sh)
 - Walker service units: [config/systemd/user/archmeros-elephant.service](/home/zacmero/projects/ArchMerOS/config/systemd/user/archmeros-elephant.service), [config/systemd/user/archmeros-walker.service](/home/zacmero/projects/ArchMerOS/config/systemd/user/archmeros-walker.service)
 
@@ -257,6 +262,15 @@ Current example:
 
 This pattern is intended as the reference for future app-specific focus-or-launch integrations.
 - folder palette: Dracula comment
+
+## AI HUD Pattern
+
+ArchMerOS now uses the same wrapper-first approach for the local AI flow.
+
+- `Super+A`: floating `aichat` HUD
+- `Super+Shift+A`: floating Fabric browser
+
+This path is implemented as ArchMerOS-only shell wrappers plus Hyprland window rules, so upstream `wezterm` behavior stays untouched. The full notes live in [docs/ai-flow.md](/home/zacmero/projects/ArchMerOS/docs/ai-flow.md).
 
 Rebuild command:
 

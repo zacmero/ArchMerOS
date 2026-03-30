@@ -17,13 +17,17 @@ workspace_id=""
 full_threshold=85
 medium_threshold=64
 
+if [[ -n "${ARCHMEROS_FORCE_POP_MODE:-}" ]]; then
+  mode="$ARCHMEROS_FORCE_POP_MODE"
+fi
+
 if command -v hyprctl >/dev/null 2>&1; then
   monitors_json="$(hyprctl -j monitors 2>/dev/null || printf '[]')"
   monitor_name="$(printf '%s' "$monitors_json" | jq -r '.[] | select(.focused == true) | .name' | head -n 1)"
   workspace_id="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty' 2>/dev/null || true)"
   active="$(hyprctl activewindow -j 2>/dev/null || printf '{}')"
 
-  if [[ "$active" != "{}" ]]; then
+  if [[ "$mode" == "none" && "$active" != "{}" ]]; then
     width="$(printf '%s' "$active" | jq -r '.size[0] // 0')"
     height="$(printf '%s' "$active" | jq -r '.size[1] // 0')"
     monitor_size="$(printf '%s' "$monitors_json" | jq -r '.[] | select(.focused == true) | .width, .height' | paste -sd" " -)"

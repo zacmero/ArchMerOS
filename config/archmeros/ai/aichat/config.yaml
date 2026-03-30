@@ -1,0 +1,23 @@
+model: gemini:gemini-3-flash-preview
+temperature: 0.7
+top_p: 0.95
+
+stream: true
+save: true
+keybindings: vi
+editor: nvim
+wrap: auto
+wrap_code: true
+
+repl_prelude: "role:coder"
+serve_addr: 127.0.0.1:8000
+
+clients:
+  - type: gemini
+    models:
+      - name: gemini-3-flash-preview
+        max_input_tokens: 1048576
+        supports_function_calling: true
+
+document_loaders:
+  pdf: "pdftotext $1 -"

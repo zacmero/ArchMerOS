@@ -123,6 +123,7 @@ Tracked system overrides:
 - [install/system/apply-nvidia-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-nvidia-system.sh)
 - [install/system/apply-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-system.sh)
 - [install/system/apply-bootloader-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bootloader-system.sh)
+- [install/system/apply-bootloader-shared-esp-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bootloader-shared-esp-system.sh)
 - [install/system/apply-greeter-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-greeter-system.sh)
 - [install/system/etc/greetd/config.toml](/home/zacmero/projects/ArchMerOS/install/system/etc/greetd/config.toml)
 - [install/system/etc/modprobe.d/archmeros-nvidia.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-nvidia.conf)
@@ -179,6 +180,12 @@ sudo bash install/system/apply-nvidia-system.sh
 ```
 
 That Pascal/NVIDIA path is documented in [docs/nvidia-pascal.md](/home/zacmero/projects/ArchMerOS/docs/nvidia-pascal.md).
+
+If an older ArchMerOS install was booted in BIOS/CSM mode while Windows owns the EFI partition, the shared-ESP migration path is documented in [docs/bootloader.md](/home/zacmero/projects/ArchMerOS/docs/bootloader.md) and applied with:
+
+```bash
+sudo bash install/system/apply-bootloader-shared-esp-system.sh
+```
 
 Greeter theme status:
 

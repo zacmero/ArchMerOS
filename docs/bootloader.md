@@ -34,6 +34,12 @@ If you only want the bootloader step:
 sudo bash install/system/apply-bootloader-system.sh
 ```
 
+If you are migrating an older BIOS/CSM ArchMerOS install onto a shared Windows EFI partition:
+
+```bash
+sudo bash install/system/apply-bootloader-shared-esp-system.sh
+```
+
 The bootloader script:
 
 - backs up `/etc/default/grub`
@@ -43,6 +49,15 @@ The bootloader script:
 - regenerates GRUB fonts under `/boot/grub/themes/archmeros-80s`
 - rewrites the ArchMerOS menu entries
 - regenerates `/boot/grub/grub.cfg`
+
+The shared-ESP migration script additionally:
+
+- detects or accepts the shared EFI partition
+- mounts it at `/boot/efi`
+- backs up the current EFI contents
+- adds `/boot/efi` to `/etc/fstab`
+- installs `EFI/ArchMerOS/grubx64.efi` without touching `EFI/Microsoft`
+- uses `--no-nvram` automatically if the current Linux session is still booted in BIOS/CSM mode
 
 Backups are written to:
 
@@ -78,3 +93,4 @@ sudo grep -n 'terminal_output\|loadfont\|menu_color_\|menuentry ' /boot/grub/gru
 - The plain selector can change font, entry labels, and colors.
 - The plain selector cannot cleanly replace the top `GNU GRUB version ...` header with a custom `ARCHMEROS` title.
 - If ArchMerOS later moves back to a full GRUB theme, the `GRUB_THEME` path can be re-enabled in the apply script.
+- If Linux is currently booted in BIOS/CSM mode, EFI files can still be installed safely, but firmware boot order cannot be rewritten from that session. In that case, rerun the shared-ESP script from a UEFI-booted ArchMerOS session or add `\EFI\ArchMerOS\grubx64.efi` manually in firmware.

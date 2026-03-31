@@ -104,7 +104,7 @@ capture_nvim_context() {
   context_file="$(mktemp /tmp/archmeros-ai-context.XXXXXX.txt)"
   file_name="$(basename "$file_path")"
   {
-    printf 'ArchMerOS terminal context\n'
+    printf 'ArchMerOS nvim buffer context\n'
     printf 'Source: nvim\n'
     printf 'File: %s\n' "$file_path"
     printf 'Label: %s\n' "$file_name"
@@ -188,7 +188,7 @@ context_text="${context_text//$'\0'/}"
 
 context_file="$(mktemp /tmp/archmeros-ai-context.XXXXXX.txt)"
 cat >"$context_file" <<EOF
-ArchMerOS terminal context
+ArchMerOS wezterm pane context
 Source: wezterm
 Pane: ${pane_id}
 TTY: ${tty_name}

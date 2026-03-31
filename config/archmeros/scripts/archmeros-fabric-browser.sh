@@ -82,7 +82,11 @@ preview_target() {
 
   for candidate in README.md system.md user.md prompt.md; do
     if [[ -f "$target/$candidate" ]]; then
-      sed -n '1,220p' "$target/$candidate"
+      if command -v bat >/dev/null 2>&1; then
+        bat --color=always --style=plain --language=markdown --line-range=1:220 "$target/$candidate"
+      else
+        sed -n '1,220p' "$target/$candidate"
+      fi
       return 0
     fi
   done
@@ -132,7 +136,11 @@ Suggested usage:
 EOF
 
   if [[ -n "$preview_file" && -f "$preview_file" ]]; then
-    ${PAGER:-less} "$preview_file"
+    if command -v bat >/dev/null 2>&1; then
+      bat --paging=always --style=plain --language=markdown "$preview_file"
+    else
+      ${PAGER:-less} "$preview_file"
+    fi
   else
     printf 'No preview file found in this pattern directory.\n'
     printf '\nPress Enter to return...'

@@ -82,8 +82,8 @@ while true; do
   selection="$(
     printf '%s\n' "$entries" \
       | fzf --ansi --delimiter=$'\t' --with-nth=1,2 \
-          --expect=enter,ctrl-r,ctrl-n \
-          --header=$'Enter load  |  Ctrl-R rename  |  Ctrl-N new session  |  Esc close' \
+          --expect=enter,ctrl-r,ctrl-n,ctrl-d \
+          --header=$'Enter load  |  Ctrl-R rename  |  Ctrl-N new session  |  Ctrl-D delete  |  Esc close' \
           --preview "bash $HOME/.config/archmeros/scripts/archmeros-aichat-sessions.sh --preview {1}"
   )"
 
@@ -99,6 +99,16 @@ while true; do
       if [[ -n "$new_name" && "$new_name" != "$selected_session" ]]; then
         mv -f "${sessions_dir}/${selected_session}.yaml" "${sessions_dir}/${new_name}.yaml"
       fi
+      ;;
+    ctrl-d)
+      printf 'Delete session "%s"? [y/N]: ' "$selected_session" >/dev/tty
+      confirm=""
+      IFS= read -r confirm </dev/tty || true
+      case "$confirm" in
+        y|Y|yes|YES)
+          rm -f "${sessions_dir}/${selected_session}.yaml"
+          ;;
+      esac
       ;;
     ctrl-n)
       session_name="$(prompt_for_name "New session name" "hud-chat-$(date +%H%M%S)")"

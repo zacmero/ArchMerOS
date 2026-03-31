@@ -124,6 +124,7 @@ Current actions:
 - `Enter`: load the selected session
 - `Ctrl+R`: rename the selected session file
 - `Ctrl+N`: start a new named session
+- `Ctrl+D`: delete the selected session file after confirmation
 
 The HUD itself also exposes the most useful built-in `aichat` commands in the header:
 

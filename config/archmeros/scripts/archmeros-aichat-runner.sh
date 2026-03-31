@@ -12,55 +12,6 @@ accent_gray=$'\033[38;5;245m'
 accent_green=$'\033[1;32m'
 reset=$'\033[0m'
 
-term_cols="$(tput cols 2>/dev/null || printf '110')"
-if [[ ! "$term_cols" =~ ^[0-9]+$ ]] || (( term_cols < 80 )); then
-  term_cols=110
-fi
-box_inner_width=$((term_cols - 4))
-
-trim_text() {
-  local text="${1:-}"
-  local max_len="${2:-60}"
-  if (( ${#text} > max_len )); then
-    printf '%s…' "${text:0:max_len-1}"
-  else
-    printf '%s' "$text"
-  fi
-}
-
-pad_text() {
-  local text="${1:-}"
-  local width="${2:-10}"
-  printf '%-*s' "$width" "$text"
-}
-
-repeat_char() {
-  local char="${1:-─}"
-  local count="${2:-0}"
-  local out=""
-  while (( count > 0 )); do
-    out+="$char"
-    count=$((count - 1))
-  done
-  printf '%s' "$out"
-}
-
-print_box_row() {
-  local label="${1:-}"
-  local value="${2:-}"
-  local label_width=8
-  local value_width=$((box_inner_width - 1 - label_width - 1 - 1))
-  local label_text value_text
-  label_text="$(pad_text "$label" "$label_width")"
-  value_text="$(trim_text "$value" "$value_width")"
-  value_text="$(pad_text "$value_text" "$value_width")"
-  printf '%b│%b %b%s%b %s%b│%b\n' \
-    "$accent_cyan" "$reset" \
-    "$accent_magenta" "$label_text" "$reset" \
-    "$value_text" \
-    "$accent_cyan" "$reset"
-}
-
 cleanup() {
   if [[ -n "$context_file" && -f "$context_file" ]]; then
     rm -f "$context_file"
@@ -126,20 +77,16 @@ print_header() {
   local session_name="${1:-}"
   local context_source="${2:-none}"
   local context_summary="${3:-No context attached}"
-  local title=' ARCHMEROS AI HUD '
-  local side_width=$(((box_inner_width - ${#title}) / 2))
-  local left_side right_side
-  left_side="$(repeat_char '─' "$side_width")"
-  right_side="$(repeat_char '─' $((box_inner_width - ${#title} - side_width)))"
 
   clear
-  printf '%b╭%s%b%s%b%s%b╮%b\n' "$accent_cyan" "$left_side" "$reset" "$accent_cyan" "$title" "$reset" "$right_side" "$accent_cyan" "$reset"
-  print_box_row "Session" "$session_name"
-  print_box_row "Context" "$context_source"
-  print_box_row "Notes" "$context_summary"
-  print_box_row "Aichat" ".help  .info session  .edit session  .save session"
-  print_box_row "Hint" "Right prompt shows session token usage, e.g. ctx 1177 (0.11%)"
-  printf '%b╰%s╯%b\n\n' "$accent_cyan" "$(repeat_char '─' "$box_inner_width")" "$reset"
+  printf '%bARCHMEROS AI HUD%b\n' "$accent_cyan" "$reset"
+  printf '%b────────────────────────────────────────────────────────────────────────────────%b\n' "$accent_cyan" "$reset"
+  printf '%bSession%b  %s\n' "$accent_magenta" "$reset" "$session_name"
+  printf '%bContext%b  %s\n' "$accent_magenta" "$reset" "$context_source"
+  printf '%bNotes%b    %s\n' "$accent_magenta" "$reset" "$context_summary"
+  printf '%bAichat%b   .help  .info session  .edit session  .save session\n' "$accent_magenta" "$reset"
+  printf '%bHint%b     Right prompt shows session token usage, e.g. ctx 1177 (0.11%%)\n' "$accent_magenta" "$reset"
+  printf '%b────────────────────────────────────────────────────────────────────────────────%b\n\n' "$accent_cyan" "$reset"
 }
 
 session_name="$(session_name_from_context)"

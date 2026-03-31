@@ -49,17 +49,12 @@ preview_session() {
     return 0
   }
 
-  awk '
-    /^model:/ || /^temperature:/ || /^top_p:/ { print; next }
-    /^messages:/ { in_messages = 1; print; next }
-    in_messages && shown < 24 { print; shown++; next }
-    END {
-      if (!in_messages) {
-        print "";
-        print "(No messages found in session file yet)";
-      }
-    }
-  ' "$session_file"
+  if command -v bat >/dev/null 2>&1; then
+    bat --color=always --style=plain --language=yaml --line-range=1:220 "$session_file"
+    return 0
+  fi
+
+  sed -n '1,220p' "$session_file"
 }
 
 if [[ "${1:-}" == "--preview" ]]; then

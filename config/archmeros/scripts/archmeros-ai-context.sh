@@ -4,6 +4,7 @@ set -euo pipefail
 
 lines="${ARCHMEROS_AI_CONTEXT_LINES:-120}"
 uid="$(id -u)"
+socket_dir="/run/user/${uid}/wezterm"
 
 if ! command -v hyprctl >/dev/null 2>&1 || ! command -v wezterm >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
   exit 1
@@ -29,7 +30,6 @@ wezterm_cli() {
     return 0
   fi
 
-  local socket_dir="/run/user/${uid}/wezterm"
   local socket=""
   while IFS= read -r socket; do
     output="$(WEZTERM_UNIX_SOCKET="$socket" timeout 1s wezterm cli "$@" 2>/dev/null || true)"
@@ -121,6 +121,9 @@ capture_nvim_context() {
 active_json="$(json_or_default "$(hyprctl activewindow -j 2>/dev/null || true)" '{}')"
 active_class="$(printf '%s' "$active_json" | jq -r '.class // empty' 2>/dev/null | tr '[:upper:]' '[:lower:]')"
 active_pid="$(printf '%s' "$active_json" | jq -r '.pid // empty' 2>/dev/null || true)"
+active_title="$(printf '%s' "$active_json" | jq -r '.title // empty' 2>/dev/null || true)"
+active_title_stripped="$(printf '%s' "$active_title" | sed -E 's/^\[[0-9]+\/[0-9]+\][[:space:]]*//')"
+active_tab_index="$(printf '%s' "$active_title" | sed -nE 's/^\[([0-9]+)\/[0-9]+\].*/\1/p' | head -n 1)"
 
 case "$active_class" in
   org.wezfurlong.wezterm|archmeros-wezterm-*)
@@ -130,37 +133,65 @@ case "$active_class" in
     ;;
 esac
 
-clients_json="$(wezterm_cli list-clients --format json || printf '[]')"
-list_json="$(wezterm_cli list --format json || printf '[]')"
-
-pane_id=""
-if [[ -n "$active_pid" ]]; then
-  pane_id="$(
-    printf '%s' "$clients_json" \
-      | jq -r --argjson pid "$active_pid" '
-          map(select(.pid? == $pid and .focused_pane_id? != null))
-          | .[0].focused_pane_id // empty
-        ' 2>/dev/null || true
-  )"
+clients_json='[]'
+list_json='[]'
+preferred_socket=""
+if [[ -n "$active_pid" && -S "${socket_dir}/gui-sock-${active_pid}" ]]; then
+  preferred_socket="${socket_dir}/gui-sock-${active_pid}"
 fi
 
-if [[ -z "$pane_id" ]]; then
+if [[ -n "$preferred_socket" ]]; then
+  clients_json="$(WEZTERM_UNIX_SOCKET="$preferred_socket" timeout 1s wezterm cli list-clients --format json 2>/dev/null || printf '[]')"
+  list_json="$(WEZTERM_UNIX_SOCKET="$preferred_socket" timeout 1s wezterm cli list --format json 2>/dev/null || printf '[]')"
+else
+  clients_json="$(wezterm_cli list-clients --format json || printf '[]')"
+  list_json="$(wezterm_cli list --format json || printf '[]')"
+fi
+
+pane_id=""
+if [[ -n "$preferred_socket" ]]; then
   pane_id="$(
     printf '%s' "$clients_json" \
       | jq -r 'map(select(.focused_pane_id? != null)) | .[0].focused_pane_id // empty' 2>/dev/null || true
   )"
 fi
 
+if [[ -z "$pane_id" && -n "$active_title_stripped" ]]; then
+  pane_id="$(
+    printf '%s' "$list_json" \
+      | jq -r --arg title "$active_title" --arg stripped "$active_title_stripped" '
+          [
+            .[]
+            | select(
+                (.title? == $title) or
+                (.title? == $stripped) or
+                (.window_title? == $title) or
+                (.window_title? == $stripped)
+              )
+            | .pane_id
+          ] | .[0] // empty
+        ' 2>/dev/null || true
+  )"
+fi
+
+if [[ -z "$pane_id" ]]; then
+  if [[ -n "$active_tab_index" && "$active_tab_index" =~ ^[0-9]+$ ]]; then
+    pane_id="$(
+      printf '%s' "$list_json" \
+        | jq -r --argjson idx "$active_tab_index" '
+            ([.[].tab_id] | unique) as $tabs
+            | ($tabs[$idx - 1] // empty) as $wanted
+            | if $wanted == empty then empty else
+                ([ .[] | select(.tab_id == $wanted) | .pane_id ] | .[0] // empty)
+              end
+          ' 2>/dev/null || true
+    )"
+  fi
+fi
+
 if [[ -z "$pane_id" ]]; then
   pane_id="$(
-    printf '%s' "$list_json" | jq -r '
-      [
-        .. | objects
-        | select(.pane_id? != null)
-        | select((.is_active? == true) or (.active? == true) or (.focused? == true))
-        | .pane_id
-      ] | .[0] // empty
-    ' 2>/dev/null || true
+    printf '%s' "$list_json" | jq -r '.[0].pane_id // empty' 2>/dev/null || true
   )"
 fi
 

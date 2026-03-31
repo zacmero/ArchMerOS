@@ -8,6 +8,8 @@ keybindings: emacs
 editor: nvim
 wrap: auto
 wrap_code: true
+left_prompt: "{color.light_magenta}━━ YOU{?session [{session}]}{color.reset}\n{color.light_magenta}❯{color.reset} "
+right_prompt: "{color.dark_gray}{?consume_tokens ctx {consume_tokens} ({consume_percent}%)}{color.reset}"
 
 repl_prelude: "role:coder"
 serve_addr: 127.0.0.1:8000

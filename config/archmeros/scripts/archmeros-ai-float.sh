@@ -10,6 +10,7 @@ launch_wrapper="$HOME/.config/archmeros/scripts/archmeros-launch-detached.sh"
 context_helper="$HOME/.config/archmeros/scripts/archmeros-ai-context.sh"
 fabric_browser="$HOME/.config/archmeros/scripts/archmeros-fabric-browser.sh"
 runner="$HOME/.config/archmeros/scripts/archmeros-aichat-runner.sh"
+session_browser="$HOME/.config/archmeros/scripts/archmeros-aichat-sessions.sh"
 archmeros_env="$HOME/.config/archmeros/ai/aichat.env"
 
 launch_wezterm() {
@@ -30,8 +31,12 @@ case "$mode" in
     launch_class="archmeros-fabric-browser"
     launch_wezterm "$launch_class" --cwd "$HOME" -- bash "$fabric_browser" "$@"
     ;;
+  sessions)
+    launch_class="archmeros-aichat-sessions"
+    launch_wezterm "$launch_class" --cwd "$HOME" -- bash "$session_browser"
+    ;;
   *)
-    printf 'Usage: %s [aichat|fabric]\n' "$0" >&2
+    printf 'Usage: %s [aichat|fabric|sessions]\n' "$0" >&2
     exit 1
     ;;
 esac

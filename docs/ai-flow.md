@@ -8,6 +8,7 @@ The goal is to add a fast local AI HUD for this machine without mutating normal 
 
 - `Super+A`: open the floating `aichat` HUD
 - `Super+Shift+A`: open the floating Fabric browser
+- `Super+Ctrl+A`: open the saved-session browser for `aichat`
 
 ## Boundary
 
@@ -41,10 +42,11 @@ Context injection is conservative on purpose.
 When `Super+A` is pressed:
 
 1. ArchMerOS checks whether the currently focused Hyprland window is a WezTerm window.
-2. If it is, the wrapper asks `wezterm cli` for the focused pane.
-3. The last `120` visible lines from that pane are captured.
-4. That capture is written to a temporary file.
-5. `aichat` starts with `--file <context-file>`.
+2. The wrapper maps the active Hyprland window PID back to the frontmost WezTerm client and pane.
+3. If that pane is running `nvim`, ArchMerOS connects to the live Neovim socket and captures a bounded slice of the current buffer around the visible window and cursor.
+4. If that pane is not running `nvim`, the wrapper falls back to the last `120` visible lines of the pane scrollback.
+5. That capture is written to a temporary file.
+6. `aichat` preloads the capture into a saved HUD session and then reopens that session interactively.
 
 If the current focused window is not WezTerm, the HUD opens a clean `aichat` session with no injected context.
 
@@ -52,9 +54,16 @@ This keeps the flow safe:
 
 - no global WezTerm config mutation
 - no assumption about a single terminal instance
-- no dependency on Neovim remote sockets
+- Neovim context is bounded instead of dumping whole `2000+` line files into the HUD
 
-For now, ArchMerOS injects terminal-visible context, not deep Neovim RPC buffer state.
+The HUD session name is generated from the active source when possible, for example:
+
+- `hud-path-utils-203455`
+- `hud-wezterm-203522`
+
+The right side prompt meter inside `aichat` is token usage for the active session:
+
+- `ctx 1177 (0.11%)` means roughly `1177` tokens currently stored in the session, which is `0.11%` of the configured model context window
 
 ## ArchMerOS-Local Aichat Override
 
@@ -101,3 +110,24 @@ Current package intent:
 - `fabric-ai-bin`: tracked in the optional AUR package set
 
 If Fabric is not installed yet, the browser still opens as a pattern explorer and install hint.
+
+## Session Browser
+
+The session browser is a lightweight TUI wrapper around `~/.config/aichat/sessions`.
+
+Open it with:
+
+- `Super+Ctrl+A`
+
+Current actions:
+
+- `Enter`: load the selected session
+- `Ctrl+R`: rename the selected session file
+- `Ctrl+N`: start a new named session
+
+The HUD itself also exposes the most useful built-in `aichat` commands in the header:
+
+- `.help`
+- `.info session`
+- `.edit session`
+- `.save session`

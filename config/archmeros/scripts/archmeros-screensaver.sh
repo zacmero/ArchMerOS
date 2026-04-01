@@ -83,13 +83,14 @@ if command -v wezterm >/dev/null 2>&1; then
   log "launch wezterm"
   cmd=("$binary_path" "--test" "--theme" "$theme_name" "--screensaver")
   env "${env_args[@]}" \
-    wezterm start \
-      --always-new-process \
-      --class ArchMerOS-Screensaver \
-      --cwd "$HOME" \
+    wezterm \
       --config enable_tab_bar=false \
       --config use_fancy_tab_bar=false \
       --config window_decorations=NONE \
+      start \
+      --always-new-process \
+      --class ArchMerOS-Screensaver \
+      --cwd "$HOME" \
       /bin/bash \
       -lc \
       'exec "$@" 2>>"$0"' \

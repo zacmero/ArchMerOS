@@ -82,11 +82,11 @@ set_side_dpms off
 if command -v wezterm >/dev/null 2>&1; then
   log "launch wezterm"
   cmd=("$binary_path" "--test" "--theme" "$theme_name" "--screensaver")
-  env "${env_args[@]}" \
+  if env "${env_args[@]}" \
     wezterm \
-      --config enable_tab_bar=false \
-      --config use_fancy_tab_bar=false \
-      --config window_decorations=NONE \
+      --config 'enable_tab_bar=false' \
+      --config 'use_fancy_tab_bar=false' \
+      --config 'window_decorations="NONE"' \
       start \
       --always-new-process \
       --class ArchMerOS-Screensaver \
@@ -95,8 +95,10 @@ if command -v wezterm >/dev/null 2>&1; then
       -lc \
       'exec "$@" 2>>"$0"' \
       "$log_path" \
-      "${cmd[@]}"
-  exit $?
+      "${cmd[@]}"; then
+    exit 0
+  fi
+  log "wezterm failed; falling back"
 fi
 
 if command -v kitty >/dev/null 2>&1; then

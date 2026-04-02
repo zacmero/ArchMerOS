@@ -6,13 +6,9 @@ script_path="$(readlink -f "${BASH_SOURCE[0]}")"
 repo_root="$(cd -- "$(dirname -- "$script_path")/../../.." && pwd)"
 log_path="/tmp/archmeros-screensaver.log"
 lock_path="/tmp/archmeros-screensaver.pid"
+window_launcher="$HOME/.config/archmeros/scripts/archmeros-screensaver-window.sh"
 
 config_path="${HOME}/.config/archmeros/screensaver/screensaver.conf"
-repo_binary="${repo_root}/.build/sysc-greet/archmeros-sysc-greet"
-system_binary="/usr/local/bin/sysc-greet"
-system_kitty_conf="/etc/greetd/kitty-greeter.conf"
-repo_kitty_conf="${repo_root}/config/greetd/sysc-greet/kitty-greeter.conf"
-theme_name="archmeros"
 side_monitors=(DP-2 DP-3)
 
 log() {
@@ -36,36 +32,29 @@ set_side_dpms() {
 
 cleanup() {
   set_side_dpms on
-  if [[ -f "$lock_path" ]] && [[ "$(cat "$lock_path" 2>/dev/null)" == "$$" ]]; then
-    rm -f "$lock_path"
-  fi
+  rm -f "$lock_path"
 }
 
 if [[ -f "$lock_path" ]]; then
   existing_pid="$(cat "$lock_path" 2>/dev/null || true)"
-  if [[ -n "$existing_pid" ]] && kill -0 "$existing_pid" 2>/dev/null; then
+  if [[ "$existing_pid" == launching:* ]]; then
+    launch_ts="${existing_pid#launching:}"
+    now_ts="$(date +%s)"
+    if [[ "$launch_ts" =~ ^[0-9]+$ ]] && (( now_ts - launch_ts < 15 )); then
+      log "skip launching lock=$existing_pid"
+      exit 0
+    fi
+    rm -f "$lock_path"
+  elif [[ -n "$existing_pid" ]] && kill -0 "$existing_pid" 2>/dev/null; then
     log "skip locked pid=$existing_pid"
     exit 0
+  else
+    rm -f "$lock_path"
   fi
 fi
 
-printf '%s\n' "$$" >"$lock_path"
+printf 'launching:%s\n' "$(date +%s)" >"$lock_path"
 trap cleanup EXIT
-
-binary_path="$repo_binary"
-if [[ ! -x "$binary_path" ]]; then
-  binary_path="$system_binary"
-fi
-
-if [[ ! -x "$binary_path" ]]; then
-  log "skip missing-binary"
-  exit 1
-fi
-
-kitty_conf="$system_kitty_conf"
-if [[ ! -f "$kitty_conf" ]]; then
-  kitty_conf="$repo_kitty_conf"
-fi
 
 env_args=()
 if [[ -f "$config_path" ]]; then
@@ -79,43 +68,22 @@ fi
 
 set_side_dpms off
 
-if command -v wezterm >/dev/null 2>&1; then
-  log "launch wezterm"
-  cmd=("$binary_path" "--test" "--theme" "$theme_name" "--screensaver")
-  if env "${env_args[@]}" \
-    wezterm \
-      --config 'enable_tab_bar=false' \
-      --config 'use_fancy_tab_bar=false' \
-      --config 'window_decorations="NONE"' \
-      start \
-      --always-new-process \
-      --class ArchMerOS-Screensaver \
-      --cwd "$HOME" \
-      /bin/bash \
-      -lc \
-      'exec "$@" 2>>"$0"' \
-      "$log_path" \
-      "${cmd[@]}"; then
-    exit 0
-  fi
-  log "wezterm failed; falling back"
+if [[ ! -x "$window_launcher" ]]; then
+  log "skip missing-window-launcher"
+  exit 1
 fi
 
-if command -v kitty >/dev/null 2>&1; then
-  log "launch kitty"
-  cmd=("$binary_path" "--test" "--theme" "$theme_name" "--screensaver")
-  env "${env_args[@]}" \
-    kitty \
-      --class ArchMerOS-Screensaver \
-      --start-as=fullscreen \
-      --config "$kitty_conf" \
-      /bin/bash \
-      -lc \
-      'exec "$@" 2>>"$0"' \
-      "$log_path" \
-      "${cmd[@]}"
-  exit $?
+log "launch hyprland-window"
+launch_cmd="ARCHMEROS_SCREENSAVER_LOCK=$lock_path"
+for env_kv in "${env_args[@]}"; do
+  launch_cmd+=" ${env_kv@Q}"
+done
+launch_cmd+=" ${window_launcher@Q}"
+
+if hyprctl dispatch exec "$launch_cmd" >/dev/null 2>&1; then
+  trap - EXIT
+  exit 0
 fi
 
-log "launch binary"
-env "${env_args[@]}" "$binary_path" --test --theme "$theme_name" --screensaver
+log "launch failed"
+exit 1

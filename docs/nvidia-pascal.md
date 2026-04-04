@@ -34,12 +34,33 @@ sudo bash install/system/apply-nvidia-system.sh
 
 - [install/system/etc/modprobe.d/archmeros-nvidia.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-nvidia.conf)
 - [install/system/etc/dracut.conf.d/archmeros-nvidia.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/dracut.conf.d/archmeros-nvidia.conf)
+- [install/system/etc/kernel/install.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/kernel/install.conf)
 
 Then it:
 
 - appends the NVIDIA kernel parameters to `/etc/default/grub`
-- regenerates all `dracut` initramfs images
+- forces `kernel-install` into GRUB-safe `layout=other`
+- rebuilds classic `/boot/initramfs-*.img` images explicitly for each installed kernel
 - regenerates `/boot/grub/grub.cfg`
+
+## Update Safety
+
+The ArchMerOS NVIDIA dracut profile uses `add_drivers`, not `force_drivers`.
+
+Reason:
+
+- `force_drivers` is more fragile during mixed-kernel updates if one installed kernel does not currently have matching NVIDIA DKMS modules
+- `add_drivers` still includes the NVIDIA modules when available, but does not hard-require them for every image
+- `uefi="no"` is set because ArchMerOS currently boots through GRUB and does not rely on dracut-built UKI images in the ESP
+- `/etc/kernel/install.conf` sets `layout=other`, so systemd `kernel-install` does not try to write Boot Loader Specification entries into `/boot/efi/<machine-id>/...`
+- the apply script no longer relies on `dracut --regenerate-all`, which is the path that can fall back to the wrong default boot root on mixed Endeavour/GRUB installs
+
+The tracked GRUB profile also installs two plain fallback entries:
+
+- `Arch Plain Recovery` hotkey `p`
+- `Arch LTS Plain Recovery` hotkey `b`
+
+Those are the first recovery path if a future graphics/NVIDIA update breaks the normal graphical boot path.
 
 ## Verification After Reboot
 

@@ -206,6 +206,15 @@ The usual recovery idea is:
 5. regenerate GRUB config
 6. reboot
 
+## Built-In GRUB Recovery Entries
+
+The tracked ArchMerOS GRUB config should include:
+
+- `Arch Plain Recovery` with hotkey `p`
+- `Arch LTS Plain Recovery` with hotkey `b`
+
+Those boot to `multi-user.target` with `nomodeset` and are the first fallback before external rescue media.
+
 ## Basic Recovery Flow
 
 ### 1. Boot The Live USB

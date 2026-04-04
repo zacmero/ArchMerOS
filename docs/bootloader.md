@@ -50,6 +50,13 @@ The bootloader script:
 - rewrites the ArchMerOS menu entries
 - regenerates `/boot/grub/grub.cfg`
 
+The tracked menu also includes two direct fallback entries:
+
+- `Arch Plain Recovery` with hotkey `p`
+- `Arch LTS Plain Recovery` with hotkey `b`
+
+Those boot to `multi-user.target` with `nomodeset` so they bypass more of the graphical/NVIDIA stack.
+
 The shared-ESP migration script additionally:
 
 - detects or accepts the shared EFI partition
@@ -58,6 +65,12 @@ The shared-ESP migration script additionally:
 - adds `/boot/efi` to `/etc/fstab`
 - installs `EFI/ArchMerOS/grubx64.efi` without touching `EFI/Microsoft`
 - uses `--no-nvram` automatically if the current Linux session is still booted in BIOS/CSM mode
+
+On GRUB-based ArchMerOS systems, boot image generation is also pinned away from Boot Loader Specification layout through:
+
+- [install/system/etc/kernel/install.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/kernel/install.conf)
+
+That forces `kernel-install` to `layout=other`, so future kernel or dracut updates keep using the classic `/boot/vmlinuz-*` and `/boot/initramfs-*.img` path instead of trying to write entries under `/boot/efi/<machine-id>/...`.
 
 Backups are written to:
 

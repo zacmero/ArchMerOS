@@ -60,6 +60,7 @@ boot_has_intel_ucode=0
 
 quiet_args="usbcore.autosuspend=-1 quiet loglevel=3 systemd.show_status=false vt.global_cursor_default=0"
 safe_args="usbcore.autosuspend=-1 systemd.show_status=true loglevel=4"
+recovery_args="usbcore.autosuspend=-1 systemd.unit=multi-user.target nomodeset systemd.show_status=true loglevel=4"
 
 {
   printf '#!/bin/sh\n'
@@ -95,6 +96,24 @@ safe_args="usbcore.autosuspend=-1 systemd.show_status=true loglevel=4"
   printf "menuentry 'ArchMerOS LTS Safe Verbose' --hotkey=v {\n"
   printf "  search --no-floppy --fs-uuid --set=root %s\n" "${root_uuid}"
   printf "  linux /boot/vmlinuz-linux-lts root=UUID=%s rw %s\n" "${root_uuid}" "${safe_args}"
+  if [[ "${boot_has_intel_ucode}" -eq 1 ]]; then
+    printf "  initrd /boot/intel-ucode.img /boot/initramfs-linux-lts.img\n"
+  else
+    printf "  initrd /boot/initramfs-linux-lts.img\n"
+  fi
+  printf "}\n\n"
+  printf "menuentry 'Arch Plain Recovery' --hotkey=p {\n"
+  printf "  search --no-floppy --fs-uuid --set=root %s\n" "${root_uuid}"
+  printf "  linux /boot/vmlinuz-linux root=UUID=%s rw %s\n" "${root_uuid}" "${recovery_args}"
+  if [[ "${boot_has_intel_ucode}" -eq 1 ]]; then
+    printf "  initrd /boot/intel-ucode.img /boot/initramfs-linux.img\n"
+  else
+    printf "  initrd /boot/initramfs-linux.img\n"
+  fi
+  printf "}\n\n"
+  printf "menuentry 'Arch LTS Plain Recovery' --hotkey=b {\n"
+  printf "  search --no-floppy --fs-uuid --set=root %s\n" "${root_uuid}"
+  printf "  linux /boot/vmlinuz-linux-lts root=UUID=%s rw %s\n" "${root_uuid}" "${recovery_args}"
   if [[ "${boot_has_intel_ucode}" -eq 1 ]]; then
     printf "  initrd /boot/intel-ucode.img /boot/initramfs-linux-lts.img\n"
   else

@@ -9,7 +9,6 @@ lock_path="/tmp/archmeros-screensaver.pid"
 window_launcher="$HOME/.config/archmeros/scripts/archmeros-screensaver-window.sh"
 
 config_path="${HOME}/.config/archmeros/screensaver/screensaver.conf"
-side_monitors=(DP-2 DP-3)
 
 log() {
   printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >>"$log_path"
@@ -71,9 +70,6 @@ fi
 
 log "launch hyprland-window"
 launch_cmd="ARCHMEROS_SCREENSAVER_LOCK=$lock_path"
-for env_kv in "${env_args[@]}"; do
-  launch_cmd+=" ${env_kv@Q}"
-done
 launch_cmd+=" ${window_launcher@Q}"
 
 if hyprctl dispatch exec "$launch_cmd" >/dev/null 2>&1; then

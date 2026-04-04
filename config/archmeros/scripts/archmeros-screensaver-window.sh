@@ -6,12 +6,8 @@ script_path="$(readlink -f "${BASH_SOURCE[0]}")"
 repo_root="$(cd -- "$(dirname -- "$script_path")/../../.." && pwd)"
 log_path="/tmp/archmeros-screensaver.log"
 lock_path="${ARCHMEROS_SCREENSAVER_LOCK:-/tmp/archmeros-screensaver.pid}"
-
-repo_binary="${repo_root}/.build/sysc-greet/archmeros-sysc-greet"
-system_binary="/usr/local/bin/sysc-greet"
-system_kitty_conf="/etc/greetd/kitty-greeter.conf"
-repo_kitty_conf="${repo_root}/config/greetd/sysc-greet/kitty-greeter.conf"
-theme_name="archmeros"
+playlist_path="/tmp/archmeros-screensaver-playlist.m3u"
+wallpaper_dir="${repo_root}/config/wallpapers"
 
 log() {
   printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >>"$log_path"
@@ -20,58 +16,75 @@ log() {
 cleanup() {
   hyprctl dispatch dpms on >/dev/null 2>&1 || true
   "$HOME/.config/archmeros/scripts/archmeros-side-dpms.sh" on >/dev/null 2>&1 || true
-  rm -f "$lock_path"
+  rm -f "$lock_path" "$playlist_path"
 }
 
-printf '%s\n' "$$" >"$lock_path"
+collect_images() {
+  find "$wallpaper_dir" -maxdepth 2 -type f \
+    \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) \
+    | shuf
+}
+
+place_window() {
+  local address=""
+  for _ in $(seq 1 60); do
+    address="$(
+      hyprctl -j clients 2>/dev/null \
+        | python3 -c 'import json,sys
+clients=json.load(sys.stdin)
+for c in clients:
+    klass=(c.get("class") or "")
+    title=(c.get("title") or "")
+    if klass=="ArchMerOS-Screensaver" or title=="ArchMerOS Screensaver":
+        print(c.get("address",""))
+        break
+' 2>/dev/null || true
+    )"
+    if [[ -n "$address" ]]; then
+      hyprctl dispatch movetoworkspacesilent 1,address:"$address" >/dev/null 2>&1 || true
+      hyprctl dispatch pin address:"$address" >/dev/null 2>&1 || true
+      hyprctl dispatch fullscreen 1,address:"$address" >/dev/null 2>&1 || true
+      break
+    fi
+    sleep 0.1
+  done
+}
+
 trap cleanup EXIT
 
-binary_path="$repo_binary"
-if [[ ! -x "$binary_path" ]]; then
-  binary_path="$system_binary"
-fi
+mkdir -p "$(dirname "$playlist_path")"
+collect_images >"$playlist_path"
 
-if [[ ! -x "$binary_path" ]]; then
-  log "window-launcher missing-binary"
+if [[ ! -s "$playlist_path" ]]; then
+  log "window-launcher no-images"
   exit 1
 fi
 
-kitty_conf="$system_kitty_conf"
-if [[ ! -f "$kitty_conf" ]]; then
-  kitty_conf="$repo_kitty_conf"
+if ! command -v mpv >/dev/null 2>&1; then
+  log "window-launcher missing-mpv"
+  exit 1
 fi
 
-cmd=("$binary_path" "--test" "--theme" "$theme_name" "--screensaver")
+printf '%s\n' "$$" >"$lock_path"
 
-if command -v kitty >/dev/null 2>&1; then
-  log "window-launcher kitty"
-  exec kitty \
-    --class ArchMerOS-Screensaver \
-    --start-as=fullscreen \
-    --config "$kitty_conf" \
-    /bin/bash \
-    -lc \
-    'exec "$@" 2>>"$0"' \
-    "$log_path" \
-    "${cmd[@]}"
-fi
+log "window-launcher mpv"
+mpv \
+  --no-config \
+  --no-audio \
+  --no-osc \
+  --fs \
+  --force-window=yes \
+  --title="ArchMerOS Screensaver" \
+  --wayland-app-id=ArchMerOS-Screensaver \
+  --cursor-autohide=always \
+  --image-display-duration=12 \
+  --loop-playlist=inf \
+  --keep-open=no \
+  --really-quiet \
+  --shuffle \
+  --playlist="$playlist_path" >>"$log_path" 2>&1 &
 
-if command -v wezterm >/dev/null 2>&1; then
-  log "window-launcher wezterm"
-  exec wezterm \
-    --config 'enable_tab_bar=false' \
-    --config 'use_fancy_tab_bar=false' \
-    --config 'window_decorations="NONE"' \
-    start \
-    --always-new-process \
-    --class ArchMerOS-Screensaver \
-    --cwd "$HOME" \
-    /bin/bash \
-    -lc \
-    'exec "$@" 2>>"$0"' \
-    "$log_path" \
-    "${cmd[@]}"
-fi
-
-log "window-launcher direct"
-exec "${cmd[@]}"
+mpv_pid=$!
+printf '%s\n' "$mpv_pid" >"$lock_path"
+place_window
+wait "$mpv_pid"

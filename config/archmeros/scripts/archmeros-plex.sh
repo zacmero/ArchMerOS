@@ -2,52 +2,132 @@
 
 set -euo pipefail
 
+app_support_dir="${XDG_DATA_HOME:-$HOME/.local/share}/archmeros/plex"
+log_dir="${XDG_STATE_HOME:-$HOME/.local/state}/archmeros"
+log_path="${log_dir}/plex-server.log"
+pid_path="${app_support_dir}/plex.pid"
 media_root="/run/media/zacmero/New Volume/Plex"
-action="${1:-help}"
+plex_home="/usr/lib/plexmediaserver"
+plex_bin="${plex_home}/Plex Media Server"
+
+mkdir -p "$app_support_dir" "$log_dir"
 
 usage() {
   cat <<'EOF'
 usage: archmeros-plex.sh <start|stop|restart|status|web>
 
-start   grant Plex access to the external media path and start plexmediaserver
-stop    stop plexmediaserver
-restart restart plexmediaserver
-status  show service status
-web     open Plex Web at http://127.0.0.1:32400/web
+start   start Plex Media Server as the current user
+stop    stop the user-run Plex Media Server
+restart restart the user-run Plex Media Server
+status  show whether the user-run Plex Media Server is active
+web     open Plex Web in app mode
 EOF
 }
 
-ensure_access() {
+is_running() {
+  if [[ -f "$pid_path" ]]; then
+    local pid
+    pid="$(cat "$pid_path" 2>/dev/null || true)"
+    if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+      return 0
+    fi
+  fi
+
+  pgrep -u "$USER" -f "${plex_bin}" >/dev/null 2>&1
+}
+
+write_pid() {
+  local pid="$1"
+  printf '%s\n' "$pid" >"$pid_path"
+}
+
+cleanup_stale_pid() {
+  if [[ -f "$pid_path" ]]; then
+    local pid
+    pid="$(cat "$pid_path" 2>/dev/null || true)"
+    if [[ -z "$pid" ]] || ! kill -0 "$pid" 2>/dev/null; then
+      rm -f "$pid_path"
+    fi
+  fi
+}
+
+start_server() {
+  if [[ ! -x "$plex_bin" ]]; then
+    printf 'plex binary missing: %s\n' "$plex_bin" >&2
+    exit 1
+  fi
+
   if [[ ! -d "$media_root" ]]; then
     printf 'plex media path missing: %s\n' "$media_root" >&2
     exit 1
   fi
 
-  sudo setfacl -m u:plex:rx /run/media/zacmero >/dev/null
-  sudo setfacl -R -m u:plex:rX "$media_root" >/dev/null
+  cleanup_stale_pid
+
+  if is_running; then
+    return 0
+  fi
+
+  nohup env \
+    LD_LIBRARY_PATH="${plex_home}/lib" \
+    PLEX_MEDIA_SERVER_HOME="${plex_home}" \
+    PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR="${app_support_dir}" \
+    PLEX_MEDIA_SERVER_MAX_PLUGIN_PROCS=6 \
+    PLEX_MEDIA_SERVER_TMPDIR=/tmp \
+    TMPDIR=/tmp \
+    "${plex_bin}" >>"$log_path" 2>&1 &
+
+  write_pid "$!"
 }
 
-start_service() {
-  ensure_access
-  sudo systemctl start plexmediaserver
+stop_server() {
+  cleanup_stale_pid
+  if [[ -f "$pid_path" ]]; then
+    local pid
+    pid="$(cat "$pid_path" 2>/dev/null || true)"
+    if [[ -n "$pid" ]]; then
+      kill "$pid" >/dev/null 2>&1 || true
+      sleep 1
+      kill -9 "$pid" >/dev/null 2>&1 || true
+    fi
+    rm -f "$pid_path"
+    return 0
+  fi
+
+  pkill -u "$USER" -f "${plex_bin}" >/dev/null 2>&1 || true
+  rm -f "$pid_path"
 }
 
-case "$action" in
+status_server() {
+  cleanup_stale_pid
+  if is_running; then
+    printf 'plex: running\n'
+  else
+    printf 'plex: stopped\n'
+    return 1
+  fi
+}
+
+open_web() {
+  "$HOME/.config/archmeros/scripts/archmeros-webapp.sh" plex
+}
+
+case "${1:-help}" in
   start)
-    start_service
+    start_server
     ;;
   stop)
-    sudo systemctl stop plexmediaserver
+    stop_server
     ;;
   restart)
-    ensure_access
-    sudo systemctl restart plexmediaserver
+    stop_server
+    start_server
     ;;
   status)
-    sudo systemctl status plexmediaserver --no-pager -l
+    status_server
     ;;
   web)
-    xdg-open "http://127.0.0.1:32400/web" >/dev/null 2>&1 &
+    open_web
     ;;
   *)
     usage

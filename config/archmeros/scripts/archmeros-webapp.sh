@@ -39,6 +39,10 @@ case "$app_id" in
     name="Gemini"
     url="https://gemini.google.com/"
     ;;
+  plex)
+    name="Plex"
+    url="http://127.0.0.1:32400/web"
+    ;;
   youtube-music)
     name="YouTube Music"
     url="https://music.youtube.com/"

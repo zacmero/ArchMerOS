@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Plex Server + Web
+Comment=Start Plex Media Server on demand and open Plex Web in app mode
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-plex-launch.sh
+Icon=multimedia-player
+Terminal=false
+StartupNotify=true
+Categories=AudioVideo;Video;Network;
+Keywords=plex;media;server;streaming;library;
+StartupWMClass=archmeros-plex

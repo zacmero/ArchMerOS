@@ -36,6 +36,7 @@ declare -A links=(
   ["${repo_root}/local/share/applications/chatgpt.desktop"]="${HOME}/.local/share/applications/chatgpt.desktop"
   ["${repo_root}/local/share/applications/gemini.desktop"]="${HOME}/.local/share/applications/gemini.desktop"
   ["${repo_root}/local/share/applications/youtube-music.desktop"]="${HOME}/.local/share/applications/youtube-music.desktop"
+  ["${repo_root}/local/share/applications/plex-server.desktop"]="${HOME}/.local/share/applications/plex-server.desktop"
   ["${repo_root}/local/share/applications/com.termius.Termius.desktop"]="${HOME}/.local/share/applications/com.termius.Termius.desktop"
   ["${repo_root}/local/share/applications/archmeros-emoji.desktop"]="${HOME}/.local/share/applications/archmeros-emoji.desktop"
   ["${repo_root}/local/share/applications/qbittorrent.desktop"]="${HOME}/.local/share/applications/qbittorrent.desktop"

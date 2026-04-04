@@ -26,6 +26,7 @@ SCREENSAVER_OVERRIDE_CONFIG = SCREENSAVER_OVERRIDE_DIR / "screensaver.conf"
 SCREENSAVER_LAUNCHER = REPO_ROOT / "config" / "archmeros" / "scripts" / "archmeros-screensaver.sh"
 WALLPAPER_STATE_FILE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "archmeros" / "wallpapers.json"
 SCREENSAVER_KEY_ORDER = [
+    "mode",
     "idle_timeout",
     "time_format",
     "date_format",
@@ -35,10 +36,8 @@ SCREENSAVER_KEY_ORDER = [
     "animation_speed",
 ]
 SCREENSAVER_EFFECTS = {
-    "beams": "Beams",
-    "print": "Print",
-    "colorcycle": "Color Cycle",
-    "none": "Static",
+    "slideshow": "Wallpaper Slide",
+    "nightdrive": "Night Drive",
 }
 
 PREVIEW_SIZE = (780, 440)
@@ -421,7 +420,10 @@ class ScreensaverStudio(tk.Toplevel):
 
         settings = load_screensaver_settings()
         self.enabled_var = tk.BooleanVar(value=settings.get("enabled", "true").lower() != "false")
-        self.effect_var = tk.StringVar(value=settings.get("animation_type", "beams"))
+        mode = settings.get("mode") or settings.get("animation_type", "slideshow")
+        if mode not in SCREENSAVER_EFFECTS:
+            mode = "slideshow"
+        self.effect_var = tk.StringVar(value=mode)
         self.speed_var = tk.IntVar(value=int(settings.get("animation_speed", "2") or 2))
         self.animate_var = tk.BooleanVar(value=settings.get("animate_on_start", "true").lower() == "true")
 
@@ -433,7 +435,7 @@ class ScreensaverStudio(tk.Toplevel):
         tk.Label(header, text="SCREENSAVER", bg="#171a24", fg="#7cb8ff", font=("Cascadia Code", 20, "bold")).pack(anchor="w")
         tk.Label(
             header,
-            text="This is the live session screensaver layer. It uses the same ArchMerOS logo system as the greeter, but triggers from desktop idle.",
+            text="Choose between a reliable wallpaper slideshow or a custom ArchMerOS Night Drive cyberpunk screensaver. Both trigger from desktop idle.",
             bg="#171a24",
             fg="#c6d0f5",
             justify="left",
@@ -442,7 +444,7 @@ class ScreensaverStudio(tk.Toplevel):
 
         effect_frame = tk.Frame(shell, bg="#171a24")
         effect_frame.pack(fill="x", pady=(0, 16))
-        tk.Label(effect_frame, text="Animation", bg="#171a24", fg="#7cb8ff").pack(anchor="w", pady=(0, 8))
+        tk.Label(effect_frame, text="Mode", bg="#171a24", fg="#7cb8ff").pack(anchor="w", pady=(0, 8))
 
         chips = tk.Frame(effect_frame, bg="#171a24")
         chips.pack(fill="x")
@@ -560,6 +562,7 @@ class ScreensaverStudio(tk.Toplevel):
     def _settings_payload(self) -> dict[str, str]:
         return {
             "enabled": "true" if self.enabled_var.get() else "false",
+            "mode": self.effect_var.get(),
             "animate_on_start": "true" if self.animate_var.get() else "false",
             "animation_type": self.effect_var.get(),
             "animation_speed": str(self.speed_var.get()),

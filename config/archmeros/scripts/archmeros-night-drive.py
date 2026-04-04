@@ -658,7 +658,7 @@ class TerminalController:
 
 
 class NightDriveApp:
-    def __init__(self) -> None:
+    def __init__(self, *, screensaver: bool = False) -> None:
         self.view_index = 0
         self.ritual_index = 0
         self.transmission_index = 0
@@ -669,6 +669,10 @@ class NightDriveApp:
         self.drive_sequence: DriveSequence | None = None
         self.state = build_state(self.sequence_offset)
         self.last_refresh = time.monotonic()
+        self.screensaver = screensaver
+        self.screensaver_started_at = time.monotonic()
+        if self.screensaver:
+            self.start_drive_sequence()
 
     def palette_rgb(self, name: str, fallback: str) -> RGB:
         return parse_rgb(self.state.palette.get(name, fallback), parse_rgb(fallback, (255, 255, 255)))
@@ -693,6 +697,9 @@ class NightDriveApp:
         self.refresh_state_if_needed(force=True)
         self.show_help = False
         self.drive_sequence = build_drive_sequence(self.state, self.frame, self.sequence_offset)
+        if self.screensaver:
+            self.drive_sequence.traffic.clear()
+            self.drive_sequence.spawn_timer = 9999.0
 
     def reroll(self) -> None:
         self.sequence_offset += 1
@@ -700,6 +707,8 @@ class NightDriveApp:
         self.refresh_state_if_needed(force=True)
 
     def handle_key(self, key: str) -> bool:
+        if self.screensaver and key:
+            return False
         drive_sequence = self.active_drive_sequence()
         if key in {"q", "Q"}:
             return False
@@ -791,6 +800,9 @@ class NightDriveApp:
         if delta <= 0.0:
             return
 
+        if self.screensaver:
+            sequence.desired_lane = 1
+
         lane_target = float(sequence.desired_lane - 1)
         lane_snap = 12.0 if sequence.vehicle_kind == "motorcycle" else 8.0
         sequence.lane_position += (lane_target - sequence.lane_position) * min(1.0, delta * lane_snap)
@@ -806,6 +818,9 @@ class NightDriveApp:
         sequence.speed += (ambient_speed - sequence.speed) * min(1.0, delta * 0.75)
         sequence.speed = max(92.0, min(float(sequence.speed_peak), sequence.speed))
         sequence.distance += sequence.speed * delta * 0.12
+
+        if self.screensaver:
+            return
 
         sequence.spawn_timer -= delta * (0.95 + ((sequence.speed / max(1.0, sequence.speed_peak)) * 1.2))
         if sequence.spawn_timer <= 0.0 and len(sequence.traffic) < 7:
@@ -1185,6 +1200,21 @@ class NightDriveApp:
             canvas.text(overlay_x + 2, overlay_y + 2, "Neon everywhere. Your line broke.", fg=text, bg=overlay_bg, max_width=max(0, overlay_w - 4))
             canvas.text(overlay_x + 2, overlay_y + 3, "Enter restarts. Esc returns to the cockpit.", fg=subtext, bg=overlay_bg, max_width=max(0, overlay_w - 4))
 
+    def draw_screensaver_sequence(self, canvas: Canvas, sequence: DriveSequence) -> None:
+        self.draw_drive_sequence(canvas, sequence)
+        crust = self.palette_rgb("crust", DEFAULT_PALETTE["crust"])
+        accent = self.palette_rgb("accent", DEFAULT_PALETTE["accent"])
+        accent2 = self.palette_rgb("accent2", DEFAULT_PALETTE["accent2"])
+        text = self.palette_rgb("text", DEFAULT_PALETTE["text"])
+
+        canvas.fill_rect(0, 0, canvas.width, 3, bg=crust)
+        canvas.fill_rect(0, canvas.height - 2, canvas.width, 2, bg=crust)
+
+        label = " ARCHMEROS NIGHT DRIVE "
+        pulse = accent2 if (self.frame // 12) % 2 == 0 else accent
+        x = max(2, (canvas.width - len(label)) // 2)
+        canvas.text(x, canvas.height - 1, label, fg=pulse, bg=crust, max_width=len(label))
+
     def draw_background(self, canvas: Canvas) -> None:
         crust = self.palette_rgb("crust", DEFAULT_PALETTE["crust"])
         base = self.palette_rgb("base", DEFAULT_PALETTE["base"])
@@ -1496,6 +1526,21 @@ class NightDriveApp:
         crust = self.palette_rgb("crust", DEFAULT_PALETTE["crust"])
         canvas = Canvas(width, height, bg=crust)
         drive_sequence = self.active_drive_sequence()
+        if self.screensaver:
+            if drive_sequence is None:
+                self.start_drive_sequence()
+                drive_sequence = self.active_drive_sequence()
+            if drive_sequence is not None:
+                elapsed = time.monotonic() - self.screensaver_started_at
+                if elapsed >= 45.0:
+                    self.screensaver_started_at = time.monotonic()
+                    self.reroll()
+                    self.start_drive_sequence()
+                    drive_sequence = self.active_drive_sequence()
+            if drive_sequence is not None:
+                self.draw_screensaver_sequence(canvas, drive_sequence)
+                self.frame += 1
+                return canvas.render(color=True, home=True)
         if drive_sequence is not None:
             self.draw_drive_sequence(canvas, drive_sequence)
             self.draw_help(canvas)
@@ -1589,9 +1634,10 @@ def main() -> int:
     parser.add_argument("--width", type=int, default=120, help="Snapshot width")
     parser.add_argument("--height", type=int, default=36, help="Snapshot height")
     parser.add_argument("--fps", type=float, default=12.0, help="Interactive frame rate")
+    parser.add_argument("--screensaver", action="store_true", help="Exit on the first keypress for screensaver use")
     args = parser.parse_args()
 
-    app = NightDriveApp()
+    app = NightDriveApp(screensaver=args.screensaver)
     if args.snapshot:
         sys.stdout.write(app.snapshot(max(70, args.width), max(20, args.height), color=not args.plain))
         if not args.plain:

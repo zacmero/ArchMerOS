@@ -6,9 +6,12 @@ script_path="$(readlink -f "${BASH_SOURCE[0]}")"
 repo_root="$(cd -- "$(dirname -- "$script_path")/../../.." && pwd)"
 log_path="/tmp/archmeros-screensaver.log"
 lock_path="/tmp/archmeros-screensaver.pid"
+stamp_path="/tmp/archmeros-screensaver.started"
+launch_script_path="/tmp/archmeros-screensaver-launch.sh"
 window_launcher="$HOME/.config/archmeros/scripts/archmeros-screensaver-window.sh"
 
 config_path="${HOME}/.config/archmeros/screensaver/screensaver.conf"
+default_config_path="${repo_root}/config/greetd/sysc-greet/share/ascii_configs/screensaver.conf"
 
 log() {
   printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >>"$log_path"
@@ -25,9 +28,25 @@ set_side_dpms() {
   "$HOME/.config/archmeros/scripts/archmeros-side-dpms.sh" "$1" >/dev/null 2>&1 || true
 }
 
+read_setting() {
+  local source_path="$1"
+  local key="$2"
+  local default_value="${2:-}"
+  default_value="${3:-}"
+  if [[ -f "$source_path" ]]; then
+    local value
+    value="$(sed -n "s/^${key}=//p" "$source_path" | head -n 1 | tr -d '\r')"
+    if [[ -n "$value" ]]; then
+      printf '%s\n' "$value"
+      return 0
+    fi
+  fi
+  printf '%s\n' "$default_value"
+}
+
 cleanup() {
   set_side_dpms on
-  rm -f "$lock_path"
+  rm -f "$lock_path" "$stamp_path" "$launch_script_path"
 }
 
 if [[ -f "$lock_path" ]]; then
@@ -52,14 +71,22 @@ printf 'launching:%s\n' "$(date +%s)" >"$lock_path"
 trap cleanup EXIT
 
 env_args=()
+effective_config_path="$default_config_path"
 if [[ -f "$config_path" ]]; then
-  enabled_value="$(sed -n 's/^enabled=//p' "$config_path" | head -n 1 | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')"
-  if [[ "$enabled_value" == "false" ]]; then
-    log "skip disabled"
-    exit 0
-  fi
-  env_args+=("ARCHMEROS_SCREENSAVER_CONFIG=$config_path")
+  effective_config_path="$config_path"
 fi
+
+enabled_value="$(read_setting "$effective_config_path" enabled true | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')"
+if [[ "$enabled_value" == "false" ]]; then
+  log "skip disabled"
+  exit 0
+fi
+
+mode_value="$(read_setting "$effective_config_path" mode nightdrive)"
+speed_value="$(read_setting "$effective_config_path" animation_speed 2)"
+env_args+=("ARCHMEROS_SCREENSAVER_CONFIG=$effective_config_path")
+env_args+=("ARCHMEROS_SCREENSAVER_MODE=$mode_value")
+env_args+=("ARCHMEROS_SCREENSAVER_SPEED=$speed_value")
 
 set_side_dpms off
 
@@ -69,10 +96,18 @@ if [[ ! -x "$window_launcher" ]]; then
 fi
 
 log "launch hyprland-window"
-launch_cmd="ARCHMEROS_SCREENSAVER_LOCK=$lock_path"
-launch_cmd+=" ${window_launcher@Q}"
+log "launch mode=$mode_value speed=$speed_value config=$effective_config_path"
+cat >"$launch_script_path" <<EOF
+#!/usr/bin/env bash
+export ARCHMEROS_SCREENSAVER_LOCK=$(printf '%q' "$lock_path")
+export ARCHMEROS_SCREENSAVER_CONFIG=$(printf '%q' "$effective_config_path")
+export ARCHMEROS_SCREENSAVER_MODE=$(printf '%q' "$mode_value")
+export ARCHMEROS_SCREENSAVER_SPEED=$(printf '%q' "$speed_value")
+exec $(printf '%q' "$window_launcher")
+EOF
+chmod +x "$launch_script_path"
 
-if hyprctl dispatch exec "$launch_cmd" >/dev/null 2>&1; then
+if hyprctl dispatch exec "$launch_script_path" >/dev/null 2>&1; then
   trap - EXIT
   exit 0
 fi

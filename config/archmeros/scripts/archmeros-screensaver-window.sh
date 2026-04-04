@@ -19,6 +19,7 @@ log() {
 
 cleanup() {
   hyprctl dispatch dpms on >/dev/null 2>&1 || true
+  "$HOME/.config/archmeros/scripts/archmeros-side-dpms.sh" on >/dev/null 2>&1 || true
   rm -f "$lock_path"
 }
 

@@ -23,11 +23,7 @@ if ~/.config/archmeros/scripts/archmeros-idle-media-active.sh; then
 fi
 
 set_side_dpms() {
-  local state="$1"
-  local monitor
-  for monitor in "${side_monitors[@]}"; do
-    hyprctl dispatch dpms "$state" "$monitor" >/dev/null 2>&1 || true
-  done
+  "$HOME/.config/archmeros/scripts/archmeros-side-dpms.sh" "$1" >/dev/null 2>&1 || true
 }
 
 cleanup() {

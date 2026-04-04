@@ -9,6 +9,8 @@ pid_path="${app_support_dir}/plex.pid"
 media_root="/run/media/zacmero/New Volume/Plex"
 plex_home="/usr/lib/plexmediaserver"
 plex_bin="${plex_home}/Plex Media Server"
+prefs_dir="${app_support_dir}/Plex Media Server"
+prefs_path="${prefs_dir}/Preferences.xml"
 
 mkdir -p "$app_support_dir" "$log_dir"
 
@@ -51,6 +53,12 @@ cleanup_stale_pid() {
   fi
 }
 
+ensure_network_prefs() {
+  if [[ -f "$prefs_path" ]]; then
+    "$HOME/.config/archmeros/scripts/archmeros-plex-preferences.py" "$prefs_path" >/dev/null 2>&1 || true
+  fi
+}
+
 start_server() {
   if [[ ! -x "$plex_bin" ]]; then
     printf 'plex binary missing: %s\n' "$plex_bin" >&2
@@ -63,6 +71,7 @@ start_server() {
   fi
 
   cleanup_stale_pid
+  ensure_network_prefs
 
   if is_running; then
     return 0

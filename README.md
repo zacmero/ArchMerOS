@@ -455,7 +455,8 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Shift + Left Mouse`: drag a window
 - `Shift + Right Mouse`: resize a window
 - `Super+V`: toggle floating
-- `Super+P`: pseudotile
+- `Super+Alt+P`: wallpaper picker
+- `Super+P`: wallpaper picker fallback for the ZX-K22 keyboard modifier bug
 - `Super+F`: fullscreen
 - `Super+G`: open Telegram
 - `Super+.`: open the emoji picker

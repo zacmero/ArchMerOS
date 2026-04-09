@@ -186,6 +186,13 @@ sudo bash install/system/apply-nvidia-system.sh
 
 That Pascal/NVIDIA path is documented in [docs/nvidia-pascal.md](/home/zacmero/projects/ArchMerOS/docs/nvidia-pascal.md).
 
+The main `sudo bash install/system/apply-system.sh` entrypoint now auto-detects both:
+
+- NVIDIA hardware, then applies the NVIDIA safety profile
+- BIOS/CSM or Windows-owned/shared-ESP layouts, then applies the shared-ESP bootloader path
+
+That keeps new ArchMerOS installs aligned with this workstation layout without needing separate manual follow-up commands.
+
 If an older ArchMerOS install was booted in BIOS/CSM mode while Windows owns the EFI partition, the shared-ESP migration path is documented in [docs/bootloader.md](/home/zacmero/projects/ArchMerOS/docs/bootloader.md) and applied with:
 
 ```bash

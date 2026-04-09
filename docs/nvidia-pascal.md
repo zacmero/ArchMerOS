@@ -28,6 +28,8 @@ sudo bash install/system/apply-nvidia-system.sh
 
 3. Reboot.
 
+If you use the main ArchMerOS system apply path instead of the standalone NVIDIA script, `install/system/apply-system.sh` now auto-runs the NVIDIA profile when it detects an NVIDIA GPU on the machine.
+
 ## What The System Apply Script Does
 
 [install/system/apply-nvidia-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-nvidia-system.sh) installs:
@@ -42,6 +44,8 @@ Then it:
 - forces `kernel-install` into GRUB-safe `layout=other`
 - rebuilds classic `/boot/initramfs-*.img` images explicitly for each installed kernel
 - regenerates `/boot/grub/grub.cfg`
+
+The full `install/system/apply-system.sh` entrypoint now also detects NVIDIA hardware and applies this profile automatically on matching machines, so new ArchMerOS installs do not need a separate manual NVIDIA step when the GPU is present.
 
 ## Update Safety
 

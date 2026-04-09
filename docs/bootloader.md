@@ -50,6 +50,8 @@ The bootloader script:
 - rewrites the ArchMerOS menu entries
 - regenerates `/boot/grub/grub.cfg`
 
+`install/system/apply-system.sh` now auto-selects this shared-ESP path when the machine looks like the Windows-owned/shared-ESP layout used on this workstation. The manual script remains available when you want to force the migration yourself.
+
 The tracked menu also includes two direct fallback entries:
 
 - `Arch Plain Recovery` with hotkey `p`
@@ -107,3 +109,4 @@ sudo grep -n 'terminal_output\|loadfont\|menu_color_\|menuentry ' /boot/grub/gru
 - The plain selector cannot cleanly replace the top `GNU GRUB version ...` header with a custom `ARCHMEROS` title.
 - If ArchMerOS later moves back to a full GRUB theme, the `GRUB_THEME` path can be re-enabled in the apply script.
 - If Linux is currently booted in BIOS/CSM mode, EFI files can still be installed safely, but firmware boot order cannot be rewritten from that session. In that case, rerun the shared-ESP script from a UEFI-booted ArchMerOS session or add `\EFI\ArchMerOS\grubx64.efi` manually in firmware.
+- The normal `install/system/apply-system.sh` entrypoint now detects this shared-ESP layout and applies it automatically on matching hardware, so new ArchMerOS installs do not need the extra manual step on this machine class.

@@ -46,7 +46,7 @@ should_apply_nvidia() {
     return 1
   fi
 
-  lspci -nnk 2>/dev/null | grep -qiE 'NVIDIA.*(VGA|3D|Display)|3D controller.*NVIDIA|Display controller.*NVIDIA'
+  lspci -nnk 2>/dev/null | grep -qi 'NVIDIA'
 }
 
 bash "${repo_root}/install/system/apply-audio-system.sh"

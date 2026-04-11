@@ -45,7 +45,14 @@ Then it:
 - rebuilds classic `/boot/initramfs-*.img` images explicitly for each installed kernel
 - regenerates `/boot/grub/grub.cfg`
 
+Hibernate support is now applied by the shared hibernate step in:
+
+- [install/system/apply-hibernate-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-hibernate-system.sh)
+
+That step adds `resume=UUID=...` when swap is available and keeps dracut's `resume` module in the initramfs.
+
 The full `install/system/apply-system.sh` entrypoint now also detects NVIDIA hardware and applies this profile automatically on matching machines, so new ArchMerOS installs do not need a separate manual NVIDIA step when the GPU is present.
+The bootloader path also preserves the hibernate `resume=UUID=...` parameter when swap is available, so standalone bootloader reruns do not wipe hibernation support.
 
 ## Update Safety
 

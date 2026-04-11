@@ -74,6 +74,15 @@ On GRUB-based ArchMerOS systems, boot image generation is also pinned away from 
 
 That forces `kernel-install` to `layout=other`, so future kernel or dracut updates keep using the classic `/boot/vmlinuz-*` and `/boot/initramfs-*.img` path instead of trying to write entries under `/boot/efi/<machine-id>/...`.
 
+If a usable swap target exists, the bootloader script also keeps `resume=UUID=...` in the GRUB kernel command line so hibernation stays available after future reruns of the bootloader path.
+
+Hibernate support is handled separately by:
+
+- [install/system/apply-hibernate-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-hibernate-system.sh)
+- [install/system/etc/dracut.conf.d/archmeros-hibernate.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/dracut.conf.d/archmeros-hibernate.conf)
+
+That path detects the active swap target, appends `resume=UUID=...` to `GRUB_CMDLINE_LINUX_DEFAULT`, and keeps dracut's `resume` module in the initramfs. `install/system/apply-system.sh` now runs that step automatically when a usable swap target exists.
+
 Backups are written to:
 
 ```text

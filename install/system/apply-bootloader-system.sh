@@ -58,7 +58,52 @@ root_uuid="$(findmnt -no UUID /)"
 boot_has_intel_ucode=0
 [[ -f /boot/intel-ucode.img ]] && boot_has_intel_ucode=1
 
+detect_resume_uuid() {
+  local swap_source swap_uuid
+
+  if [[ -r /proc/swaps ]]; then
+    swap_source="$(
+      awk 'NR > 1 && $1 ~ "^/dev/" && $1 !~ /^\/dev\/zram/ { print $1; exit }' /proc/swaps
+    )"
+    if [[ -n "${swap_source:-}" ]]; then
+      swap_uuid="$(blkid -s UUID -o value "${swap_source}" 2>/dev/null || true)"
+      if [[ -n "${swap_uuid:-}" ]]; then
+        printf '%s\n' "${swap_uuid}"
+        return 0
+      fi
+    fi
+  fi
+
+  if [[ -r /etc/fstab ]]; then
+    swap_source="$(
+      awk '$3 == "swap" && $1 ~ /^UUID=/ { sub(/^UUID=/, "", $1); print $1; exit }' /etc/fstab
+    )"
+    if [[ -n "${swap_source:-}" ]]; then
+      printf '%s\n' "${swap_source}"
+      return 0
+    fi
+
+    swap_source="$(
+      awk '$3 == "swap" && $1 ~ "^/dev/" { print $1; exit }' /etc/fstab
+    )"
+    if [[ -n "${swap_source:-}" ]]; then
+      swap_uuid="$(blkid -s UUID -o value "${swap_source}" 2>/dev/null || true)"
+      if [[ -n "${swap_uuid:-}" ]]; then
+        printf '%s\n' "${swap_uuid}"
+        return 0
+      fi
+    fi
+  fi
+
+  return 1
+}
+
+resume_uuid="$(detect_resume_uuid || true)"
+
 quiet_args="usbcore.autosuspend=-1 quiet loglevel=3 systemd.show_status=false vt.global_cursor_default=0"
+if [[ -n "${resume_uuid:-}" ]]; then
+  quiet_args="${quiet_args} resume=UUID=${resume_uuid}"
+fi
 safe_args="usbcore.autosuspend=-1 systemd.show_status=true loglevel=4"
 recovery_args="usbcore.autosuspend=-1 systemd.unit=multi-user.target nomodeset systemd.show_status=true loglevel=4"
 

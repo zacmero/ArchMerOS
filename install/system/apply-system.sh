@@ -68,6 +68,7 @@ else
   printf 'apply-system: NVIDIA profile skipped; no NVIDIA GPU detected\n'
 fi
 
+bash "${repo_root}/install/system/apply-hibernate-system.sh"
 bash "${repo_root}/install/system/apply-greeter-system.sh"
 
 printf 'archmeros system defaults applied\n'

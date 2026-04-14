@@ -13,7 +13,7 @@ This script is intentionally non-destructive at this stage.
 It does not install packages yet.
 
 Planned actions:
-- read package manifests from install/packages/
+- install package manifests via install/packages/install.sh
 - verify required binaries
 - optionally install Hyprland stack later
 - deploy tracked configs by symlink via install/link.sh

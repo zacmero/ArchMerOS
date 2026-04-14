@@ -1,3 +1,11 @@
 # Optional packages not currently available in the official Arch repos used here
 walker-bin
+elephant
+elephant-calc
+elephant-desktopapplications
+elephant-files
+elephant-providerlist
+elephant-runner
+elephant-websearch
+elephant-windows
 fabric-ai-bin

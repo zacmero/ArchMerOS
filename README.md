@@ -48,6 +48,7 @@ Current known state on this workstation:
 - live user configs are symlinked from this repo into `~/.config`
 - Walker is the general launcher
 - Walker providers are installed through Elephant and started as user services from Hyprland
+- Walker and the Elephant provider packages are tracked in `install/packages/optional-aur.txt` for fresh installs
 - `mako` notifications use ArchMerOS timeout rules, and app notifications are dismissed automatically when their app regains focus
 - `Super+E` syncs the trusted Windows Desktop intersection into `~/Desktop` and opens `thunar`
 - `Super+A` opens the ArchMerOS floating `aichat` HUD, and `Super+Shift+A` opens the Fabric browser overlay
@@ -161,9 +162,23 @@ This populates:
 - `~/.local/share/themes`
 - `~/.local/share/icons`
 
-3. Log into the Hyprland session from the display manager.
+3. Install the tracked package manifests:
 
-4. Apply the tracked system-level defaults once as root:
+```bash
+bash install/packages/install.sh
+```
+
+This installs the core repo packages plus `optional-aur.txt`, which now explicitly includes Walker and the Elephant provider stack.
+
+Use flags when you want the workstation or NVIDIA profiles too:
+
+```bash
+bash install/packages/install.sh --workstation --nvidia-pascal
+```
+
+4. Log into the Hyprland session from the display manager.
+
+5. Apply the tracked system-level defaults once as root:
 
 ```bash
 sudo bash install/system/apply-system.sh
@@ -193,6 +208,11 @@ The main `sudo bash install/system/apply-system.sh` entrypoint now auto-detects 
 
 That keeps new ArchMerOS installs aligned with this workstation layout without needing separate manual follow-up commands.
 
+Walker note:
+
+- fresh installs should install `walker-bin` plus the `elephant*` provider packages from `install/packages/optional-aur.txt`
+- if Walker ever comes up empty after a major Go toolchain update, rebuild the Walker/Elephant stack cleanly rather than relying on an old cached binary build
+
 If an older ArchMerOS install was booted in BIOS/CSM mode while Windows owns the EFI partition, the shared-ESP migration path is documented in [docs/bootloader.md](/home/zacmero/projects/ArchMerOS/docs/bootloader.md) and applied with:
 
 ```bash
@@ -205,7 +225,7 @@ Greeter theme status:
 - current default design direction is `archmeros` theme + `ascii-rain` background + `pour` logo
 - the tracked greetd apply path now installs quiet wrapper launchers so fresh ArchMerOS installs do not leak greeter/session startup logs onto the TTY
 
-5. From inside a Hyprland terminal, refresh the shell components with the tracked helper:
+6. From inside a Hyprland terminal, refresh the shell components with the tracked helper:
 
 ```bash
 ~/.config/archmeros/scripts/archmeros-refresh-shell.sh

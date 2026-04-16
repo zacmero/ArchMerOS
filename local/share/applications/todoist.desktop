@@ -2,11 +2,11 @@
 Version=1.0
 Type=Application
 Name=Todoist
-Comment=Task manager in app mode
-Exec=/home/zacmero/.config/archmeros/scripts/archmeros-webapp.sh todoist
+Comment=Task manager
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-todoist.sh %U
 Icon=todoist
 Terminal=false
 StartupNotify=true
 Categories=Office;Utility;
 Keywords=todo;tasks;productivity;
-StartupWMClass=archmeros-todoist
+StartupWMClass=com.todoist.Todoist

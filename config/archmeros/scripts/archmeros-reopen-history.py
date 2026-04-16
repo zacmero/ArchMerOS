@@ -123,8 +123,9 @@ def known_command_for_window(klass: str, title: str) -> tuple[list[str], str] | 
         ("telegramdesktop", "", [str(scripts / "archmeros-telegram.sh")]),
         ("archmeros-chatgpt", "", [str(scripts / "archmeros-webapp.sh"), "chatgpt"]),
         ("archmeros-gemini", "", [str(scripts / "archmeros-webapp.sh"), "gemini"]),
-        ("archmeros-todoist", "", [str(scripts / "archmeros-webapp.sh"), "todoist"]),
-        ("archmeros-evernote", "", [str(scripts / "archmeros-webapp.sh"), "evernote"]),
+        ("archmeros-todoist", "", [str(scripts / "archmeros-todoist.sh")]),
+        ("com.todoist.todoist", "", [str(scripts / "archmeros-todoist.sh")]),
+        ("todoist", "", [str(scripts / "archmeros-todoist.sh")]),
         ("archmeros-plex", "", [str(scripts / "archmeros-plex-launch.sh")]),
         ("firefox", "youtube music", [str(scripts / "archmeros-youtube-music.sh")]),
     ]

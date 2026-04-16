@@ -168,7 +168,9 @@ This populates:
 bash install/packages/install.sh
 ```
 
-This installs the core repo packages plus `optional-aur.txt`, which now explicitly includes Walker and the Elephant provider stack.
+This installs the core repo packages, AUR package manifest, and Flatpak app manifest.
+
+The default app set includes Firefox, Obsidian, Todoist, Termius, Walker, and the Elephant provider stack. Todoist and Termius are installed through the Flatpak manifest. Evernote is not part of the default ArchMerOS app set.
 
 Use flags when you want the workstation or NVIDIA profiles too:
 
@@ -628,13 +630,14 @@ Tracked launcher:
 Tracked app entries:
 
 - [todoist.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/todoist.desktop)
-- [evernote.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/evernote.desktop)
+- [obsidian.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/obsidian.desktop)
 - [chatgpt.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/chatgpt.desktop)
 - [youtube-music.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/youtube-music.desktop)
+- [com.termius.Termius.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/com.termius.Termius.desktop)
 
 Current launch paths:
 
-- Walker/Rofi entries: `Todoist`, `Evernote`, `ChatGPT`, `YouTube Music`
+- Walker/Rofi entries: `Todoist`, `ChatGPT`, `YouTube Music`, `Termius`, `Obsidian`
 - `Super+M`: open `YouTube Music`
 - `Super+Shift+C`: open `ChatGPT`
 - `Super+N`: create a new PARA note in Neovim
@@ -837,8 +840,7 @@ Current web-app placement rules:
 
 - `YouTube Music` -> workspace `9` on the right monitor
 - `ChatGPT` -> medium-centered floating window
-- `Todoist` -> workspace `5` / `V`
-- `Evernote` -> workspace `5` / `V`
+- `Todoist` -> native Flatpak when available, workspace `5` / `V`
 - `Obsidian` -> normal app launch through `archmeros-obsidian.sh`
 
 ## Audio Stack

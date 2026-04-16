@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Obsidian
+Comment=Knowledge base and notes
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-obsidian.sh %U
+Icon=obsidian
+Terminal=false
+StartupNotify=true
+Categories=Office;Utility;
+Keywords=notes;markdown;knowledge;writing;
+StartupWMClass=obsidian

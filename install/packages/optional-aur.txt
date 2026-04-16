@@ -1,4 +1,5 @@
 # Optional packages not currently available in the official Arch repos used here
+wlogout
 walker-bin
 elephant
 elephant-calc

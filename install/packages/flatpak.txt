@@ -1,0 +1,3 @@
+# Flatpak apps used by ArchMerOS launchers
+com.todoist.Todoist
+com.termius.Termius

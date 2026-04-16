@@ -27,10 +27,6 @@ case "$app_id" in
     name="Todoist"
     url="https://todoist.com/app"
     ;;
-  evernote)
-    name="Evernote"
-    url="https://www.evernote.com/client/web"
-    ;;
   chatgpt)
     name="ChatGPT"
     url="https://chatgpt.com/"

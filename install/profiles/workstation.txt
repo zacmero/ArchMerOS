@@ -1,5 +1,3 @@
 # Additional packages for the main coding workstation
-obsidian
-todoist-electron
 network-manager-applet
 wdisplays

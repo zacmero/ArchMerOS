@@ -112,21 +112,57 @@ def track_launch(
     return 0
 
 
+def known_command_for_window(klass: str, title: str) -> tuple[list[str], str] | None:
+    scripts = Path.home() / ".config/archmeros/scripts"
+    normalized_title = normalize(title)
+    known_apps = [
+        ("obsidian", "", [str(scripts / "archmeros-obsidian.sh")]),
+        ("termius", "", [str(scripts / "archmeros-termius.sh")]),
+        ("telegram", "", [str(scripts / "archmeros-telegram.sh")]),
+        ("org.telegram.desktop", "", [str(scripts / "archmeros-telegram.sh")]),
+        ("telegramdesktop", "", [str(scripts / "archmeros-telegram.sh")]),
+        ("archmeros-chatgpt", "", [str(scripts / "archmeros-webapp.sh"), "chatgpt"]),
+        ("archmeros-gemini", "", [str(scripts / "archmeros-webapp.sh"), "gemini"]),
+        ("archmeros-todoist", "", [str(scripts / "archmeros-webapp.sh"), "todoist"]),
+        ("archmeros-evernote", "", [str(scripts / "archmeros-webapp.sh"), "evernote"]),
+        ("archmeros-plex", "", [str(scripts / "archmeros-plex-launch.sh")]),
+        ("firefox", "youtube music", [str(scripts / "archmeros-youtube-music.sh")]),
+    ]
+    for class_match, title_match, command in known_apps:
+        if class_match and class_match not in klass:
+            continue
+        if title_match and title_match not in normalized_title:
+            continue
+        return command, "general"
+    return None
+
+
 def resolve_command_from_values(klass: str, pid: int, title: str) -> tuple[list[str], str]:
     argv = read_cmdline(pid) if pid > 0 else []
     proc = process_name(argv)
-    normalized_title = normalize(title)
+    scripts = Path.home() / ".config/archmeros/scripts"
+
+    known_command = known_command_for_window(klass, title)
+    if known_command is not None:
+        return known_command
 
     launches = load_json(LAUNCHES_PATH)
     best_item = None
     best_score = -1
     for item in reversed(launches):
+        item_class = normalize(item.get("class"))
+        item_prefix = normalize(item.get("class_prefix"))
+        if item_class and item_class != klass:
+            continue
+        if item_prefix and not klass.startswith(item_prefix):
+            continue
+
         score = 0
-        if item.get("title_contains") and item["title_contains"] in normalized_title:
+        if item.get("title_contains") and item["title_contains"] in normalize(title):
             score += 150
-        if item.get("class") and item["class"] == klass:
+        if item_class and item_class == klass:
             score += 120
-        if item.get("class_prefix") and klass.startswith(item["class_prefix"]):
+        if item_prefix and klass.startswith(item_prefix):
             score += 110
         if item.get("process") and item["process"] == proc:
             score += 90
@@ -140,7 +176,7 @@ def resolve_command_from_values(klass: str, pid: int, title: str) -> tuple[list[
         return list(best_item["command"]), best_item.get("kind", "general")
 
     if klass == "thunar":
-        return [str(Path.home() / ".config/archmeros/scripts/archmeros-thunar.sh"), str(Path.home())], "folder"
+        return [str(scripts / "archmeros-thunar.sh"), str(Path.home())], "folder"
 
     if argv:
         return argv, "general"
@@ -200,11 +236,18 @@ def reopen(scope: str) -> int:
     if not data:
         return 0
 
-    item = data.pop()
+    item = None
+    command = []
+    while data:
+        candidate = data.pop()
+        candidate_command = candidate.get("command") or []
+        if candidate_command:
+            item = candidate
+            command = candidate_command
+            break
     save_json(path, data[-MAX_HISTORY:])
 
-    command = item.get("command") or []
-    if not command:
+    if item is None or not command:
         return 0
 
     with open(os.devnull, "rb") as devnull_in, open(os.devnull, "wb") as devnull_out:

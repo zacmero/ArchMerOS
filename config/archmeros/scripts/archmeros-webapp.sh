@@ -57,6 +57,16 @@ esac
 profile_root="${XDG_DATA_HOME:-$HOME/.local/share}/archmeros/webapps/${app_id}"
 mkdir -p "$profile_root"
 
+track_command=("$HOME/.config/archmeros/scripts/archmeros-webapp.sh" "$app_id")
+if [[ "$app_id" == "plex" ]]; then
+  track_command=("$HOME/.config/archmeros/scripts/archmeros-plex-launch.sh")
+fi
+
+python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" \
+  track-launch general "archmeros-${app_id}" "archmeros-${app_id}" "$browser" -- \
+  "${track_command[@]}" \
+  >/tmp/archmeros-reopen-track-"${app_id}".log 2>&1 || true
+
 mode="none"
 if command -v hyprctl >/dev/null 2>&1; then
   active="$(hyprctl activewindow -j 2>/dev/null || printf '{}')"

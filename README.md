@@ -489,7 +489,8 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+.`: open the emoji picker
 - `Super+M`: open YouTube Music app
 - `Super+N`: create a new PARA note in Neovim
-- `Super+Shift+N`: open Todoist and Evernote on workspace `V`
+- `Super+Shift+N`: open Todoist and Obsidian on workspace `V`
+- `Super+0`: open Obsidian
 - `Super+C`: pop focused window out, center it, float it, and pin it
 - `Super+\``: pop focused window into a large near-full centered mode
 - `Alt+\``: same large pop/maximize flow as `Super+\``
@@ -637,7 +638,8 @@ Current launch paths:
 - `Super+M`: open `YouTube Music`
 - `Super+Shift+C`: open `ChatGPT`
 - `Super+N`: create a new PARA note in Neovim
-- `Super+Shift+N`: open `Todoist` and `Evernote` together on workspace `V`
+- `Super+Shift+N`: open `Todoist` and `Obsidian` together on workspace `V`
+- `Super+0`: open `Obsidian`
 
 Chromium-backed web apps launch in isolated profiles under:
 
@@ -743,7 +745,7 @@ Default text sizing:
 
 Productivity launcher:
 
-- `Super+Shift+N` opens Todoist and Evernote together on workspace `V`
+- `Super+Shift+N` opens Todoist and Obsidian together on workspace `V`
 
 ## Bluetooth
 
@@ -837,6 +839,7 @@ Current web-app placement rules:
 - `ChatGPT` -> medium-centered floating window
 - `Todoist` -> workspace `5` / `V`
 - `Evernote` -> workspace `5` / `V`
+- `Obsidian` -> normal app launch through `archmeros-obsidian.sh`
 
 ## Audio Stack
 

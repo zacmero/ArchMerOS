@@ -191,6 +191,7 @@ This currently applies:
 - audio system defaults
 - bluetooth system defaults
 - keyboard hwdb overrides
+- monitor-service polkit rule for the side-screen standby hotkey
 - ArchMerOS bootloader defaults
 - ArchMerOS greetd/sysc-greet login defaults
 
@@ -468,6 +469,7 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+Return`: open WezTerm
 - `Super+Space`: launcher
 - `Super+E`: PARA hub / file access
+- `Super+S` or `Super+Alt+S`: side-screen standby toggle. The right side display uses DPMS, the left AOC display gets a black fullscreen cover because it does not expose DDC/CI power control, and `mero-monitor` is stopped/started with the same action.
 - `Super+Print`: region screenshot
 - `Super+Shift+Print`: full screenshot
 - `Alt+1` to `Alt+5`: switch main workspaces

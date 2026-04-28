@@ -191,6 +191,7 @@ This currently applies:
 - audio system defaults
 - bluetooth system defaults
 - keyboard hwdb overrides
+- build throttle for package and DKMS jobs
 - monitor-service polkit rule for the side-screen standby hotkey
 - ArchMerOS bootloader defaults
 - ArchMerOS greetd/sysc-greet login defaults
@@ -210,6 +211,13 @@ The main `sudo bash install/system/apply-system.sh` entrypoint now auto-detects 
 - BIOS/CSM or Windows-owned/shared-ESP layouts, then applies the shared-ESP bootloader path
 
 That keeps new ArchMerOS installs aligned with this workstation layout without needing separate manual follow-up commands.
+
+The same system apply path also installs a conservative build throttle:
+
+- `MAKEFLAGS=-j2`
+- `CMAKE_BUILD_PARALLEL_LEVEL=2`
+
+That keeps `yay`/AUR builds and DKMS rebuilds from fanning out to all cores on this machine class.
 
 Walker note:
 

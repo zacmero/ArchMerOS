@@ -1,0 +1,14 @@
+[Unit]
+Description=LLMero Bonsai OpenAI-compatible server
+After=default.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/zacmero/projects/LLMero
+Environment=LD_LIBRARY_PATH=/home/zacmero/projects/LLMero/.llmero/build/llmero-bonsai/cuda/bin:/opt/cuda-12.9/targets/x86_64-linux/lib
+ExecStart=/home/zacmero/projects/LLMero/.llmero/build/llmero-bonsai/cuda/bin/llama-server --host 0.0.0.0 --port 8081 --alias bonsai-8b -c 4096 -ngl 99 -m /home/zacmero/projects/LLMero/models/llmero-bonsai/Bonsai-8B.gguf --temp 0.5 --top-p 0.85 --top-k 20
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

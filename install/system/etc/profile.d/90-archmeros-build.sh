@@ -1,0 +1,2 @@
+export MAKEFLAGS='-j2'
+export CMAKE_BUILD_PARALLEL_LEVEL='2'

@@ -96,6 +96,76 @@ cache_breakdown() {
     | awk '{printf "%-24s %s\n", $2, $1}'
 }
 
+safe_cache_item() {
+  local label="$1"
+  local path="$2"
+  local what_it_is="$3"
+  local cleanup_cmd="$4"
+  local size="missing"
+
+  if [[ -e "$path" ]]; then
+    size="$(du -sh "$path" 2>/dev/null | awk '{print $1}' || true)"
+  fi
+
+  printf '%-24s %-14s %s\n' "$label" "${size:-unknown}" "$what_it_is"
+  printf '  cleanup: %s\n' "$cleanup_cmd"
+}
+
+trim_cache_menu() {
+  while true; do
+    local path
+    printf '\033]0;ArchMerOS Cleanup - Cache Trim\a'
+    cat <<'EOF'
+Cache trim submenu
+
+1) yay cache        ~/.cache/yay
+2) uv cache         ~/.cache/uv
+3) Mozilla cache    ~/.cache/mozilla
+4) Playwright cache ~/.cache/ms-playwright
+5) go build cache   ~/.cache/go-build
+6) pip cache        ~/.cache/pip
+7) Chromium cache   ~/.cache/chromium
+8) Electron cache   ~/.cache/electron
+9) Thumbnails       ~/.cache/thumbnails
+q) Back
+EOF
+
+    printf '\nSelect: '
+    read -r choice
+    case "$choice" in
+      1) path="${HOME}/.cache/yay" ;;
+      2) path="${HOME}/.cache/uv" ;;
+      3) path="${HOME}/.cache/mozilla" ;;
+      4) path="${HOME}/.cache/ms-playwright" ;;
+      5) path="${HOME}/.cache/go-build" ;;
+      6) path="${HOME}/.cache/pip" ;;
+      7) path="${HOME}/.cache/chromium" ;;
+      8) path="${HOME}/.cache/electron" ;;
+      9) path="${HOME}/.cache/thumbnails" ;;
+      q|Q) return 0 ;;
+      *) printf 'Unknown choice.\n\n' ; continue ;;
+    esac
+
+    if [[ ! -e "$path" ]]; then
+      printf 'Path missing: %s\n\n' "$path"
+      continue
+    fi
+
+    safe_cache_item "$(basename "$path")" "$path" "user cache folder" "rm -rf \"$path\""
+    read -r -p "Delete ${path} now? [y/N] " answer
+    case "$answer" in
+      y|Y|yes|YES)
+        rm -rf "$path"
+        printf 'Deleted %s\n' "$path"
+        ;;
+      *)
+        printf 'Skipped.\n'
+        ;;
+    esac
+    printf '\n'
+  done
+}
+
 cache_status() {
   printf 'Package cache:\n'
   du -sh /var/cache/pacman/pkg 2>/dev/null || printf '  unavailable\n'
@@ -234,10 +304,21 @@ ArchMerOS Cleanup
 7) Show cache breakdown
    du -sh ~/.cache/* ~/.cache/.[!.]* ~/.cache/..?* 2>/dev/null | sort -h
 
-8) Remove orphan packages
+8) Trim cache submenu
+   rm -rf ~/.cache/yay
+   rm -rf ~/.cache/uv
+   rm -rf ~/.cache/mozilla
+   rm -rf ~/.cache/ms-playwright
+   rm -rf ~/.cache/go-build
+   rm -rf ~/.cache/pip
+   rm -rf ~/.cache/chromium
+   rm -rf ~/.cache/electron
+   rm -rf ~/.cache/thumbnails
+
+9) Remove orphan packages
    sudo pacman -Rns <orphan package names>
 
-9) Full cleanup
+10) Full cleanup
    sudo paccache -r -k 1
    sudo journalctl --vacuum-time=7d
    flatpak uninstall --unused
@@ -263,8 +344,9 @@ interactive_menu() {
       5) cleanup_passive ;;
       6) show_orphans ;;
       7) cache_breakdown ;;
-      8) remove_orphans ;;
-      9) full_cleanup ;;
+      8) trim_cache_menu ;;
+      9) remove_orphans ;;
+      10) full_cleanup ;;
       q|Q) exit 0 ;;
       *) printf 'Unknown choice.\n' ;;
     esac
@@ -305,6 +387,9 @@ case "$mode" in
   cache-breakdown)
     cache_breakdown
     ;;
+  cache-trim|trim-cache)
+    trim_cache_menu
+    ;;
   orphans)
     show_orphans
     ;;
@@ -315,7 +400,7 @@ case "$mode" in
     full_cleanup
     ;;
   *)
-    printf 'Usage: %s [menu|status|cache|sizes|passive|passive-cleanup|cache-breakdown|orphans|remove-orphans|all]\n' "$0" >&2
+    printf 'Usage: %s [menu|status|cache|sizes|passive|passive-cleanup|cache-breakdown|cache-trim|orphans|remove-orphans|all]\n' "$0" >&2
     exit 1
     ;;
 esac

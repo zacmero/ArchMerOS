@@ -654,7 +654,7 @@ Current launch paths:
 - `Super+N`: create a new PARA note in Neovim
 - `Super+Shift+N`: open `Todoist` and `Obsidian` together on workspace `V`
 - `Super+0`: open `Obsidian`
-- `ArchMerOS Cleanup`: open a terminal menu for `du -sh /var/cache/pacman/pkg`, `paccache -r -k 1`, `pacman -Qdtq`, and a package-size audit for `cuda`, `dejagnu`, `doxygen`, `eos-reboot-recommended`, `ffmpeg4.4`, `gcc-ada`, `gcc-d`, `go`, `minizip-ng`, `python-pytest`, `ttf-jetbrains-mono`, `vulkan-headers`, and `xbitmaps`
+- `ArchMerOS Cleanup`: open a terminal menu for `du -sh /var/cache/pacman/pkg`, `paccache -r -k 1`, `pacman -Qdtq`, a package-size audit for `cuda`, `dejagnu`, `doxygen`, `eos-reboot-recommended`, `ffmpeg4.4`, `gcc-ada`, `gcc-d`, `go`, `minizip-ng`, `python-pytest`, `ttf-jetbrains-mono`, `vulkan-headers`, and `xbitmaps`, plus passive-junk reporting for `journalctl --disk-usage`, `du -sh /var/lib/flatpak ~/.local/share/flatpak ~/.cache/thumbnails ~/.cache /var/lib/systemd/coredump /tmp /var/tmp`, `flatpak uninstall --unused`, `sudo journalctl --vacuum-time=7d`, and `sudo coredumpctl purge`
 
 Chromium-backed web apps launch in isolated profiles under:
 

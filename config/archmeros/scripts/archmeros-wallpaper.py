@@ -18,6 +18,7 @@ DEFAULTS_FILE = REPO_ROOT / "config" / "archmeros" / "defaults" / "wallpapers.js
 STATE_DIR = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "archmeros"
 STATE_FILE = STATE_DIR / "wallpapers.json"
 LEGACY_STATE_FILE = STATE_DIR / "current-wallpaper"
+PID_FILE = STATE_DIR / "wallpaper.pid"
 LOG_FILE = Path("/tmp/archmeros-wallpaper.log")
 APPEARANCE_STATE_FILE = STATE_DIR / "appearance.json"
 THEME_SCRIPT = REPO_ROOT / "config" / "archmeros" / "scripts" / "archmeros-theme.py"
@@ -30,13 +31,29 @@ def run(command: list[str], check: bool = True) -> subprocess.CompletedProcess[s
 
 def start_detached(command: list[str], log_path: Path) -> None:
     with log_path.open("w", encoding="utf-8") as handle:
-        subprocess.Popen(
+        process = subprocess.Popen(
             command,
             stdout=handle,
             stderr=subprocess.STDOUT,
             stdin=subprocess.DEVNULL,
             start_new_session=True,
         )
+    PID_FILE.write_text(f"{process.pid}\n", encoding="utf-8")
+
+
+def stop_backend() -> None:
+    if PID_FILE.exists():
+        try:
+          pid = int(PID_FILE.read_text(encoding="utf-8").strip())
+        except Exception:
+            pid = 0
+        if pid > 0:
+            subprocess.run(["kill", str(pid)], check=False)
+            subprocess.run(["sleep", "1"], check=False)
+            subprocess.run(["kill", "-9", str(pid)], check=False)
+        PID_FILE.unlink(missing_ok=True)
+    subprocess.run(["pkill", "-x", "swaybg"], check=False)
+    subprocess.run(["pkill", "-x", "hyprpaper"], check=False)
 
 
 def active_monitors() -> list[str]:
@@ -165,8 +182,7 @@ def apply_state(state: dict) -> None:
     rotation_enabled = bool(state.get("rotation_enabled", False))
     rotation_interval = max(60, int(state.get("rotation_interval", DEFAULT_ROTATION_INTERVAL) or DEFAULT_ROTATION_INTERVAL))
 
-    subprocess.run(["pkill", "-x", "swaybg"], check=False)
-    subprocess.run(["pkill", "-x", "hyprpaper"], check=False)
+    stop_backend()
 
     if rotation_enabled:
         config_file = Path("/tmp/archmeros-hyprpaper.conf")
@@ -258,7 +274,18 @@ def main() -> int:
     parser.add_argument("--enable-rotation", action="store_true", help="Enable random wallpaper rotation")
     parser.add_argument("--disable-rotation", action="store_true", help="Disable random wallpaper rotation")
     parser.add_argument("--rotation-interval", type=int, help="Wallpaper rotation interval in seconds")
+    parser.add_argument("--stop", action="store_true", help="Stop the current wallpaper backend")
+    parser.add_argument("--status", action="store_true", help="Show the wallpaper backend PID if present")
     args = parser.parse_args()
+
+    if args.stop:
+        stop_backend()
+        return 0
+
+    if args.status:
+        if PID_FILE.exists():
+            print(PID_FILE.read_text(encoding="utf-8").strip())
+        return 0
 
     if args.list_monitors:
         print("\n".join(active_monitors()))

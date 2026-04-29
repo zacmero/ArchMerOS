@@ -81,6 +81,21 @@ passive_report() {
   passive_item "/var/tmp" "$var_tmp_size" "longer-lived temporary files" "systemd-tmpfiles --clean"
 }
 
+cache_breakdown() {
+  local cache_root="${HOME}/.cache"
+  printf 'Command:\n  du -sh ~/.cache/* ~/.cache/.[!.]* ~/.cache/..?* 2>/dev/null | sort -h\n\n'
+  if [[ ! -d "$cache_root" ]]; then
+    printf '~/.cache missing\n'
+    return 0
+  fi
+
+  printf 'Top ~/.cache folders:\n'
+  find "$cache_root" -mindepth 1 -maxdepth 1 -exec du -sh {} + 2>/dev/null \
+    | sort -h \
+    | tail -n 20 \
+    | awk '{printf "%-24s %s\n", $2, $1}'
+}
+
 cache_status() {
   printf 'Package cache:\n'
   du -sh /var/cache/pacman/pkg 2>/dev/null || printf '  unavailable\n'
@@ -216,10 +231,13 @@ ArchMerOS Cleanup
 6) Show orphan packages
    pacman -Qdtq
 
-7) Remove orphan packages
+7) Show cache breakdown
+   du -sh ~/.cache/* ~/.cache/.[!.]* ~/.cache/..?* 2>/dev/null | sort -h
+
+8) Remove orphan packages
    sudo pacman -Rns <orphan package names>
 
-8) Full cleanup
+9) Full cleanup
    sudo paccache -r -k 1
    sudo journalctl --vacuum-time=7d
    flatpak uninstall --unused
@@ -244,8 +262,9 @@ interactive_menu() {
       4) passive_report ;;
       5) cleanup_passive ;;
       6) show_orphans ;;
-      7) remove_orphans ;;
-      8) full_cleanup ;;
+      7) cache_breakdown ;;
+      8) remove_orphans ;;
+      9) full_cleanup ;;
       q|Q) exit 0 ;;
       *) printf 'Unknown choice.\n' ;;
     esac
@@ -283,6 +302,9 @@ case "$mode" in
   passive-cleanup|cleanup-passive)
     cleanup_passive
     ;;
+  cache-breakdown)
+    cache_breakdown
+    ;;
   orphans)
     show_orphans
     ;;
@@ -293,7 +315,7 @@ case "$mode" in
     full_cleanup
     ;;
   *)
-    printf 'Usage: %s [menu|status|cache|sizes|passive|passive-cleanup|orphans|remove-orphans|all]\n' "$0" >&2
+    printf 'Usage: %s [menu|status|cache|sizes|passive|passive-cleanup|cache-breakdown|orphans|remove-orphans|all]\n' "$0" >&2
     exit 1
     ;;
 esac

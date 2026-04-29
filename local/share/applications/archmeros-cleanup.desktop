@@ -2,7 +2,7 @@
 Version=1.0
 Type=Application
 Name=ArchMerOS Cleanup
-Comment=Pacman cache and orphan cleanup (status: du -sh /var/cache/pacman/pkg; cache: sudo paccache -r -k 2; orphans: pacman -Qdtq)
+Comment=Pacman cache and orphan cleanup (status: du -sh /var/cache/pacman/pkg; cache: sudo paccache -r -k 1; sizes: pacman -Qi cuda dejagnu doxygen eos-reboot-recommended ffmpeg4.4 gcc-ada gcc-d go minizip-ng python-pytest ttf-jetbrains-mono vulkan-headers xbitmaps; orphans: pacman -Qdtq)
 Exec=/home/zacmero/.config/archmeros/scripts/archmeros-cleanup.sh menu
 Icon=edit-clear-all
 Terminal=true

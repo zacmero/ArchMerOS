@@ -644,15 +644,17 @@ Tracked app entries:
 - [chatgpt.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/chatgpt.desktop)
 - [youtube-music.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/youtube-music.desktop)
 - [com.termius.Termius.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/com.termius.Termius.desktop)
+- [archmeros-cleanup.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/archmeros-cleanup.desktop)
 
 Current launch paths:
 
-- Walker/Rofi entries: `Todoist`, `ChatGPT`, `YouTube Music`, `Termius`, `Obsidian`
+- Walker/Rofi entries: `Todoist`, `ChatGPT`, `YouTube Music`, `Termius`, `Obsidian`, `ArchMerOS Cleanup`
 - `Super+M`: open `YouTube Music`
 - `Super+Shift+C`: open `ChatGPT`
 - `Super+N`: create a new PARA note in Neovim
 - `Super+Shift+N`: open `Todoist` and `Obsidian` together on workspace `V`
 - `Super+0`: open `Obsidian`
+- `ArchMerOS Cleanup`: open a terminal menu for `du -sh /var/cache/pacman/pkg`, `paccache -r -k 2`, and `pacman -Qdtq`
 
 Chromium-backed web apps launch in isolated profiles under:
 
@@ -852,6 +854,7 @@ Current web-app placement rules:
 - `ChatGPT` -> medium-centered floating window
 - `Todoist` -> native Flatpak when available, workspace `5` / `V`
 - `Obsidian` -> normal app launch through `archmeros-obsidian.sh`
+- `Todoist` duplicate Flatpak launcher is masked by a local `Hidden=true` desktop override so Walker shows one Todoist entry
 
 ## Audio Stack
 

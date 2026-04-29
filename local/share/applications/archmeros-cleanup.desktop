@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=ArchMerOS Cleanup
+Comment=Pacman cache and orphan cleanup (status: du -sh /var/cache/pacman/pkg; cache: sudo paccache -r -k 2; orphans: pacman -Qdtq)
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-cleanup.sh menu
+Icon=edit-clear-all
+Terminal=true
+StartupNotify=true
+Categories=System;Utility;
+Keywords=cleanup;cache;pacman;paccache;orphans;archmeros;
+StartupWMClass=archmeros-cleanup

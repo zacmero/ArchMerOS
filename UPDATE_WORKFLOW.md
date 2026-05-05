@@ -50,6 +50,27 @@ The heavy part is usually not the repository download. It is the post-transactio
 
 Those steps can legitimately keep a desktop CPU at 100% for a long time if they run unrestricted.
 
+## NVIDIA and Greeter Safety
+
+On this workstation class, the dangerous update path is not the repo kernel packages alone. It is the combination of:
+
+- kernel upgrades
+- `nvidia-580xx-dkms` lagging a new kernel ABI
+- greetd/Hyprland seat access drift
+
+ArchMerOS now installs a post-transaction pacman hook that runs:
+
+```bash
+sudo /usr/local/bin/archmeros-post-update-check
+```
+
+That check:
+
+- repairs `greeter` membership in the `seat` group
+- verifies every installed kernel has a loadable `nvidia` module
+
+If that check fails, do not reboot until the NVIDIA package is rebuilt for the new kernel.
+
 ## Safety Order
 
 1. Update repo packages first.

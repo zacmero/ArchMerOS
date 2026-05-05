@@ -116,7 +116,7 @@ sudo bash install/system/apply-greeter-system.sh
 
 That script currently:
 
-1. installs `greetd` and `kitty`
+1. installs `greetd`, `kitty`, and `seatd`
 2. builds the ArchMerOS-owned `sysc-greet` binary with a system data path
 3. installs the tracked theme and ASCII assets under `/usr/local/share/archmeros/sysc-greet/share`
 4. installs quiet wrapper launchers for the greeter session and `HyprMero`
@@ -124,10 +124,11 @@ That script currently:
 6. installs the tracked Hyprland and kitty greeter configs into `/etc/greetd/`
 7. redirects greeter and `HyprMero` stdout/stderr into log files instead of leaving them on the TTY
 8. launches the greeter with a direct `Hyprland -c ...` wrapper instead of `start-hyprland`, and pre-creates the greeter XDG cache/config/state dirs
-9. creates or updates the `greeter` user with `video,render,input`
+9. creates or updates the `greeter` user with `seat,video,render,input`
 10. installs the greeter polkit rule
 11. disables `lightdm`
-12. enables `greetd`
+12. enables `seatd`
+13. enables `greetd`
 
 ## NVIDIA Stability Note
 
@@ -142,3 +143,14 @@ Hyprland -c /etc/greetd/hyprland-greeter-config.conf
 ```
 
 This is deliberate. It avoids the more fragile `start-hyprland` path that was causing black-screen greeter failures after the NVIDIA driver migration.
+
+## Seat Access Safety
+
+The greetd Hyprland greeter needs seat access through `seatd`.
+
+That means two things must stay true after updates:
+
+- `seatd.service` must be enabled and running
+- the `greeter` user must be in the `seat` group
+
+The tracked apply path now enforces the `seat` group membership directly, and the post-update safety hook repairs it automatically if it ever drifts.

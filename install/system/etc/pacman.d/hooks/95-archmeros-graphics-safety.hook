@@ -1,0 +1,18 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = linux
+Target = linux-headers
+Target = linux-lts
+Target = linux-lts-headers
+Target = nvidia-580xx-dkms
+Target = nvidia-580xx-utils
+Target = greetd
+Target = seatd
+
+[Action]
+Description = ArchMerOS graphics update safety check
+When = PostTransaction
+Exec = /usr/local/bin/archmeros-post-update-check

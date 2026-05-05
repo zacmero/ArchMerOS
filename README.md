@@ -125,6 +125,7 @@ Tracked system overrides:
 - [install/system/etc/udev/hwdb.d/90-archmeros-zx-k22.hwdb](/home/zacmero/projects/ArchMerOS/install/system/etc/udev/hwdb.d/90-archmeros-zx-k22.hwdb)
 - [install/system/apply-nvidia-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-nvidia-system.sh)
 - [install/system/apply-kernel-install-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-kernel-install-system.sh)
+- [install/system/apply-update-safety-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-update-safety-system.sh)
 - [install/system/apply-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-system.sh)
 - [install/system/apply-bootloader-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bootloader-system.sh)
 - [install/system/apply-bootloader-shared-esp-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bootloader-shared-esp-system.sh)
@@ -193,6 +194,7 @@ This currently applies:
 - keyboard hwdb overrides
 - build throttle for package and DKMS jobs
 - monitor-service polkit rule for the side-screen standby hotkey
+- post-update graphics safety hook
 - ArchMerOS bootloader defaults
 - ArchMerOS greetd/sysc-greet login defaults
 
@@ -218,6 +220,13 @@ The same system apply path also installs a conservative build throttle:
 - `CMAKE_BUILD_PARALLEL_LEVEL=2`
 
 That keeps `yay`/AUR builds and DKMS rebuilds from fanning out to all cores on this machine class.
+
+The same apply path now also installs a post-update graphics safety hook. After kernel, NVIDIA, `greetd`, or `seatd` package changes, ArchMerOS automatically:
+
+- verifies the `greeter` user still has `seat` group access
+- verifies every installed kernel has a loadable `nvidia` DKMS module
+
+If that check fails, the pacman hook exits non-zero so the update does not look clean while the next reboot would actually be broken.
 
 Walker note:
 

@@ -18,7 +18,7 @@ go_cache_root="/var/cache/archmeros-sysc-greet"
 go_cache_dir="${go_cache_root}/gocache"
 go_mod_cache_dir="${go_cache_root}/gomodcache"
 
-pacman -S --needed --noconfirm greetd kitty
+pacman -S --needed --noconfirm greetd kitty seatd
 
 install -d "${system_data_dir}"
 cp -a "${repo_root}/config/greetd/sysc-greet/share/." "${system_data_dir}/"
@@ -58,17 +58,19 @@ install -d \
   /var/lib/greeter/.local/state \
   /var/lib/greeter/.local/share
 if ! id greeter >/dev/null 2>&1; then
-  useradd -M -G video,render,input -s /usr/bin/nologin greeter
+  useradd -M -G seat,video,render,input -s /usr/bin/nologin greeter
 else
-  usermod -aG video,render,input greeter || true
+  usermod -aG seat,video,render,input greeter || true
 fi
 chown -R greeter:greeter /var/lib/greeter /var/cache/sysc-greet
 chmod 755 /var/lib/greeter
 
 systemctl disable lightdm.service || true
+systemctl enable seatd.service
 systemctl enable greetd.service
 
 printf 'archmeros greeter applied\n'
 printf 'binary: %s\n' "${system_binary}"
 printf 'data:   %s\n' "${system_data_dir}"
+printf 'seat:   seatd enabled\n'
 printf 'dm:     greetd enabled, lightdm disabled\n'

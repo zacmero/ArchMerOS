@@ -73,6 +73,25 @@ The tracked GRUB profile also installs two plain fallback entries:
 
 Those are the first recovery path if a future graphics/NVIDIA update breaks the normal graphical boot path.
 
+## Post-Update Safety Check
+
+ArchMerOS now installs a post-transaction pacman hook that runs:
+
+- `/usr/local/bin/archmeros-post-update-check`
+
+That check does two things after kernel, NVIDIA, `greetd`, or `seatd` updates:
+
+- repairs the `greeter -> seat` group membership if it drifted
+- verifies that every installed kernel under `/usr/lib/modules/*` has a loadable `nvidia` module from `nvidia-580xx-dkms`
+
+If the NVIDIA module is missing for any installed kernel, the hook fails loudly so you do not reboot into a dead greeter by surprise.
+
+Manual run:
+
+```bash
+sudo /usr/local/bin/archmeros-post-update-check
+```
+
 ## Verification After Reboot
 
 ```bash

@@ -55,6 +55,7 @@ bash "${repo_root}/install/system/apply-build-system.sh"
 bash "${repo_root}/install/system/apply-keyboard-system.sh"
 bash "${repo_root}/install/system/apply-kernel-install-system.sh"
 bash "${repo_root}/install/system/apply-monitor-system.sh"
+bash "${repo_root}/install/system/apply-update-safety-system.sh"
 
 if should_apply_shared_esp; then
   printf 'apply-system: shared ESP layout detected, applying shared-ESP bootloader path\n'

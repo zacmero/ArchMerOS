@@ -42,6 +42,7 @@ declare -A links=(
   ["${repo_root}/local/share/applications/com.termius.Termius.desktop"]="${HOME}/.local/share/applications/com.termius.Termius.desktop"
   ["${repo_root}/local/share/applications/archmeros-emoji.desktop"]="${HOME}/.local/share/applications/archmeros-emoji.desktop"
   ["${repo_root}/local/share/applications/qbittorrent.desktop"]="${HOME}/.local/share/applications/qbittorrent.desktop"
+  ["${repo_root}/local/share/applications/org.qbittorrent.qBittorrent.desktop"]="${HOME}/.local/share/applications/org.qbittorrent.qBittorrent.desktop"
   ["${repo_root}/local/share/icons/ArchMerOS-Icons"]="${HOME}/.local/share/icons/ArchMerOS-Icons"
 )
 

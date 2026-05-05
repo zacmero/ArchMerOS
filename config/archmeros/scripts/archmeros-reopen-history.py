@@ -22,7 +22,10 @@ SOCKET_RETRY_DELAY = 1.0
 
 
 def ensure_cache_dir() -> None:
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        pass
 
 
 def load_json(path: Path) -> list[dict]:
@@ -36,14 +39,20 @@ def load_json(path: Path) -> list[dict]:
 
 
 def save_json(path: Path, data: list[dict]) -> None:
-    ensure_cache_dir()
-    path.write_text(json.dumps(data, indent=2))
+    try:
+        ensure_cache_dir()
+        path.write_text(json.dumps(data, indent=2))
+    except OSError:
+        pass
 
 
 def append_capped(path: Path, item: dict, limit: int) -> None:
-    data = load_json(path)
-    data.append(item)
-    save_json(path, data[-limit:])
+    try:
+        data = load_json(path)
+        data.append(item)
+        save_json(path, data[-limit:])
+    except OSError:
+        pass
 
 
 def normalize(value: str | None) -> str:

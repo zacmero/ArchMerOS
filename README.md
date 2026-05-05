@@ -53,6 +53,7 @@ Current known state on this workstation:
 - `Super+E` syncs the trusted Windows Desktop intersection into `~/Desktop` and opens `thunar`
 - `Super+A` opens the ArchMerOS floating `aichat` HUD, and `Super+Shift+A` opens the Fabric browser overlay
 - `rofi` remains available as the launcher fallback if Walker fails
+- qBittorrent is wrapped so stale lock/socket files are cleared when no instance is running
 - new login-shell Bash sessions source an ArchMerOS shell hook from `~/.bash_profile`
 - local GTK, cursor, and icon theme assets are deployed under `~/.local/share`
 - the active Firefox `default-release` profile can be fed from a repo-owned `user.js`

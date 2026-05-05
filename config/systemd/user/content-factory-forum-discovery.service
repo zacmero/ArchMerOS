@@ -1,0 +1,18 @@
+[Unit]
+Description=Content Factory Forum Discovery Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/zacmero/projects/content-factory-stack
+Environment=FORUM_DISCOVERY_HOST=0.0.0.0
+Environment=FORUM_DISCOVERY_PORT=8792
+ExecStart=/usr/bin/node /home/zacmero/projects/content-factory-stack/scripts/forum_discovery_service.mjs
+Restart=on-failure
+RestartSec=3
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Install]
+WantedBy=default.target

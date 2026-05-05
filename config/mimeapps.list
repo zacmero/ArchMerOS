@@ -63,3 +63,4 @@ video/x-matroska=mpv.desktop;
 image/vnd.microsoft.icon=imv-dir.desktop;imv.desktop;
 application/x-bittorrent=qbittorrent.desktop;
 x-scheme-handler/magnet=qbittorrent.desktop;
+application/vnd.oasis.opendocument.text=nvim.desktop;org.xfce.mousepad.desktop;

@@ -14,6 +14,26 @@ sudo pacman -Syu
 
 This is the lowest-risk path when you only need repo packages and the kernel/security fixes.
 
+If you want a manual pre-update rollback point first, use:
+
+```bash
+yay -snapshot -Syu
+```
+
+That path does not use Topgrade. It calls the ArchMerOS snapshot helper first, then runs `yay` with the remaining arguments.
+
+Snapshot command:
+
+```bash
+~/.config/archmeros/scripts/archmeros-system-snapshot.sh create
+```
+
+Status command:
+
+```bash
+~/.config/archmeros/scripts/archmeros-system-snapshot.sh status
+```
+
 ## Throttled AUR / Rebuild Path
 
 Use this when `yay` needs to rebuild heavy packages such as NVIDIA modules, GCC-related tooling, or other AUR packages:
@@ -103,3 +123,58 @@ That helps with builds, but it does not replace throttling the `yay` update comm
 ## Practical Rule
 
 If you only need the security fix, do not let AUR rebuilds ride along unless you actually want them.
+
+## Snapshot Target Rules
+
+The current ArchMerOS snapshot target is the external disk mounted at:
+
+```bash
+/run/media/zacmero/A65602225601F439
+```
+
+The helper checks three things before it runs:
+
+- the disk is mounted
+- the disk is not mounted read-only
+- free space is above the current estimated system snapshot payload
+
+Current snapshot scope:
+
+- `/boot`
+- `/etc`
+- `/opt`
+- `/root`
+- `/usr`
+- `/var`
+
+It does not include:
+
+- `/home/zacmero`
+- `/mnt`
+- `/run/media/*` user data
+- Windows partitions
+
+Retention:
+
+- latest 2 snapshots kept by default
+- older snapshots pruned when a new one is created
+
+Manual status check:
+
+```bash
+~/.config/archmeros/scripts/archmeros-system-snapshot.sh status
+```
+
+Recovery path:
+
+1. Mount snapshot disk.
+2. Restore from restic repo.
+3. Reinstall or reapply bootloader if needed.
+4. Reboot.
+
+Example restore flow:
+
+```bash
+sudo restic -r /run/media/zacmero/A65602225601F439/ArchMerOS-restic --password-file ~/.config/archmeros/system-snapshot.pass snapshots
+sudo restic -r /run/media/zacmero/A65602225601F439/ArchMerOS-restic --password-file ~/.config/archmeros/system-snapshot.pass restore latest --target /
+```

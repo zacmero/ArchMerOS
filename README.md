@@ -54,6 +54,9 @@ Current known state on this workstation:
 - `Super+A` opens the ArchMerOS floating `aichat` HUD, and `Super+Shift+A` opens the Fabric browser overlay
 - `rofi` remains available as the launcher fallback if Walker fails
 - qBittorrent is wrapped so stale lock/socket files are cleared when no instance is running
+- `yay -snapshot ...` creates an ArchMerOS restic system snapshot before running the real `yay` command
+- snapshot scope covers `/boot /etc /opt /root /usr /var`, not user home data
+- latest 2 snapshots kept by default
 - new login-shell Bash sessions source an ArchMerOS shell hook from `~/.bash_profile`
 - local GTK, cursor, and icon theme assets are deployed under `~/.local/share`
 - the active Firefox `default-release` profile can be fed from a repo-owned `user.js`

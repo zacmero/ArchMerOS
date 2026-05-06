@@ -8,6 +8,28 @@ if command -v aichat >/dev/null 2>&1; then
   alias ai='aichat'
 fi
 
+if command -v yay >/dev/null 2>&1; then
+  yay() {
+    local snapshot_requested=0
+    local arg
+    local -a args=()
+    for arg in "$@"; do
+      if [[ "$arg" == "-snapshot" ]]; then
+        snapshot_requested=1
+        continue
+      fi
+      args+=("$arg")
+    done
+
+    if (( snapshot_requested )); then
+      "$HOME/.config/archmeros/scripts/archmeros-system-snapshot.sh" create || return $?
+      [[ ${#args[@]} -gt 0 ]] || return 0
+    fi
+
+    command yay "${args[@]}"
+  }
+fi
+
 shopt -s extdebug
 
 declare -gA __archmeros_gui_commands=()

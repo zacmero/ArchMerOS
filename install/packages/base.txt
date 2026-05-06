@@ -37,6 +37,7 @@ imv
 hyprpaper
 chromium
 qbittorrent
+restic
 flatpak
 obsidian
 ublock-origin

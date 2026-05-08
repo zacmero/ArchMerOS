@@ -457,19 +457,19 @@ Current auto palette rule:
 
 ## Current Waybar Behavior
 
-Waybar is currently on the stable single-config launch path:
+Waybar now starts through the ArchMerOS wrapper so hidden-monitor state is preserved:
 
-- `waybar -c ~/.config/waybar/config.jsonc -s ~/.config/waybar/style.css`
+- `~/.config/archmeros/scripts/archmeros-waybar.sh start`
 
 The Bluetooth module is intentionally removed from the top connectivity group because the tray already exposes Bluetooth status. The old Bluetooth number was `num_connections`, meaning the count of connected Bluetooth devices.
 
-Current top bar flow:
+Current top bar flow on each monitor:
 
 - workspaces first
-- taskbar slot reserved immediately after workspaces
 - terminal button and tray on the left section
 - date/time centered
 - connectivity, keyboard layout, and system stats on the right
+- `Super+Shift+H` hides or shows all Waybar bars together
 
 Taskbar behavior:
 
@@ -497,6 +497,9 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Alt+KP_1` to `Alt+KP_5`: switch main workspaces from the numpad with NumLock on
 - `Alt+numpad 1-5` also has raw `code:` fallback binds in Hyprland for stubborn keypad mappings
 - `Ctrl+Alt+Left` / `Ctrl+Alt+Right`: cycle workspaces
+- `Ctrl+Alt+code:105` / `Ctrl+Alt+code:106`: raw arrow fallback binds for stubborn keyboards
+- `Super+mouse wheel`: cycle workspaces
+- `Super+Shift+H`: toggle all Waybar bars together
 - `Super+H/J/K/L`: move focus
 - `Super+Left/Right/Up/Down`: move focus
 - `Alt+Tab`: cycle to next window on the active workspace

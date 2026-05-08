@@ -8,14 +8,17 @@
   "reload_style_on_change": true,
   "output": "DP-2",
   "modules-left": [
-    "hyprland/workspaces"
+    "hyprland/workspaces",
+    "custom/terminal",
+    "tray"
   ],
-  "modules-center": [],
+  "modules-center": [
+    "group/datetime"
+  ],
   "modules-right": [
-    "network",
-    "cpu",
-    "memory",
-    "battery"
+    "group/connectivity",
+    "custom/keyboard",
+    "group/system"
   ],
   "hyprland/workspaces": {
     "disable-scroll": true,
@@ -51,12 +54,71 @@
       ]
     }
   },
+  "group/datetime": {
+    "orientation": "inherit",
+    "modules": [
+      "clock#date",
+      "clock#time"
+    ]
+  },
+  "group/connectivity": {
+    "orientation": "inherit",
+    "modules": [
+      "network",
+      "pulseaudio"
+    ]
+  },
+  "group/system": {
+    "orientation": "inherit",
+    "modules": [
+      "cpu",
+      "memory",
+      "battery"
+    ]
+  },
+  "custom/terminal": {
+    "format": "   TERM ",
+    "tooltip": false,
+    "on-click": "~/.config/archmeros/scripts/archmeros-terminal.sh"
+  },
+  "clock#date": {
+    "interval": 3600,
+    "format": "{:%a, %d %b %Y}",
+    "tooltip": false,
+    "on-click": "~/.config/archmeros/scripts/archmeros-calendar-popup.sh"
+  },
+  "clock#time": {
+    "interval": 1,
+    "format": "{:%I:%M:%S %p}",
+    "tooltip-format": "{:%Ec}",
+    "on-click": "~/.config/archmeros/scripts/archmeros-calendar-popup.sh"
+  },
   "network": {
     "format-wifi": "▲ {bandwidthUpBytes} ▼ {bandwidthDownBytes}    {essid}",
     "format-ethernet": "▲ {bandwidthUpBytes} ▼ {bandwidthDownBytes}    ETH",
     "format-disconnected": "  offline",
     "tooltip-format": "{ifname}  {ipaddr}/{cidr}",
     "max-length": 36
+  },
+  "custom/keyboard": {
+    "return-type": "json",
+    "interval": 1,
+    "exec": "~/.config/archmeros/scripts/archmeros-keyboard.sh",
+    "on-click": "~/.config/archmeros/scripts/archmeros-keyboard.sh toggle",
+    "tooltip": true
+  },
+  "pulseaudio": {
+    "scroll-step": 2,
+    "format": "{volume}% {icon}",
+    "format-muted": "",
+    "on-click": "pavucontrol",
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "format-icons": {
+      "default": [
+        "",
+        ""
+      ]
+    }
   },
   "cpu": {
     "interval": 2,

@@ -8,13 +8,17 @@
   "reload_style_on_change": true,
   "output": "HDMI-A-1",
   "modules-left": [
-    "hyprland/workspaces"
+    "hyprland/workspaces",
+    "custom/terminal",
+    "tray"
   ],
   "modules-center": [
     "group/datetime"
   ],
   "modules-right": [
-    "pulseaudio"
+    "group/connectivity",
+    "custom/keyboard",
+    "group/system"
   ],
   "hyprland/workspaces": {
     "disable-scroll": true,
@@ -69,6 +73,40 @@
     "tooltip-format": "{:%Ec}",
     "on-click": "~/.config/archmeros/scripts/archmeros-calendar-popup.sh"
   },
+  "group/connectivity": {
+    "orientation": "inherit",
+    "modules": [
+      "network",
+      "pulseaudio"
+    ]
+  },
+  "group/system": {
+    "orientation": "inherit",
+    "modules": [
+      "cpu",
+      "memory",
+      "battery"
+    ]
+  },
+  "custom/terminal": {
+    "format": "   TERM ",
+    "tooltip": false,
+    "on-click": "~/.config/archmeros/scripts/archmeros-terminal.sh"
+  },
+  "network": {
+    "format-wifi": "▲ {bandwidthUpBytes} ▼ {bandwidthDownBytes}    {essid}",
+    "format-ethernet": "▲ {bandwidthUpBytes} ▼ {bandwidthDownBytes}    ETH",
+    "format-disconnected": "  offline",
+    "tooltip-format": "{ifname}  {ipaddr}/{cidr}",
+    "max-length": 36
+  },
+  "custom/keyboard": {
+    "return-type": "json",
+    "interval": 1,
+    "exec": "~/.config/archmeros/scripts/archmeros-keyboard.sh",
+    "on-click": "~/.config/archmeros/scripts/archmeros-keyboard.sh toggle",
+    "tooltip": true
+  },
   "pulseaudio": {
     "scroll-step": 2,
     "format": "{volume}% {icon}",
@@ -80,6 +118,23 @@
         "",
         ""
       ]
+    }
+  },
+  "cpu": {
+    "interval": 2,
+    "format": "{usage}% "
+  },
+  "memory": {
+    "interval": 2,
+    "format": "{}% "
+  },
+  "battery": {
+    "interval": 30,
+    "format": "{capacity}% ",
+    "format-charging": "{capacity}% ",
+    "states": {
+      "warning": 30,
+      "critical": 15
     }
   }
 }

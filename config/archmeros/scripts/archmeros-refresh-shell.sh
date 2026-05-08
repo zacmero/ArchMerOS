@@ -46,10 +46,7 @@ pkill -f 'waybar.runtime.jsonc' >/dev/null 2>&1 || true
 pkill -x mako >/dev/null 2>&1 || true
 
 pkill -x waybar >/dev/null 2>&1 || true
-setsid waybar \
-  -c "${HOME}/.config/waybar/config.jsonc" \
-  -s "${HOME}/.config/waybar/style.css" \
-  >/tmp/archmeros-waybar.log 2>&1 < /dev/null &
+"${HOME}/.config/archmeros/scripts/archmeros-waybar.sh" restart >/tmp/archmeros-waybar.log 2>&1 || true
 
 setsid mako -c "${HOME}/.config/mako/config" >/tmp/archmeros-mako.log 2>&1 < /dev/null &
 

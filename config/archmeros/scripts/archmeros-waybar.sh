@@ -105,6 +105,21 @@ show_all() {
   restart_waybar
 }
 
+toggle_all() {
+  local current_json hidden_count
+
+  current_json="$(hidden_monitors_json)"
+  hidden_count="$(jq 'length' <<<"$current_json")"
+
+  if [[ "$hidden_count" -ge 3 ]]; then
+    show_all
+    return
+  fi
+
+  jq -n '["DP-3","HDMI-A-1","DP-2"]' >"$hidden_file"
+  restart_waybar
+}
+
 case "${1:-start}" in
   start|restart)
     setup_hypr_env
@@ -116,6 +131,10 @@ case "${1:-start}" in
   toggle)
     setup_hypr_env
     toggle_focused_monitor
+    ;;
+  toggleall)
+    setup_hypr_env
+    toggle_all
     ;;
   showall)
     setup_hypr_env
@@ -129,7 +148,7 @@ case "${1:-start}" in
     hidden_monitors_json
     ;;
   *)
-    printf 'Usage: %s {start|restart|stop|toggle|showall|output|hidden}\n' "$0" >&2
+    printf 'Usage: %s {start|restart|stop|toggle|toggleall|showall|output|hidden}\n' "$0" >&2
     exit 1
     ;;
 esac

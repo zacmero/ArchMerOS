@@ -1076,6 +1076,7 @@ Notes:
 - ArchMerOS keeps the default rounded frame for high-level apps like the wallpaper studio itself
 - low-level native pickers can use the old-school square look when we want that retro feel, such as the wallpaper source chooser
 - the wallpaper source chooser is Tk-based and directory-only by design; it is intentionally a low-level utility, not a full file manager
+- GTK/polkit auth prompts for mounting drives are also treated as low-level dialogs and can use the square retro frame
 - when the target is `All monitors`, the crop action is intentionally automatic; choose a single monitor target for the manual crop window
 
 ## Build Log

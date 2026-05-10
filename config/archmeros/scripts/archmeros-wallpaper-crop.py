@@ -56,7 +56,6 @@ def resolve_source(value: str) -> Path:
 
 def crop_for_monitor(source: Path, monitor: str, size: tuple[int, int]) -> Path:
     GENERATED_DIR.mkdir(parents=True, exist_ok=True)
-
     width, height = size
     stem = sanitize(source.stem)
     monitor_name = sanitize(monitor)
@@ -77,11 +76,15 @@ def crop_for_monitor(source: Path, monitor: str, size: tuple[int, int]) -> Path:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Crop wallpapers to monitor aspect ratios for ArchMerOS")
     parser.add_argument("source", help="Wallpaper file path or name")
+    parser.add_argument("--output-dir", help="Directory to write generated crops into")
     parser.add_argument("--monitor", help="Single monitor name")
     parser.add_argument("--all", action="store_true", help="Crop for all active monitors")
     args = parser.parse_args()
 
     source = resolve_source(args.source)
+    global GENERATED_DIR
+    if args.output_dir:
+        GENERATED_DIR = Path(args.output_dir).expanduser().resolve()
     monitors = active_monitors()
     if not monitors:
         return 1

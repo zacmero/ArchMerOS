@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import filedialog, messagebox, ttk
 
 from PIL import Image, ImageOps, ImageTk
 
@@ -25,6 +25,7 @@ SCREENSAVER_OVERRIDE_DIR = Path.home() / ".config" / "archmeros" / "screensaver"
 SCREENSAVER_OVERRIDE_CONFIG = SCREENSAVER_OVERRIDE_DIR / "screensaver.conf"
 SCREENSAVER_LAUNCHER = REPO_ROOT / "config" / "archmeros" / "scripts" / "archmeros-screensaver.sh"
 WALLPAPER_STATE_FILE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "archmeros" / "wallpapers.json"
+WALLPAPER_SOURCE_STATE_FILE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "archmeros" / "wallpaper-source.json"
 SCREENSAVER_KEY_ORDER = [
     "mode",
     "idle_timeout",
@@ -111,6 +112,38 @@ def load_rotation_settings() -> dict[str, int | bool]:
     }
 
 
+def load_wallpaper_source() -> Path:
+    try:
+        data = json.loads(WALLPAPER_SOURCE_STATE_FILE.read_text())
+        candidate = Path(data.get("source", "")).expanduser()
+        if candidate.is_dir():
+            return candidate.resolve()
+    except Exception:
+        pass
+    return WALLPAPER_DIR
+
+
+def save_wallpaper_source(source_dir: Path) -> None:
+    WALLPAPER_SOURCE_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    WALLPAPER_SOURCE_STATE_FILE.write_text(json.dumps({"source": str(source_dir.resolve())}, indent=2) + "\n", encoding="utf-8")
+
+
+def generated_dir_for(source_dir: Path) -> Path:
+    if source_dir.resolve() == WALLPAPER_DIR.resolve():
+        return GENERATED_DIR
+    return source_dir / "generated"
+
+
+def wallpapers(source_dir: Path) -> list[Path]:
+    if not source_dir.exists():
+        return []
+    return sorted(
+        path
+        for path in source_dir.iterdir()
+        if path.is_file() and path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"}
+    )
+
+
 def apply_rotation_settings(enabled: bool, interval_seconds: int) -> None:
     command = [
         "python3",
@@ -188,16 +221,6 @@ def focused_monitor_name() -> str | None:
     return None
 
 
-def wallpapers() -> list[Path]:
-    if not WALLPAPER_DIR.exists():
-        return []
-    return sorted(
-        path
-        for path in WALLPAPER_DIR.iterdir()
-        if path.is_file() and path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"}
-    )
-
-
 def apply_wallpaper(target: str, wallpaper: Path) -> None:
     if target == "All monitors":
         subprocess.run(["python3", str(WALLPAPER_CONTROLLER), "--all", str(wallpaper)], check=True)
@@ -205,8 +228,8 @@ def apply_wallpaper(target: str, wallpaper: Path) -> None:
         subprocess.run(["python3", str(WALLPAPER_CONTROLLER), "--monitor", target, str(wallpaper)], check=True)
 
 
-def auto_crop_all(source: Path) -> None:
-    output = run(["python3", str(WALLPAPER_CROPPER), "--all", str(source)])
+def auto_crop_all(source: Path, generated_dir: Path) -> None:
+    output = run(["python3", str(WALLPAPER_CROPPER), "--output-dir", str(generated_dir), "--all", str(source)])
     mapping = json.loads(output)
     items = list(mapping.items())
     for index, (monitor_name, monitor_path) in enumerate(items):
@@ -679,7 +702,10 @@ class WallpaperBrowser(tk.Tk):
         self.minsize(1080, 620)
 
         self.monitor_map = monitors()
-        self.wallpapers = wallpapers()
+        self.wallpaper_source = load_wallpaper_source()
+        self.generated_dir = generated_dir_for(self.wallpaper_source)
+        self.wallpapers = wallpapers(self.wallpaper_source)
+        self.source_var = tk.StringVar(value=str(self.wallpaper_source))
         self.preview_photo: ImageTk.PhotoImage | None = None
         self.current_path: Path | None = self.wallpapers[0] if self.wallpapers else None
         self.original_image: Image.Image | None = None
@@ -704,6 +730,7 @@ class WallpaperBrowser(tk.Tk):
         except tk.TclError:
             pass
         style.configure("TCombobox", fieldbackground="#252a37", background="#252a37", foreground="#c6d0f5")
+        style.configure("TEntry", fieldbackground="#252a37", background="#252a37", foreground="#c6d0f5")
 
         top = tk.Frame(self, bg="#171a24")
         top.pack(fill="both", expand=True, padx=16, pady=16)
@@ -720,6 +747,43 @@ class WallpaperBrowser(tk.Tk):
             self.target.current(0)
         self.target.pack(anchor="w", pady=(0, 12))
         self.target.bind("<<ComboboxSelected>>", self._on_target)
+
+        tk.Label(left, text="Source", bg="#171a24", fg="#7cb8ff").pack(anchor="w", pady=(0, 6))
+        source_row = tk.Frame(left, bg="#171a24")
+        source_row.pack(fill="x", pady=(0, 6))
+        self.source_entry = ttk.Entry(source_row, textvariable=self.source_var, width=28)
+        self.source_entry.pack(side="left", fill="x", expand=True)
+        self.source_entry.bind("<Return>", lambda _e: self._set_wallpaper_source(self.source_var.get()))
+        tk.Button(
+            source_row,
+            text="Browse",
+            command=self._choose_source,
+            bg="#34284a",
+            fg="#ff7ad9",
+            relief="flat",
+            padx=10,
+            pady=6,
+        ).pack(side="left", padx=(8, 0))
+        tk.Button(
+            left,
+            text="Use Repo Wallpapers",
+            command=self._use_repo_source,
+            bg="#253447",
+            fg="#7cb8ff",
+            relief="flat",
+            padx=12,
+            pady=8,
+        ).pack(anchor="w", pady=(0, 8))
+        tk.Button(
+            left,
+            text="Refresh Source",
+            command=self._refresh_source,
+            bg="#253447",
+            fg="#7cb8ff",
+            relief="flat",
+            padx=12,
+            pady=8,
+        ).pack(anchor="w", pady=(0, 14))
 
         tk.Button(
             left,
@@ -761,13 +825,9 @@ class WallpaperBrowser(tk.Tk):
         )
         self.listbox.pack(side="left", fill="both", expand=True)
         scrollbar.config(command=self.listbox.yview)
-        for path in self.wallpapers:
-            self.listbox.insert("end", path.name)
         self.listbox.bind("<<ListboxSelect>>", self._on_select)
         self.listbox.bind("<Double-Button-1>", lambda _e: self._primary_action())
-        if self.wallpapers:
-            self.listbox.selection_set(0)
-            self.listbox.activate(0)
+        self._reload_wallpaper_list()
 
         right = tk.Frame(top, bg="#171a24")
         right.pack(side="left", fill="both", expand=True, padx=(16, 0))
@@ -807,9 +867,37 @@ class WallpaperBrowser(tk.Tk):
         self.bind("<Left>", lambda _e: self._move_rect(-18, 0))
         self.bind("<Right>", lambda _e: self._move_rect(18, 0))
         self._refresh_preview()
+        self.after(0, self.lift)
+        self.after(0, self.focus_force)
+        self.after(0, lambda: self.attributes("-topmost", True))
+        self.after(150, lambda: self.attributes("-topmost", False))
 
     def _selected_target(self) -> str:
         return self.target.get() or "All monitors"
+
+    def _set_wallpaper_source(self, source: str | Path) -> None:
+        candidate = Path(source).expanduser()
+        if not candidate.exists() or not candidate.is_dir():
+            messagebox.showerror("ArchMerOS Wallpaper", f"Wallpaper source not found:\n{candidate}")
+            return
+        self.wallpaper_source = candidate.resolve()
+        self.generated_dir = generated_dir_for(self.wallpaper_source)
+        save_wallpaper_source(self.wallpaper_source)
+        self.source_var.set(str(self.wallpaper_source))
+        self.wallpapers = wallpapers(self.wallpaper_source)
+        self._reload_wallpaper_list()
+
+    def _choose_source(self) -> None:
+        initial = str(self.wallpaper_source if self.wallpaper_source.exists() else WALLPAPER_DIR)
+        chosen = filedialog.askdirectory(title="Choose wallpaper source", initialdir=initial, parent=self)
+        if chosen:
+            self._set_wallpaper_source(Path(chosen))
+
+    def _use_repo_source(self) -> None:
+        self._set_wallpaper_source(WALLPAPER_DIR)
+
+    def _refresh_source(self) -> None:
+        self._set_wallpaper_source(self.wallpaper_source)
 
     def _open_screensaver_studio(self) -> None:
         ScreensaverStudio(self)
@@ -823,6 +911,19 @@ class WallpaperBrowser(tk.Tk):
             return None
         index = selection[0]
         return self.wallpapers[index]
+
+    def _reload_wallpaper_list(self) -> None:
+        self.listbox.delete(0, "end")
+        for path in self.wallpapers:
+            self.listbox.insert("end", path.name)
+        if self.wallpapers:
+            self.listbox.selection_set(0)
+            self.listbox.activate(0)
+            self.current_path = self.wallpapers[0]
+        else:
+            self.current_path = None
+        if hasattr(self, "preview_canvas"):
+            self._refresh_preview()
 
     def _on_select(self, _event=None) -> None:
         self.current_path = self._selected_path()
@@ -1016,8 +1117,8 @@ class WallpaperBrowser(tk.Tk):
             int(round((y2 - self.image_offset_y) * self.scale_y)),
         )
         cropped = self.original_image.crop(crop_box).resize((mon_w, mon_h), Image.Resampling.LANCZOS)
-        GENERATED_DIR.mkdir(parents=True, exist_ok=True)
-        output = GENERATED_DIR / f"{target.replace('/', '-')}-manual-{path.stem}-{mon_w}x{mon_h}.png"
+        self.generated_dir.mkdir(parents=True, exist_ok=True)
+        output = self.generated_dir / f"{target.replace('/', '-')}-manual-{path.stem}-{mon_w}x{mon_h}.png"
         cropped.save(output, format="PNG")
         try:
             apply_wallpaper(target, output)

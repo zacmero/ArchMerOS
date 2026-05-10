@@ -34,6 +34,7 @@ declare -A links=(
   ["${repo_root}/local/share/applications/todoist.desktop"]="${HOME}/.local/share/applications/todoist.desktop"
   ["${repo_root}/local/share/applications/com.todoist.Todoist.desktop"]="${HOME}/.local/share/applications/com.todoist.Todoist.desktop"
   ["${repo_root}/local/share/applications/archmeros-cleanup.desktop"]="${HOME}/.local/share/applications/archmeros-cleanup.desktop"
+  ["${repo_root}/local/share/applications/archmeros-wallpaper.desktop"]="${HOME}/.local/share/applications/archmeros-wallpaper.desktop"
   ["${repo_root}/local/share/applications/obsidian.desktop"]="${HOME}/.local/share/applications/obsidian.desktop"
   ["${repo_root}/local/share/applications/chatgpt.desktop"]="${HOME}/.local/share/applications/chatgpt.desktop"
   ["${repo_root}/local/share/applications/gemini.desktop"]="${HOME}/.local/share/applications/gemini.desktop"

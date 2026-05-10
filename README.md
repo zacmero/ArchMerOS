@@ -661,6 +661,7 @@ Tracked app entries:
 - [youtube-music.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/youtube-music.desktop)
 - [com.termius.Termius.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/com.termius.Termius.desktop)
 - [archmeros-cleanup.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/archmeros-cleanup.desktop)
+- [archmeros-wallpaper.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/archmeros-wallpaper.desktop)
 
 Current launch paths:
 
@@ -1046,6 +1047,7 @@ Current behavior:
 - the same window now includes an ArchMerOS screensaver section for live session screensaver styling
 - the screensaver section can also disable the animated screensaver entirely while keeping monitor standby / DPMS idle-off active
 - the same launcher now also exposes wallpaper rotation controls for random per-monitor cycling from `config/wallpapers`
+- the browser can now load wallpapers from an alternate folder, and it remembers that source in `~/.local/state/archmeros/wallpaper-source.json`
 - target now defaults to the currently focused monitor for manual crop-first behavior
 - wallpaper preview updates automatically as you move through the list
 - `Apply`:
@@ -1055,7 +1057,7 @@ Current behavior:
   - arrow keys nudge the crop area
   - `Enter` applies the current crop immediately
   - on `All monitors`, applies the original wallpaper directly
-- generated crops are stored under `config/wallpapers/generated`
+- generated crops are stored under `config/wallpapers/generated` for the repo source, or under `<chosen-source>/generated` for an alternate source
 - the crop flow now stays inside the main wallpaper browser instead of opening a second popup
 
 Notes:

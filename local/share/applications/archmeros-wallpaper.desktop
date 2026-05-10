@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Wallpaper Studio
+Comment=Open the ArchMerOS wallpaper browser and screensaver studio
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-wallpaper-pick.sh
+Terminal=false
+Categories=Utility;Graphics;ArchMerOS;
+StartupNotify=true
+StartupWMClass=archmeros-wallpaper

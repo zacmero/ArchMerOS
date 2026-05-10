@@ -1073,6 +1073,9 @@ Notes:
 - session screensaver input exits straight back to the current desktop session; it does not drop into a login prompt
 - wallpaper rotation uses `hyprpaper` for random per-monitor directory cycling
 - the current wallpaper backend does not provide a subtle fade transition, so rotation uses hard cuts for now
+- ArchMerOS keeps the default rounded frame for high-level apps like the wallpaper studio itself
+- low-level native pickers can use the old-school square look when we want that retro feel, such as the wallpaper source chooser
+- the wallpaper source chooser is Tk-based and directory-only by design; it is intentionally a low-level utility, not a full file manager
 - when the target is `All monitors`, the crop action is intentionally automatic; choose a single monitor target for the manual crop window
 
 ## Build Log

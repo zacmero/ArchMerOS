@@ -54,6 +54,7 @@ Current known state on this workstation:
 - `Super+A` opens the ArchMerOS floating `aichat` HUD, and `Super+Shift+A` opens the Fabric browser overlay
 - `rofi` remains available as the launcher fallback if Walker fails
 - qBittorrent is wrapped so stale lock/socket files are cleared when no instance is running
+- LibreOffice is part of the default core package set for document editing, with the lighter Neovim preview path still available for on-demand inspection
 - `yay -snapshot ...` creates an ArchMerOS restic system snapshot before running the real `yay` command
 - snapshot scope covers `/boot /etc /opt /root /usr /var`, not user home data
 - latest 2 snapshots kept by default

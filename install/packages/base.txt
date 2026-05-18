@@ -39,6 +39,7 @@ chromium
 qbittorrent
 restic
 flatpak
+libreoffice-fresh
 obsidian
 ublock-origin
 telegram-desktop

@@ -10,3 +10,4 @@ elephant-runner
 elephant-websearch
 elephant-windows
 fabric-ai-bin
+python-mammoth

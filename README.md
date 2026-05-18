@@ -756,6 +756,8 @@ Fast note flow:
 - the file opens in Neovim inside WezTerm
 - saving writes directly into the PARA folder
 - zero-byte files are also mapped to Neovim through `application/x-zerosize` and `inode/x-empty`, so fresh notes do not fall through to Mousepad
+- Word documents (`.docx` / `.doc`) now also open through the tracked Neovim path as a lightweight preview workflow instead of forcing a heavyweight editor
+- the preview helper depends on `python-mammoth` from `install/packages/optional-aur.txt` on ArchMerOS and the Mero Terminal `merodoc-preview` helper on the Neovim side
 
 Current editor focus behavior:
 

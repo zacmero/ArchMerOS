@@ -1,0 +1,16 @@
+[Unit]
+Description=Content Factory Stack
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/zacmero/projects/content-factory-stack
+ExecStart=/home/zacmero/projects/content-factory-stack/scripts/start_content_factory_stack.sh
+ExecStop=/home/zacmero/projects/content-factory-stack/scripts/stop_content_factory_stack.sh
+RemainAfterExit=yes
+TimeoutStartSec=300
+TimeoutStopSec=180
+
+[Install]
+WantedBy=default.target

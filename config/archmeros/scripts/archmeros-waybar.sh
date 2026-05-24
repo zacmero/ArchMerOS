@@ -44,6 +44,17 @@ focused_monitor() {
   hyprctl -j monitors | jq -r '.[] | select(.focused == true) | .name' | head -n 1
 }
 
+monitor_name_for_slot() {
+  case "${1:-}" in
+    1) printf 'DP-3\n' ;;
+    2) printf 'HDMI-A-1\n' ;;
+    3) printf 'DP-2\n' ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
 hidden_monitors_json() {
   if [[ -f "$hidden_file" ]]; then
     cat "$hidden_file"
@@ -100,6 +111,27 @@ toggle_focused_monitor() {
   restart_waybar
 }
 
+toggle_monitor_slot() {
+  local slot monitor current_json
+  slot="${1:-}"
+  monitor="$(monitor_name_for_slot "$slot")" || {
+    printf 'ArchMerOS waybar: unknown monitor slot %s\n' "$slot" >&2
+    return 1
+  }
+
+  current_json="$(hidden_monitors_json)"
+  jq \
+    --arg monitor "$monitor" \
+    '
+      if index($monitor)
+      then map(select(. != $monitor))
+      else . + [$monitor]
+      end
+    ' <<<"$current_json" >"${hidden_file}.tmp"
+  mv "${hidden_file}.tmp" "$hidden_file"
+  restart_waybar
+}
+
 show_all() {
   rm -f "$hidden_file"
   restart_waybar
@@ -135,6 +167,14 @@ case "${1:-start}" in
   toggleall)
     setup_hypr_env
     toggle_all
+    ;;
+  toggle1|toggle2|toggle3)
+    setup_hypr_env
+    toggle_monitor_slot "${1#toggle}"
+    ;;
+  toggle-monitor)
+    setup_hypr_env
+    toggle_monitor_slot "${2:-}"
     ;;
   showall)
     setup_hypr_env

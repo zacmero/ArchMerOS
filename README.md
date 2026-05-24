@@ -471,6 +471,9 @@ Current top bar flow on each monitor:
 - date/time centered
 - connectivity, keyboard layout, and system stats on the right
 - `Super+Shift+H` hides or shows all Waybar bars together
+- `Super+Shift+1` hides or shows the left Waybar bar (`DP-3`)
+- `Super+Shift+2` hides or shows the center Waybar bar (`HDMI-A-1`)
+- `Super+Shift+3` hides or shows the right Waybar bar (`DP-2`)
 
 Taskbar behavior:
 
@@ -501,6 +504,7 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Ctrl+Alt+code:105` / `Ctrl+Alt+code:106`: raw arrow fallback binds for stubborn keyboards
 - `Super+mouse wheel`: cycle workspaces
 - `Super+Shift+H`: toggle all Waybar bars together
+- `Super+Shift+1/2/3`: toggle the left, center, or right Waybar bar individually
 - `Super+H/J/K/L`: move focus
 - `Super+Left/Right/Up/Down`: move focus
 - `Alt+Tab`: cycle to next window on the active workspace

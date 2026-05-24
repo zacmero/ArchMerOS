@@ -1,0 +1,15 @@
+[Unit]
+Description=Content Factory OpenRouter Fallback Proxy
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/zacmero/projects/content-factory-stack
+EnvironmentFile=/home/zacmero/projects/content-factory-stack/.env
+ExecStart=/usr/bin/env node /home/zacmero/projects/content-factory-stack/scripts/openrouter_fallback_proxy.mjs
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

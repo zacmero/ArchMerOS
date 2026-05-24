@@ -31,6 +31,7 @@ image/vnd.microsoft.icon=imv-dir.desktop
 application/x-bittorrent=qbittorrent.desktop
 x-scheme-handler/magnet=qbittorrent.desktop
 application/vnd.openxmlformats-officedocument.wordprocessingml.document=libreoffice-writer.desktop
+application/vnd.oasis.opendocument.text=libreoffice-writer.desktop
 
 [Added Associations]
 image/jpeg=imv.desktop;org.xfce.ristretto.desktop;
@@ -38,7 +39,7 @@ image/jpg=imv.desktop;
 text/plain=nvim.desktop;org.xfce.mousepad.desktop;
 text/markdown=firefox.desktop;nvim.desktop;
 application/x-shellscript=nvim.desktop;
-application/x-zerosize=nvim.desktop;org.xfce.mousepad.desktop;
+application/x-zerosize=libreoffice-startcenter.desktop;nvim.desktop;org.xfce.mousepad.desktop;
 inode/x-empty=nvim.desktop;org.xfce.mousepad.desktop;
 text/x-python=nvim.desktop;
 text/x-java=nvim.desktop;
@@ -64,8 +65,9 @@ video/x-matroska=mpv.desktop;
 image/vnd.microsoft.icon=imv-dir.desktop;imv.desktop;
 application/x-bittorrent=qbittorrent.desktop;
 x-scheme-handler/magnet=qbittorrent.desktop;
-application/vnd.oasis.opendocument.text=org.xfce.mousepad.desktop;nvim.desktop;
+application/vnd.oasis.opendocument.text=nvim.desktop;libreoffice-writer.desktop;
 application/vnd.openxmlformats-officedocument.wordprocessingml.document=libreoffice-writer.desktop;
 
 [Removed Associations]
 application/vnd.openxmlformats-officedocument.wordprocessingml.document=nvim.desktop;org.gnome.FileRoller.desktop;
+application/vnd.oasis.opendocument.text=org.xfce.mousepad.desktop;

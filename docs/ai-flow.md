@@ -79,6 +79,17 @@ Supported variable:
 
 If left empty, the HUD defers to the normal `aichat` config.
 
+Current default:
+
+- `openrouter:openrouter/free`
+
+HUD model labels:
+
+- `OpenRouter auto (free)` = `openrouter:openrouter/free`
+- `OpenRouter auto (paid)` = `openrouter:openrouter/auto`
+
+The shared OpenRouter API key is loaded from `/opt/mero_terminal/aichat.env` as `OPENROUTER_API_KEY`, so the HUD stays portable without storing secrets in git.
+
 ## Fabric Browser
 
 The Fabric path is a browser first, not a forced execution layer.

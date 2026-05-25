@@ -27,7 +27,7 @@ if [[ -f "$archmeros_env" ]]; then
   set +a
 fi
 
-if [[ -f /opt/mero_terminal/aichat.env ]]; then
+if [[ -r /opt/mero_terminal/aichat.env ]]; then
   set -a
   # shellcheck disable=SC1091
   source /opt/mero_terminal/aichat.env
@@ -41,6 +41,14 @@ model_args=()
 if [[ -n "${ARCHMEROS_AICHAT_MODEL:-}" ]]; then
   model_args=(-m "$ARCHMEROS_AICHAT_MODEL")
 fi
+
+model_label() {
+  case "${ARCHMEROS_AICHAT_MODEL:-openrouter:openrouter/free}" in
+    openrouter:openrouter/free) printf 'OpenRouter auto (free)';;
+    openrouter:openrouter/auto) printf 'OpenRouter auto (paid)';;
+    *) printf '%s' "${ARCHMEROS_AICHAT_MODEL:-openrouter:openrouter/free}";;
+  esac
+}
 
 session_slug() {
   printf '%s' "${1:-hud}" \
@@ -77,6 +85,7 @@ print_header() {
   local session_name="${1:-}"
   local context_source="${2:-none}"
   local context_summary="${3:-No context attached}"
+  local active_model="${4:-Unknown}"
 
   clear
   printf '%bARCHMEROS AI HUD%b\n' "$accent_cyan" "$reset"
@@ -84,6 +93,7 @@ print_header() {
   printf '%bSession%b  %s\n' "$accent_magenta" "$reset" "$session_name"
   printf '%bContext%b  %s\n' "$accent_magenta" "$reset" "$context_source"
   printf '%bNotes%b    %s\n' "$accent_magenta" "$reset" "$context_summary"
+  printf '%bModel%b    %s\n' "$accent_magenta" "$reset" "$active_model"
   printf '%bAichat%b   .help  .info session  .edit session  .save session\n' "$accent_magenta" "$reset"
   printf '%bHint%b     Right prompt shows session token usage, e.g. ctx 1177 (0.11%%)\n' "$accent_magenta" "$reset"
   printf '%b────────────────────────────────────────────────────────────────────────────────%b\n\n' "$accent_cyan" "$reset"
@@ -116,7 +126,7 @@ if [[ -n "$context_file" && -s "$context_file" ]]; then
   esac
 fi
 
-print_header "$session_name" "$context_source" "$context_summary"
+print_header "$session_name" "$context_source" "$context_summary" "$(model_label)"
 
 if [[ -n "$context_file" && -s "$context_file" ]]; then
   preload_prompt="Use the attached source context as background context. Do not answer anything yet. Wait for my next question."

@@ -1,0 +1,14 @@
+[Unit]
+Description=Content Factory Video Fallback Helper
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/zacmero/projects/content-factory-stack
+ExecStart=/usr/bin/node /home/zacmero/projects/content-factory-stack/content_factory/video_fallback_server.mjs
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

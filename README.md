@@ -51,7 +51,7 @@ Current known state on this workstation:
 - Walker and the Elephant provider packages are tracked in `install/packages/optional-aur.txt` for fresh installs
 - `mako` notifications use ArchMerOS timeout rules, and app notifications are dismissed automatically when their app regains focus
 - `Super+E` syncs the trusted Windows Desktop intersection into `~/Desktop` and opens `thunar`
-- `Super+A` opens the ArchMerOS floating `aichat` HUD, and `Super+Shift+A` opens the Fabric browser overlay
+- `Super+A` opens the ArchMerOS floating `aichat` HUD backed by OpenRouter's free auto router, and `Super+Shift+A` opens the Fabric browser overlay
 - `rofi` remains available as the launcher fallback if Walker fails
 - qBittorrent is wrapped so stale lock/socket files are cleared when no instance is running
 - LibreOffice is part of the default core package set for document editing, with the lighter Neovim preview path still available for on-demand inspection
@@ -321,7 +321,7 @@ This pattern is intended as the reference for future app-specific focus-or-launc
 
 ArchMerOS now uses the same wrapper-first approach for the local AI flow.
 
-- `Super+A`: floating `aichat` HUD
+- `Super+A`: floating `aichat` HUD (OpenRouter free router backed)
 - `Super+Shift+A`: floating Fabric browser
 
 This path is implemented as ArchMerOS-only shell wrappers plus Hyprland window rules, so upstream `wezterm` behavior stays untouched. The full notes live in [docs/ai-flow.md](/home/zacmero/projects/ArchMerOS/docs/ai-flow.md).

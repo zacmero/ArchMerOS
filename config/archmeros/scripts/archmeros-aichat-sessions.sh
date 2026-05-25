@@ -13,7 +13,7 @@ if [[ -f "$archmeros_env" ]]; then
   set +a
 fi
 
-if [[ -f /opt/mero_terminal/aichat.env ]]; then
+if [[ -r /opt/mero_terminal/aichat.env ]]; then
   set -a
   # shellcheck disable=SC1091
   source /opt/mero_terminal/aichat.env

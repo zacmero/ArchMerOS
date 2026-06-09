@@ -1054,6 +1054,7 @@ Current behavior:
 - the same window now includes an ArchMerOS screensaver section for live session screensaver styling
 - the screensaver section can also disable the animated screensaver entirely while keeping monitor standby / DPMS idle-off active
 - the same launcher now also exposes wallpaper rotation controls for random per-monitor cycling from `config/wallpapers`
+- the wallpaper rotation panel also controls the live session screensaver idle timeout by writing `config/hypr/hypridle.conf`
 - the browser can now load wallpapers from an alternate folder, and it remembers that source in `~/.local/state/archmeros/wallpaper-source.json`
 - target now defaults to the currently focused monitor for manual crop-first behavior
 - wallpaper preview updates automatically as you move through the list

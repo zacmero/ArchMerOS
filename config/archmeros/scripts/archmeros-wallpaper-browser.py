@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -24,6 +25,7 @@ SCREENSAVER_DEFAULT_CONFIG = REPO_ROOT / "config" / "greetd" / "sysc-greet" / "s
 SCREENSAVER_OVERRIDE_DIR = Path.home() / ".config" / "archmeros" / "screensaver"
 SCREENSAVER_OVERRIDE_CONFIG = SCREENSAVER_OVERRIDE_DIR / "screensaver.conf"
 SCREENSAVER_LAUNCHER = REPO_ROOT / "config" / "archmeros" / "scripts" / "archmeros-screensaver.sh"
+HYPRIDLE_CONFIG = REPO_ROOT / "config" / "hypr" / "hypridle.conf"
 WALLPAPER_STATE_FILE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "archmeros" / "wallpapers.json"
 WALLPAPER_SOURCE_STATE_FILE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "archmeros" / "wallpaper-source.json"
 SCREENSAVER_KEY_ORDER = [
@@ -155,6 +157,32 @@ def apply_rotation_settings(enabled: bool, interval_seconds: int) -> None:
     subprocess.run(command, check=True)
 
 
+def load_screensaver_idle_timeout_minutes() -> int:
+    try:
+        text = HYPRIDLE_CONFIG.read_text(encoding="utf-8")
+    except Exception:
+        return 15
+    match = re.search(r"(?m)^\s*timeout\s*=\s*(\d+)\s*$", text)
+    if not match:
+        return 15
+    seconds = max(60, int(match.group(1)))
+    return max(1, seconds // 60)
+
+
+def set_screensaver_idle_timeout_minutes(minutes: int) -> None:
+    seconds = max(60, int(minutes) * 60)
+    text = HYPRIDLE_CONFIG.read_text(encoding="utf-8")
+    updated, count = re.subn(
+        r"(?m)^(\s*timeout\s*=\s*)\d+\s*$",
+        rf"\g<1>{seconds}",
+        text,
+        count=1,
+    )
+    if count == 0:
+        raise RuntimeError(f"Could not find screensaver timeout in {HYPRIDLE_CONFIG}")
+    HYPRIDLE_CONFIG.write_text(updated, encoding="utf-8")
+
+
 def place_window_on_parent(window: tk.Toplevel, parent: tk.Misc, width: int, height: int, parent_title: str) -> None:
     client = hypr_client_for_title(parent_title)
     if client:
@@ -222,6 +250,7 @@ def focused_monitor_name() -> str | None:
 
 
 def apply_wallpaper(target: str, wallpaper: Path) -> None:
+    subprocess.run(["python3", str(WALLPAPER_CONTROLLER), "--disable-rotation"], check=True)
     if target == "All monitors":
         subprocess.run(["python3", str(WALLPAPER_CONTROLLER), "--all", str(wallpaper)], check=True)
     else:
@@ -615,6 +644,7 @@ class RotationStudio(tk.Toplevel):
         settings = load_rotation_settings()
         self.enabled_var = tk.BooleanVar(value=bool(settings["enabled"]))
         self.interval_var = tk.IntVar(value=max(1, int(settings["interval"]) // 60))
+        self.idle_timeout_var = tk.IntVar(value=load_screensaver_idle_timeout_minutes())
 
         shell = tk.Frame(self, bg="#171a24")
         shell.pack(fill="both", expand=True, padx=18, pady=18)
@@ -627,6 +657,14 @@ class RotationStudio(tk.Toplevel):
             text="This mode rotates random images from the repo wallpaper folder across the three monitors. Each monitor gets its own random order.",
             bg="#171a24",
             fg="#c6d0f5",
+            justify="left",
+            wraplength=680,
+        ).pack(anchor="w", pady=(8, 0))
+        tk.Label(
+            header,
+            text="The screensaver idle timeout below writes to config/hypr/hypridle.conf, so the same studio controls both rotation and screensaver entry time.",
+            bg="#171a24",
+            fg="#9adf76",
             justify="left",
             wraplength=680,
         ).pack(anchor="w", pady=(8, 0))
@@ -662,6 +700,24 @@ class RotationStudio(tk.Toplevel):
         self.interval_label = tk.Label(interval_row, text="", bg="#171a24", fg="#9adf76", width=12)
         self.interval_label.pack(side="left", padx=(12, 0))
 
+        tk.Label(options, text="Screensaver idle timeout", bg="#171a24", fg="#7cb8ff").pack(anchor="w", pady=(18, 8))
+        timeout_row = tk.Frame(options, bg="#171a24")
+        timeout_row.pack(fill="x")
+        tk.Scale(
+            timeout_row,
+            from_=5,
+            to=30,
+            orient="horizontal",
+            variable=self.idle_timeout_var,
+            bg="#171a24",
+            fg="#c6d0f5",
+            highlightthickness=0,
+            troughcolor="#252a37",
+            activebackground="#7cb8ff",
+        ).pack(side="left", fill="x", expand=True)
+        self.idle_timeout_label = tk.Label(timeout_row, text="", bg="#171a24", fg="#9adf76", width=12)
+        self.idle_timeout_label.pack(side="left", padx=(12, 0))
+
         info = tk.Frame(shell, bg="#11131a", highlightthickness=1, highlightbackground="#384664")
         info.pack(fill="x", pady=(0, 18))
         tk.Label(info, text="Backend note", bg="#11131a", fg="#7cb8ff", font=("Cascadia Code", 11, "bold")).pack(anchor="w", padx=12, pady=(12, 6))
@@ -680,6 +736,7 @@ class RotationStudio(tk.Toplevel):
         tk.Button(buttons, text="Apply", command=self._apply, bg="#4c7adf", fg="#11131a", relief="flat").pack(side="right", padx=(0, 8))
 
         self.interval_var.trace_add("write", lambda *_args: self._refresh_state())
+        self.idle_timeout_var.trace_add("write", lambda *_args: self._refresh_state())
         self._refresh_state()
         place_window_on_parent(self, parent, 760, 500, "ArchMerOS Wallpaper Picker")
         self.deiconify()
@@ -687,8 +744,14 @@ class RotationStudio(tk.Toplevel):
 
     def _refresh_state(self) -> None:
         self.interval_label.configure(text=f"{self.interval_var.get()} min")
+        self.idle_timeout_label.configure(text=f"{self.idle_timeout_var.get()} min")
 
     def _apply(self) -> None:
+        try:
+            set_screensaver_idle_timeout_minutes(self.idle_timeout_var.get())
+        except Exception as exc:
+            messagebox.showerror("ArchMerOS Rotation", f"Failed to update screensaver timeout:\n{exc}")
+            return
         apply_rotation_settings(self.enabled_var.get(), self.interval_var.get() * 60)
         messagebox.showinfo("ArchMerOS Rotation", "Wallpaper rotation settings applied.")
 

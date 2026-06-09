@@ -6,6 +6,7 @@ lock_path="/tmp/archmeros-screensaver.pid"
 stamp_path="/tmp/archmeros-screensaver.started"
 log_path="/tmp/archmeros-screensaver.log"
 minimum_runtime_seconds=5
+waybar_script="$HOME/.config/archmeros/scripts/archmeros-waybar.sh"
 
 log() {
   printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >>"$log_path"
@@ -41,5 +42,6 @@ log "stop-pkill"
 pkill -f 'mpv.*ArchMerOS-Screensaver|ArchMerOS Screensaver|wezterm.*ArchMerOS-Screensaver.*archmeros-night-drive.py|python3 .*archmeros-night-drive.py --fps' >/dev/null 2>&1 || true
 hyprctl dispatch dpms on >/dev/null 2>&1 || true
 "$HOME/.config/archmeros/scripts/archmeros-side-dpms.sh" on >/dev/null 2>&1 || true
+"$waybar_script" start >/dev/null 2>&1 || true
 rm -f "$lock_path"
 log "stop-done"

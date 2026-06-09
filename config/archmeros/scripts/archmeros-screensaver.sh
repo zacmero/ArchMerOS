@@ -9,6 +9,7 @@ lock_path="/tmp/archmeros-screensaver.pid"
 stamp_path="/tmp/archmeros-screensaver.started"
 launch_script_path="/tmp/archmeros-screensaver-launch.sh"
 window_launcher="$HOME/.config/archmeros/scripts/archmeros-screensaver-window.sh"
+waybar_script="$HOME/.config/archmeros/scripts/archmeros-waybar.sh"
 
 config_path="${HOME}/.config/archmeros/screensaver/screensaver.conf"
 default_config_path="${repo_root}/config/greetd/sysc-greet/share/ascii_configs/screensaver.conf"
@@ -26,6 +27,19 @@ fi
 
 set_side_dpms() {
   "$HOME/.config/archmeros/scripts/archmeros-side-dpms.sh" "$1" >/dev/null 2>&1 || true
+}
+
+set_waybar() {
+  "$waybar_script" "$1" >/dev/null 2>&1 || true
+}
+
+wait_for_waybar_to_stop() {
+  for _ in $(seq 1 30); do
+    if ! pgrep -x waybar >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 0.1
+  done
 }
 
 read_setting() {
@@ -46,6 +60,7 @@ read_setting() {
 
 cleanup() {
   set_side_dpms on
+  set_waybar start
   rm -f "$lock_path" "$stamp_path" "$launch_script_path"
 }
 
@@ -89,6 +104,8 @@ env_args+=("ARCHMEROS_SCREENSAVER_MODE=$mode_value")
 env_args+=("ARCHMEROS_SCREENSAVER_SPEED=$speed_value")
 
 set_side_dpms off
+set_waybar stop
+wait_for_waybar_to_stop
 
 if [[ ! -x "$window_launcher" ]]; then
   log "skip missing-window-launcher"

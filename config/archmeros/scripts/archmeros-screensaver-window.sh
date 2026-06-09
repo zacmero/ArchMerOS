@@ -12,7 +12,9 @@ playlist_path="/tmp/archmeros-screensaver-playlist.m3u"
 mpv_input_conf_path="/tmp/archmeros-screensaver-mpv-input.conf"
 wallpaper_dir="${repo_root}/config/wallpapers"
 night_drive_script="${HOME}/.config/archmeros/scripts/archmeros-night-drive.py"
+waybar_script="${HOME}/.config/archmeros/scripts/archmeros-waybar.sh"
 config_path="${ARCHMEROS_SCREENSAVER_CONFIG:-${repo_root}/config/greetd/sysc-greet/share/ascii_configs/screensaver.conf}"
+main_monitor="HDMI-A-1"
 
 log() {
   printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >>"$log_path"
@@ -39,6 +41,7 @@ cleanup() {
   log "window-cleanup"
   hyprctl dispatch dpms on >/dev/null 2>&1 || true
   "$HOME/.config/archmeros/scripts/archmeros-side-dpms.sh" on >/dev/null 2>&1 || true
+  "$waybar_script" start >/dev/null 2>&1 || true
   rm -f "$lock_path" "$stamp_path" "$playlist_path" "$mpv_input_conf_path"
 }
 
@@ -123,7 +126,7 @@ EOF
     --no-config \
     --no-audio \
     --no-osc \
-    --fs \
+    --ontop \
     --force-window=yes \
     --title="ArchMerOS Screensaver" \
     --wayland-app-id=ArchMerOS-Screensaver \
@@ -147,16 +150,30 @@ EOF
 place_window() {
   local address=""
   local workspace_id=""
-  workspace_id="$(
-    hyprctl -j activeworkspace 2>/dev/null \
+  local monitor_size=""
+  readarray -t monitor_info < <(
+    hyprctl -j monitors 2>/dev/null \
       | python3 -c 'import json,sys
 try:
     data=json.load(sys.stdin)
-    print(int(data.get("id", 0) or 0))
+    workspace_id = 0
+    width = 0
+    height = 0
+    for monitor in data:
+        if (monitor.get("name") or "") == "HDMI-A-1":
+            workspace_id = int((monitor.get("activeWorkspace") or {}).get("id", 0) or 0)
+            width = int(monitor.get("width", 0) or 0)
+            height = int(monitor.get("height", 0) or 0)
+            break
+    print(workspace_id)
+    print(width)
+    print(height)
 except Exception:
     print(0)
 ' 2>/dev/null || true
-  )"
+  )
+  workspace_id="${monitor_info[0]:-0}"
+  monitor_size="${monitor_info[1]:-0} ${monitor_info[2]:-0}"
   if [[ ! "$workspace_id" =~ ^[0-9]+$ ]] || (( workspace_id <= 0 )); then
     workspace_id=1
   fi
@@ -174,8 +191,15 @@ for c in clients:
 ' 2>/dev/null || true
     )"
     if [[ -n "$address" ]]; then
+      hyprctl dispatch focusmonitor "$main_monitor" >/dev/null 2>&1 || true
+      hyprctl dispatch focuswindow address:"$address" >/dev/null 2>&1 || true
+      hyprctl dispatch movewindow "mon:$main_monitor" >/dev/null 2>&1 || true
       hyprctl dispatch movetoworkspacesilent "$workspace_id",address:"$address" >/dev/null 2>&1 || true
-      hyprctl dispatch fullscreen 1,address:"$address" >/dev/null 2>&1 || true
+      if [[ "$monitor_size" =~ ^([0-9]+)\ ([0-9]+)$ ]]; then
+        hyprctl dispatch resizeactive exact "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" >/dev/null 2>&1 || true
+      fi
+      sleep 0.1
+      hyprctl dispatch fullscreen 0,address:"$address" >/dev/null 2>&1 || true
       break
     fi
     sleep 0.1

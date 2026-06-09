@@ -570,7 +570,7 @@ class ScreensaverStudio(tk.Toplevel):
         self.enabled_check.pack(anchor="w", pady=(8, 0))
         tk.Label(
             flags,
-            text="Idle trigger is currently 5 minutes through hypridle. DPMS powers the screens off after one more minute.",
+            text="The screensaver timeout below writes to hypridle in seconds. DPMS powers the screens off after one more minute.",
             bg="#171a24",
             fg="#8e96c8",
             justify="left",

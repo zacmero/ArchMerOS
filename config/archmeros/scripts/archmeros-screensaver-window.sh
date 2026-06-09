@@ -146,6 +146,20 @@ EOF
 
 place_window() {
   local address=""
+  local workspace_id=""
+  workspace_id="$(
+    hyprctl -j activeworkspace 2>/dev/null \
+      | python3 -c 'import json,sys
+try:
+    data=json.load(sys.stdin)
+    print(int(data.get("id", 0) or 0))
+except Exception:
+    print(0)
+' 2>/dev/null || true
+  )"
+  if [[ ! "$workspace_id" =~ ^[0-9]+$ ]] || (( workspace_id <= 0 )); then
+    workspace_id=1
+  fi
   for _ in $(seq 1 60); do
     address="$(
       hyprctl -j clients 2>/dev/null \
@@ -160,8 +174,7 @@ for c in clients:
 ' 2>/dev/null || true
     )"
     if [[ -n "$address" ]]; then
-      hyprctl dispatch movetoworkspacesilent 1,address:"$address" >/dev/null 2>&1 || true
-      hyprctl dispatch pin address:"$address" >/dev/null 2>&1 || true
+      hyprctl dispatch movetoworkspacesilent "$workspace_id",address:"$address" >/dev/null 2>&1 || true
       hyprctl dispatch fullscreen 1,address:"$address" >/dev/null 2>&1 || true
       break
     fi

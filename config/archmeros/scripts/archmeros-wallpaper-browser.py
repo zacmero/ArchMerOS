@@ -183,6 +183,10 @@ def set_screensaver_idle_timeout_minutes(minutes: int) -> None:
     HYPRIDLE_CONFIG.write_text(updated, encoding="utf-8")
 
 
+def restart_hypridle() -> None:
+    subprocess.run(["systemctl", "--user", "restart", "hypridle.service"], check=False)
+
+
 def place_window_on_parent(window: tk.Toplevel, parent: tk.Misc, width: int, height: int, parent_title: str) -> None:
     client = hypr_client_for_title(parent_title)
     if client:
@@ -753,6 +757,7 @@ class RotationStudio(tk.Toplevel):
             messagebox.showerror("ArchMerOS Rotation", f"Failed to update screensaver timeout:\n{exc}")
             return
         apply_rotation_settings(self.enabled_var.get(), self.interval_var.get() * 60)
+        restart_hypridle()
         messagebox.showinfo("ArchMerOS Rotation", "Wallpaper rotation settings applied.")
 
 

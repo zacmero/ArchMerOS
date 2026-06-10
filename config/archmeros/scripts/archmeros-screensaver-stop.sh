@@ -7,9 +7,18 @@ stamp_path="/tmp/archmeros-screensaver.started"
 log_path="/tmp/archmeros-screensaver.log"
 minimum_runtime_seconds=5
 waybar_script="$HOME/.config/archmeros/scripts/archmeros-waybar.sh"
+blackout_script="$HOME/.config/archmeros/scripts/archmeros-side-blackout.sh"
+monitor_service="turzx-monitor.service"
 
 log() {
   printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >>"$log_path"
+}
+
+set_monitor_service_state() {
+  local state="$1"
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl --no-pager --quiet --no-ask-password "$state" "$monitor_service" >/dev/null 2>&1 || true
+  fi
 }
 
 log "stop-invoke"
@@ -41,7 +50,9 @@ fi
 log "stop-pkill"
 pkill -f 'mpv.*ArchMerOS-Screensaver|ArchMerOS Screensaver|wezterm.*ArchMerOS-Screensaver.*archmeros-night-drive.py|python3 .*archmeros-night-drive.py --fps' >/dev/null 2>&1 || true
 hyprctl dispatch dpms on >/dev/null 2>&1 || true
+"$blackout_script" stop >/dev/null 2>&1 || true
 "$HOME/.config/archmeros/scripts/archmeros-side-dpms.sh" on >/dev/null 2>&1 || true
+set_monitor_service_state start
 "$waybar_script" start >/dev/null 2>&1 || true
 rm -f "$lock_path"
 log "stop-done"

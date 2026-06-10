@@ -10,6 +10,8 @@ stamp_path="/tmp/archmeros-screensaver.started"
 launch_script_path="/tmp/archmeros-screensaver-launch.sh"
 window_launcher="$HOME/.config/archmeros/scripts/archmeros-screensaver-window.sh"
 waybar_script="$HOME/.config/archmeros/scripts/archmeros-waybar.sh"
+blackout_script="$HOME/.config/archmeros/scripts/archmeros-side-blackout.sh"
+monitor_service="turzx-monitor.service"
 
 config_path="${HOME}/.config/archmeros/screensaver/screensaver.conf"
 default_config_path="${repo_root}/config/greetd/sysc-greet/share/ascii_configs/screensaver.conf"
@@ -31,6 +33,30 @@ set_side_dpms() {
 
 set_waybar() {
   "$waybar_script" "$1" >/dev/null 2>&1 || true
+}
+
+set_monitor_service_state() {
+  local state="$1"
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl --no-pager --quiet --no-ask-password "$state" "$monitor_service" >/dev/null 2>&1 || true
+  fi
+}
+
+set_side_screensaver_state() {
+  local state="$1"
+  case "$state" in
+    off)
+      set_monitor_service_state stop
+      "$blackout_script" start >/dev/null 2>&1 || true
+      hyprctl dispatch dpms off DP-2 >/dev/null 2>&1 || true
+      ;;
+    on)
+      "$blackout_script" stop >/dev/null 2>&1 || true
+      hyprctl dispatch dpms on DP-2 >/dev/null 2>&1 || true
+      hyprctl dispatch dpms on DP-3 >/dev/null 2>&1 || true
+      set_monitor_service_state start
+      ;;
+  esac
 }
 
 wait_for_waybar_to_stop() {
@@ -59,6 +85,7 @@ read_setting() {
 }
 
 cleanup() {
+  set_side_screensaver_state on
   set_side_dpms on
   set_waybar start
   rm -f "$lock_path" "$stamp_path" "$launch_script_path"
@@ -103,6 +130,7 @@ env_args+=("ARCHMEROS_SCREENSAVER_CONFIG=$effective_config_path")
 env_args+=("ARCHMEROS_SCREENSAVER_MODE=$mode_value")
 env_args+=("ARCHMEROS_SCREENSAVER_SPEED=$speed_value")
 
+set_side_screensaver_state off
 set_side_dpms off
 set_waybar stop
 wait_for_waybar_to_stop

@@ -11,3 +11,6 @@ __pycache__/
 
 # Generated wallpaper artifacts
 config/wallpapers/generated/
+
+#Headroom artifacts:
+.tokensave/

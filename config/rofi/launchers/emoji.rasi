@@ -12,7 +12,8 @@ window {
   anchor: center;
   fullscreen: false;
   width: 560px;
-  border: 0px;
+  border: 1px;
+  border-color: @active;
   border-radius: 18px;
   background-color: rgba(10, 16, 26, 0.78);
 }
@@ -20,8 +21,7 @@ window {
 mainbox {
   spacing: 8px;
   padding: 12px;
-  border: 1px solid;
-  border-color: @active;
+  border: 0px;
   background-color: rgba(15, 22, 35, 0.54);
   children: [ "inputbar", "listview" ];
 }

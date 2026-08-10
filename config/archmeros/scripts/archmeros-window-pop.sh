@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-mode="${1:-medium}"
+requested_mode="${1:-medium}"
+mode="$requested_mode"
 
 active="$(hyprctl activewindow -j)"
 pinned="$(printf '%s' "$active" | jq -r '.pinned')"
@@ -34,7 +35,17 @@ if [[ "$pinned" == "true" ]]; then
   exit 0
 fi
 
-if [[ "$floating" == "true" && "$current_mode" == "$mode" ]]; then
+if [[ "$requested_mode" == "shrink" ]]; then
+  if [[ "$current_mode" == "full" ]]; then
+    mode="medium"
+  else
+    mode="small"
+  fi
+elif [[ "$requested_mode" == "full" && "$current_mode" == "none" ]]; then
+  mode="medium"
+fi
+
+if [[ "$requested_mode" != "shrink" && "$floating" == "true" && "$current_mode" == "$mode" ]]; then
   hyprctl -q --batch \
     "dispatch settiled;"
   exit 0
@@ -52,6 +63,10 @@ case "$mode" in
   medium)
     width="$(( monitor_width * 72 / 100 ))"
     height="$(( monitor_height * 76 / 100 ))"
+    ;;
+  small)
+    width="$(( monitor_width * 42 / 100 ))"
+    height="$(( monitor_height * 52 / 100 ))"
     ;;
   *)
     printf 'ArchMerOS window pop: unknown mode %s\n' "$mode" >&2

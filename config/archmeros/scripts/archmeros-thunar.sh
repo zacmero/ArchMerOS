@@ -2,24 +2,18 @@
 
 set -euo pipefail
 
-find_thunar_address() {
-  local monitor_id="$1"
-  local workspace_id="$2"
+find_new_thunar_address() {
+  local known_addresses="$1"
   local clients
   clients="$(hyprctl -j clients 2>/dev/null || printf '[]')"
 
   printf '%s' "$clients" | jq -r \
-    --argjson monitor "$monitor_id" \
-    --argjson workspace "$workspace_id" '
+    --argjson known "$known_addresses" '
       [
         .[]
         | select(((.class // .initialClass // "") | ascii_downcase) == "thunar")
-        | . + {
-            score:
-              (if (.workspace.id // -1) == $workspace then 20 else 0 end) +
-              (if (.monitor // -1) == $monitor then 10 else 0 end) +
-              (.focusHistoryID // -1)
-          }
+        | select(.address as $address | ($known | index($address) | not))
+        | . + { score: (.focusHistoryID // -1) }
       ]
       | sort_by(.score)
       | last
@@ -40,18 +34,19 @@ monitors_json="$(hyprctl -j monitors 2>/dev/null || printf '[]')"
 focused_monitor="$(printf '%s' "$monitors_json" | jq -r '.[] | select(.focused == true) | .id' | head -n 1)"
 focused_monitor_name="$(printf '%s' "$monitors_json" | jq -r '.[] | select(.focused == true) | .name' | head -n 1)"
 focused_workspace="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id // empty' 2>/dev/null || true)"
-active_window="$(hyprctl activewindow -j 2>/dev/null || printf '{}')"
-
-if [[ "$active_window" != "{}" ]] && [[ "$(printf '%s' "$active_window" | jq -r '.floating // false')" == "true" ]]; then
-  hyprctl dispatch alterzorder bottom >/dev/null 2>&1 || true
-fi
+prelaunch_clients="$(hyprctl -j clients 2>/dev/null || printf '[]')"
+known_thunar_addresses="$(printf '%s' "$prelaunch_clients" | jq '[.[] | select(((.class // .initialClass // "") | ascii_downcase) == "thunar") | .address]')"
+occupied_windows="$(printf '%s' "$prelaunch_clients" | jq -r \
+  --argjson monitor "${focused_monitor:-0}" \
+  --argjson workspace "${focused_workspace:-0}" \
+  '[.[] | select((.monitor // -1) == $monitor and (.workspace.id // -1) == $workspace)] | length')"
 
 thunar -w "$@" >/tmp/archmeros-thunar.log 2>&1 &
 
 address=""
 for _ in $(seq 1 40); do
   sleep 0.1
-  address="$(find_thunar_address "${focused_monitor:-0}" "${focused_workspace:-0}")"
+  address="$(find_new_thunar_address "$known_thunar_addresses")"
   [[ -n "$address" ]] && break
 done
 
@@ -73,8 +68,13 @@ monitor_width="$(printf '%s' "$monitors_json" | jq -r --argjson monitor "${focus
 monitor_height="$(printf '%s' "$monitors_json" | jq -r --argjson monitor "${focused_monitor:-0}" '.[] | select(.id == $monitor) | .height' | head -n 1)"
 
 if [[ -n "${monitor_width:-}" && -n "${monitor_height:-}" ]]; then
-  width="$(( monitor_width * 72 / 100 ))"
-  height="$(( monitor_height * 76 / 100 ))"
+  if [[ "${occupied_windows:-1}" == "0" ]]; then
+    width="$(( monitor_width * 96 / 100 ))"
+    height="$(( monitor_height * 92 / 100 ))"
+  else
+    width="$(( monitor_width * 72 / 100 ))"
+    height="$(( monitor_height * 76 / 100 ))"
+  fi
 
   hyprctl dispatch focuswindow "address:${address}" >/dev/null 2>&1 || true
 

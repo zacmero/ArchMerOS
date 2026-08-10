@@ -19,6 +19,7 @@ MAX_LAUNCHES = 120
 MAX_HISTORY = 20
 SNAPSHOT_REFRESH_DELAY = 0.14
 SOCKET_RETRY_DELAY = 1.0
+FOLDER_SEARCH_LIMIT = 12000
 
 
 def ensure_cache_dir() -> None:
@@ -194,6 +195,109 @@ def resolve_command_from_values(klass: str, pid: int, title: str) -> tuple[list[
     return [], "general"
 
 
+def thunar_folder_from_command(command: list[str]) -> Path | None:
+    if len(command) < 2 or Path(str(command[0])).name != "archmeros-thunar.sh":
+        return None
+
+    folder = Path(str(command[1])).expanduser()
+    return folder if folder.is_dir() else None
+
+
+def thunar_title_folder(title: str) -> str:
+    raw_title = (title or "").strip()
+    suffix = " - Thunar"
+    if not raw_title.lower().endswith(suffix.lower()):
+        return ""
+    return raw_title[: -len(suffix)].strip()
+
+
+def user_folder_roots() -> list[Path]:
+    home = Path.home()
+    return [home / "Desktop", home / "Documents", home / "Downloads", home / "projects"]
+
+
+def find_unique_user_folder(folder_name: str) -> Path | None:
+    if not folder_name or "/" in folder_name:
+        return None
+
+    ignored = {".git", ".cache", ".local", ".npm-global", ".venv", "build", "dist", "node_modules", "vendor", "venv"}
+    matches: list[Path] = []
+    visited: set[Path] = set()
+    scanned = 0
+
+    for root in user_folder_roots():
+        if not root.is_dir():
+            continue
+        for current, directories, _ in os.walk(root, followlinks=True):
+            current_path = Path(current)
+            resolved_path = current_path.resolve()
+            if resolved_path in visited:
+                directories[:] = []
+                continue
+            visited.add(resolved_path)
+            directories[:] = [name for name in directories if not name.startswith(".") and name not in ignored]
+            scanned += len(directories)
+            if current_path.name == folder_name:
+                matches.append(current_path)
+                if len(matches) > 1:
+                    return None
+            if scanned >= FOLDER_SEARCH_LIMIT:
+                return None
+
+    return matches[0] if len(matches) == 1 else None
+
+
+def resolve_thunar_folder(title: str, previous_command: list[str]) -> Path | None:
+    folder_name = thunar_title_folder(title)
+    previous_folder = thunar_folder_from_command(previous_command)
+    if not folder_name:
+        return previous_folder
+
+    if previous_folder is not None:
+        current = previous_folder.resolve()
+        if current.name == folder_name:
+            return current
+
+        child = current / folder_name
+        if child.is_dir():
+            return child
+
+        ancestor = current.parent
+        while ancestor != ancestor.parent:
+            if ancestor.name == folder_name:
+                return ancestor
+            ancestor = ancestor.parent
+
+    home = Path.home()
+    for standard_folder in (home, home / "Desktop", home / "Downloads", home / "Documents"):
+        if standard_folder.name == folder_name and standard_folder.is_dir():
+            return standard_folder
+
+    return find_unique_user_folder(folder_name) or previous_folder
+
+
+def refresh_window_snapshot(windows: dict[str, dict], address: str) -> bool:
+    for client in clients():
+        if normalize_address(client.get("address")) != address:
+            continue
+
+        item = build_history_item(client)
+        if normalize(item.get("class")) == "thunar":
+            previous = windows.get(address, {})
+            folder = resolve_thunar_folder(
+                client.get("title", ""),
+                previous.get("command") or item.get("command") or [],
+            )
+            if folder is not None:
+                item["command"] = [
+                    str(Path.home() / ".config/archmeros/scripts/archmeros-thunar.sh"),
+                    str(folder),
+                ]
+        windows[address] = item
+        return True
+    return False
+
+
 def build_history_item(window: dict) -> dict:
     klass = normalize(window.get("class"))
     pid = int(window.get("pid") or 0)
@@ -250,7 +354,16 @@ def reopen(scope: str) -> int:
     command = []
     while data:
         candidate = data.pop()
+        if scope == "general" and candidate.get("kind") == "folder":
+            continue
         candidate_command = candidate.get("command") or []
+        if candidate.get("kind") == "folder":
+            folder = resolve_thunar_folder(candidate.get("title", ""), candidate_command)
+            if folder is not None:
+                candidate_command = [
+                    str(Path.home() / ".config/archmeros/scripts/archmeros-thunar.sh"),
+                    str(folder),
+                ]
         if candidate_command:
             item = candidate
             command = candidate_command
@@ -337,9 +450,20 @@ def listen() -> int:
                                 append_history_item(item)
                             continue
 
-                        if event_name == "openwindow":
-                            time.sleep(SNAPSHOT_REFRESH_DELAY)
-                            windows = snapshot_windows()
+            if event_name == "openwindow":
+                time.sleep(SNAPSHOT_REFRESH_DELAY)
+                address = normalize_address(payload.split(",", 1)[0])
+                if address:
+                    if not refresh_window_snapshot(windows, address):
+                        windows = snapshot_windows()
+                else:
+                    windows = snapshot_windows()
+                continue
+
+            if event_name in {"activewindowv2", "windowtitle", "windowtitlev2"}:
+                address = normalize_address(payload.split(",", 1)[0])
+                if address:
+                    refresh_window_snapshot(windows, address)
         except KeyboardInterrupt:
             return 0
         except Exception:

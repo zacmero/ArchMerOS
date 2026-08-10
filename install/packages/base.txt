@@ -12,6 +12,8 @@ bluez-utils
 blueman
 thunar
 thunar-volman
+file-roller
+7zip
 tumbler
 wezterm
 aichat

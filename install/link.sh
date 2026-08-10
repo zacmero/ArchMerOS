@@ -20,6 +20,8 @@ declare -A links=(
   ["${config_root}/gtk-3.0"]="${HOME}/.config/gtk-3.0"
   ["${config_root}/gtk-4.0"]="${HOME}/.config/gtk-4.0"
   ["${config_root}/rofimoji.rc"]="${HOME}/.config/rofimoji.rc"
+
+  ["${config_root}/thunar/uca.xml"]="${HOME}/.config/Thunar/uca.xml"
   ["${config_root}/mimeapps.list"]="${HOME}/.config/mimeapps.list"
   ["${config_root}/systemd/user"]="${HOME}/.config/systemd/user"
   ["${repo_root}/local/share/applications/thunar.desktop"]="${HOME}/.local/share/applications/thunar.desktop"

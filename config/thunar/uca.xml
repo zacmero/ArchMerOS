@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+<action>
+	<icon>utilities-terminal</icon>
+	<name>Open Terminal Here</name>
+	<submenu></submenu>
+	<unique-id>1761618678421054-1</unique-id>
+	<command>exo-open --working-directory %f --launch TerminalEmulator</command>
+	<description>Open a terminal in this folder</description>
+	<range></range>
+	<patterns>*</patterns>
+	<startup-notify/>
+	<directories/>
+</action>
+<action>
+	<icon>package-x-generic</icon>
+	<name>Compress...</name>
+	<submenu></submenu>
+	<unique-id>1773180000000000-1</unique-id>
+	<command>/bin/sh -c 'exec "$HOME/.config/archmeros/scripts/archmeros-compress.sh" gui "$@"' archmeros-compress %F</command>
+	<description>Choose an archive name and format</description>
+	<range></range>
+	<patterns>*</patterns>
+	<startup-notify/>
+	<audio-files/>
+	<image-files/>
+	<text-files/>
+	<video-files/>
+	<other-files/>
+	<directories/>
+</action>
+<action>
+	<icon>package-x-generic</icon>
+	<name>Compress here</name>
+	<submenu></submenu>
+	<unique-id>1773180000000000-2</unique-id>
+	<command>/bin/sh -c 'exec "$HOME/.config/archmeros/scripts/archmeros-compress.sh" here "$@"' archmeros-compress %F</command>
+	<description>Create a fast ZIP archive beside the selected items</description>
+	<range></range>
+	<patterns>*</patterns>
+	<audio-files/>
+	<image-files/>
+	<text-files/>
+	<video-files/>
+	<other-files/>
+	<directories/>
+</action>
+</actions>

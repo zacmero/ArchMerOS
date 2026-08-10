@@ -247,7 +247,61 @@ def find_unique_user_folder(folder_name: str) -> Path | None:
     return matches[0] if len(matches) == 1 else None
 
 
+def thunar_folder_from_accessibility(title: str) -> Path | None:
+    folder_name = thunar_title_folder(title)
+    if not folder_name:
+        return None
+
+    try:
+        import gi
+
+        gi.require_version("Atspi", "2.0")
+        from gi.repository import Atspi
+
+        Atspi.init()
+        desktop = Atspi.get_desktop(0)
+    except Exception:
+        return None
+
+    matches: set[Path] = set()
+    for app_index in range(desktop.get_child_count()):
+        try:
+            app = desktop.get_child_at_index(app_index)
+            if app.get_name() != "Thunar":
+                continue
+            for window_index in range(app.get_child_count()):
+                window = app.get_child_at_index(window_index)
+                if window.get_role_name() != "frame" or window.get_name() != title:
+                    continue
+                stack = [window]
+                while stack:
+                    node = stack.pop()
+                    if node.get_role_name() == "text":
+                        location = Atspi.Text.get_text(node, 0, -1).strip()
+                        folder = Path(location).expanduser()
+                        if folder.name == folder_name and folder.is_dir():
+                            matches.add(folder.resolve())
+                    stack.extend(
+                        node.get_child_at_index(index)
+                        for index in range(node.get_child_count())
+                    )
+        except Exception:
+            continue
+
+    return matches.pop() if len(matches) == 1 else None
+
+
 def resolve_thunar_folder(title: str, previous_command: list[str]) -> Path | None:
+    exact_folder = thunar_folder_from_accessibility(title)
+    if exact_folder is not None:
+        return exact_folder
+
+    previous_folder = thunar_folder_from_command(previous_command)
+    if previous_folder is not None and previous_folder.name == thunar_title_folder(title):
+        return previous_folder
+    return None
+
+    # Legacy inference retained below temporarily for rollback comparison.
     folder_name = thunar_title_folder(title)
     previous_folder = thunar_folder_from_command(previous_command)
     if not folder_name:
@@ -302,7 +356,19 @@ def build_history_item(window: dict) -> dict:
     klass = normalize(window.get("class"))
     pid = int(window.get("pid") or 0)
     title = window.get("title", "")
-    command, kind = resolve_command_from_values(klass, pid, title)
+    if klass == "thunar":
+        folder = thunar_folder_from_accessibility(title)
+        command = (
+            [
+                str(Path.home() / ".config/archmeros/scripts/archmeros-thunar.sh"),
+                str(folder),
+            ]
+            if folder is not None
+            else []
+        )
+        kind = "folder"
+    else:
+        command, kind = resolve_command_from_values(klass, pid, title)
     return {
         "ts": time.time(),
         "kind": kind,

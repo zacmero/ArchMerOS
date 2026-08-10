@@ -1020,6 +1020,25 @@ Manual refresh command:
 ~/.config/archmeros/scripts/archmeros-desktop-sync.sh
 ```
 
+### Thunar mouse history invariant
+
+Mouse side buttons are Linux/Wayland buttons `275` (Back/GDK button 8) and
+`276` (Forward/GDK button 9). Thunar 4.20 handles both natively.
+
+The global Hyprland bindings exist only to add side-button navigation to
+`imv`. They must remain release bindings, the handler must remain `imv`-only,
+and `binds:pass_mouse_when_bound` must stay enabled. Otherwise Hyprland
+consumes the physical events before Thunar receives them. Do not translate
+the buttons into `BackSpace`, `XF86Forward`, or Alt+arrow keys for Thunar;
+`wtype` events are ignored in this path and can interfere with other apps.
+
+Verification:
+
+```bash
+hyprctl getoption binds:pass_mouse_when_bound
+wev # reports buttons 275 and 276
+```
+
 ## Current Screenshot Flow
 
 Screenshot launcher:

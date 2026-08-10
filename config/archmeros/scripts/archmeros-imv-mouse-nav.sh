@@ -13,8 +13,4 @@ if [[ "$class" == "imv" ]]; then
   fi
 fi
 
-case "$direction" in
-  prev) exec wtype -M alt -k Left -m alt ;;
-  next) exec wtype -M alt -k Right -m alt ;;
-  *) exit 2 ;;
-esac
+exit 0

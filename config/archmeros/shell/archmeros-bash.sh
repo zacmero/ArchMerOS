@@ -133,7 +133,11 @@ __archmeros_detach_gui_preexec() {
   [[ -n "${__archmeros_gui_commands[$command_name]:-}" ]] || return 0
 
   local resolved_command
-  resolved_command="$(type -P -- "$command_name" 2>/dev/null || true)"
+  if [[ "$command_name" == "firefox" ]]; then
+    resolved_command="$HOME/.config/archmeros/scripts/archmeros-firefox.sh"
+  else
+    resolved_command="$(type -P -- "$command_name" 2>/dev/null || true)"
+  fi
   [[ -n "$resolved_command" ]] || return 0
 
   ~/.config/archmeros/scripts/archmeros-launch-detached.sh "$resolved_command" "${argv[@]:1}"

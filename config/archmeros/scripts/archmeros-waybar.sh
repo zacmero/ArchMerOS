@@ -72,10 +72,20 @@ start_bar() {
   local config="$1"
   local name="$2"
   setsid waybar -c "$config" -s "$style_path" >"/tmp/archmeros-waybar-${name}.log" 2>&1 < /dev/null &
+  sleep 0.35
+}
+
+wait_for_waybar_stop() {
+  local attempt
+  for attempt in {1..20}; do
+    pgrep -x waybar >/dev/null 2>&1 || return 0
+    sleep 0.1
+  done
 }
 
 restart_waybar() {
   pkill -x waybar >/dev/null 2>&1 || true
+  wait_for_waybar_stop
 
   if monitor_visible "DP-3"; then
     start_bar "${HOME}/.config/waybar/left.jsonc" "left"

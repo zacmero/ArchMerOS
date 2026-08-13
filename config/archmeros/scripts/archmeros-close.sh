@@ -4,11 +4,13 @@ set -euo pipefail
 
 printf '%s close %s\n' "$(date +%s.%N)" "${1:-direct}" >> /tmp/archmeros-close.log 2>/dev/null || true
 
-active_class="$(hyprctl activewindow -j 2>/dev/null | jq -r '.class // empty' | tr '[:upper:]' '[:lower:]')"
+active_window="$(hyprctl activewindow -j 2>/dev/null)"
+active_class="$(jq -r '.class // empty' <<<"$active_window" | tr '[:upper:]' '[:lower:]')"
+active_floating="$(jq -r '.floating // false' <<<"$active_window")"
 
 python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" record-close >/tmp/archmeros-reopen-record-close.log 2>&1 || true
 
-if [[ "$active_class" == "firefox" ]]; then
+if [[ "$active_class" == "firefox" && "$active_floating" != "true" ]]; then
   exec hyprctl dispatch sendshortcut "CTRL,W,class:^(firefox)$"
 fi
 

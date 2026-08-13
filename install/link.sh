@@ -59,8 +59,9 @@ if [[ -f "${firefox_profiles_ini}" && -f "${config_root}/firefox/user.js" ]]; th
   ' "${firefox_profiles_ini}")"
 
   if [[ -n "${firefox_profile_rel:-}" ]]; then
-    links["${config_root}/firefox/user.js"]="${firefox_root}/${firefox_profile_rel}/user.js"
-  fi
+  links["${config_root}/firefox/user.js"]="${firefox_root}/${firefox_profile_rel}/user.js"
+  links["${config_root}/firefox/chrome/userChrome.css"]="${firefox_root}/${firefox_profile_rel}/chrome/userChrome.css"
+fi
 fi
 
 backup_root="${HOME}/.config/archmeros-backups/$(date +%Y%m%d-%H%M%S)"

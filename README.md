@@ -641,11 +641,14 @@ This keeps `Right Alt` acting as `AltGr` for the ABNT2 layout, including the nat
 Repo-owned Firefox overrides live in:
 
 - [config/firefox/user.js](/home/zacmero/projects/ArchMerOS/config/firefox/user.js)
+- [config/firefox/chrome/userChrome.css](/home/zacmero/projects/ArchMerOS/config/firefox/chrome/userChrome.css)
 
 Current managed prefs:
 
 - `full-screen-api.enabled = true`
 - `full-screen-api.ignore-widgets = false`
+- Firefox tab labels are set to `18px` through `userChrome.css`; this is
+  browser-only and does not change the OS or GTK font scale.
 
 Firefox is intentionally launched through
 [archmeros-firefox.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-firefox.sh)

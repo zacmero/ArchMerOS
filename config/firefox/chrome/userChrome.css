@@ -1,0 +1,10 @@
+/* Keep Firefox tab labels readable under the XWayland launcher. */
+:root {
+  --tab-min-height: 42px !important;
+}
+
+#TabsToolbar .tab-label,
+#TabsToolbar .tab-text,
+#TabsToolbar .tab-label-container {
+  font-size: 21px !important;
+}

@@ -61,7 +61,8 @@ def normalize(value: str | None) -> str:
 
 
 def normalize_address(value: str | None) -> str:
-    return normalize(value)
+    address = normalize(value)
+    return f"0x{address}" if address and not address.startswith("0x") else address
 
 
 def read_cmdline(pid: int) -> list[str]:
@@ -99,6 +100,44 @@ def active_window() -> dict:
 def clients() -> list[dict]:
     data = hyprctl_json("clients")
     return data if isinstance(data, list) else []
+
+
+def apply_thunar_medium_size(address: str) -> None:
+    # DBus file-manager launches bypass the Thunar wrapper and restore 640x480.
+    client = next(
+        (item for item in clients() if normalize_address(item.get("address")) == address),
+        None,
+    )
+    if not client or normalize(client.get("class")) != "thunar":
+        return
+
+    time.sleep(0.75)
+    client = next(
+        (item for item in clients() if normalize_address(item.get("address")) == address),
+        None,
+    )
+    if not client or normalize(client.get("class")) != "thunar":
+        return
+
+    monitors = hyprctl_json("monitors")
+    if not isinstance(monitors, list):
+        return
+    monitor = next((item for item in monitors if item.get("id") == client.get("monitor")), None)
+    if not monitor:
+        return
+
+    width = int(monitor.get("width", 0) * 72 / 100)
+    height = int(monitor.get("height", 0) * 76 / 100)
+    if width <= 0 or height <= 0:
+        return
+    for _ in range(2):
+        subprocess.run(
+            ["hyprctl", "dispatch", "resizewindowpixel", "exact", f"{width} {height},address:{address}"],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        time.sleep(0.4)
 
 
 def track_launch(
@@ -516,20 +555,21 @@ def listen() -> int:
                                 append_history_item(item)
                             continue
 
-            if event_name == "openwindow":
-                time.sleep(SNAPSHOT_REFRESH_DELAY)
-                address = normalize_address(payload.split(",", 1)[0])
-                if address:
-                    if not refresh_window_snapshot(windows, address):
-                        windows = snapshot_windows()
-                else:
-                    windows = snapshot_windows()
-                continue
+                        if event_name == "openwindow":
+                            time.sleep(SNAPSHOT_REFRESH_DELAY)
+                            address = normalize_address(payload.split(",", 1)[0])
+                            if address:
+                                if not refresh_window_snapshot(windows, address):
+                                    windows = snapshot_windows()
+                                apply_thunar_medium_size(address)
+                            else:
+                                windows = snapshot_windows()
+                            continue
 
-            if event_name in {"activewindowv2", "windowtitle", "windowtitlev2"}:
-                address = normalize_address(payload.split(",", 1)[0])
-                if address:
-                    refresh_window_snapshot(windows, address)
+                        if event_name in {"activewindowv2", "windowtitle", "windowtitlev2"}:
+                            address = normalize_address(payload.split(",", 1)[0])
+                            if address:
+                                refresh_window_snapshot(windows, address)
         except KeyboardInterrupt:
             return 0
         except Exception:

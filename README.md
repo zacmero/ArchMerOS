@@ -650,14 +650,12 @@ Current managed prefs:
 - Firefox tab labels are set to `18px` through `userChrome.css`; this is
   browser-only and does not change the OS or GTK font scale.
 
-Firefox is intentionally launched through
+Firefox is launched through
 [archmeros-firefox.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-firefox.sh)
-with `MOZ_ENABLE_WAYLAND=0`. Native Wayland Firefox can flicker and lose
-input when delayed extension entries resize a context menu near an edge;
-XWayland preserves both stable menus and popup placement. The dedicated
-YouTube Music Firefox profile remains native Wayland. `Super+B`, Walker, and
-the shell command `firefox` use this wrapper; `/usr/bin/firefox` is the
-explicit native-Wayland escape hatch.
+with `MOZ_ENABLE_WAYLAND=1` so normal Firefox uses native Wayland rendering
+and video acceleration. `Super+B`, Walker, and the shell command `firefox`
+use this wrapper. The dedicated YouTube Music Firefox profile remains native
+Wayland as well.
 
 The linker attaches this file to the active `default-release` profile when present.
 

@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-target_uuid="${ARCHMEROS_SNAPSHOT_TARGET_UUID:-A65602225601F439}"
+target_uuid="${ARCHMEROS_SNAPSHOT_TARGET_UUID:-8AF2-47AB}"
 current_user="${USER:-$(id -un)}"
-target_mount="${ARCHMEROS_SNAPSHOT_MOUNTPOINT:-/run/media/${current_user}/${target_uuid}}"
+target_mount="${ARCHMEROS_SNAPSHOT_MOUNTPOINT:-/run/media/${current_user}/WONDERBOX/backup HD}"
 repo_dir="${ARCHMEROS_SNAPSHOT_REPO_DIR:-${target_mount}/ArchMerOS-restic}"
 password_file="${ARCHMEROS_SNAPSHOT_PASSWORD_FILE:-${HOME}/.config/archmeros/system-snapshot.pass}"
 exclude_file="${HOME}/.config/archmeros/system-snapshot-excludes.txt"
@@ -34,7 +34,7 @@ ensure_dependencies() {
 }
 
 ensure_target_mounted() {
-  mountpoint -q "$target_mount" || fail "snapshot disk not mounted: ${target_mount} (${target_uuid})"
+  findmnt -rn -T "$target_mount" >/dev/null 2>&1 || fail "snapshot disk not mounted: ${target_mount} (${target_uuid})"
 }
 
 target_mount_options() {

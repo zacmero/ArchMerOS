@@ -40,23 +40,28 @@ Use this when `yay` needs to rebuild heavy packages such as NVIDIA modules, GCC-
 
 ```bash
 systemd-run --user --scope \
-  -p CPUQuota=60% \
-  -p IOWeight=50 \
-  nice -n 10 ionice -c2 -n7 \
-  yay -Syu
+  -p CPUQuota=175% \
+  -p IOWeight=70 \
+  env MAKEFLAGS=-j2 CMAKE_BUILD_PARALLEL_LEVEL=2 \
+  nice -n 5 ionice -c2 -n5 \
+  yay -Syu --mflags "--nocheck"
 ```
+
+`--mflags "--nocheck"` skips AUR `check()` suites. Use it intentionally for
+trusted rebuilds such as `gcc14`; it must be supplied before the build starts
+and cannot be applied retroactively.
 
 What this does:
 
-- `CPUQuota=60%` caps the process tree so it cannot pin all cores for long periods.
-- `IOWeight=50` lowers I/O pressure during package downloads and rebuilds.
-- `nice -n 10` reduces CPU scheduling priority.
-- `ionice -c2 -n7` reduces disk I/O priority.
+- `CPUQuota=175%` caps the process tree at roughly 1.75 CPU cores.
+- `IOWeight=70` lowers I/O pressure during package downloads and rebuilds.
+- `nice -n 5` reduces CPU scheduling priority.
+- `ionice -c2 -n5` reduces disk I/O priority.
 
 If you want it even gentler, lower the quota:
 
 ```bash
-systemd-run --user --scope -p CPUQuota=40% -p IOWeight=30 nice -n 15 ionice -c2 -n7 yay -Syu
+systemd-run --user --scope -p CPUQuota=125% -p IOWeight=50 env MAKEFLAGS=-j2 CMAKE_BUILD_PARALLEL_LEVEL=2 nice -n 10 ionice -c2 -n7 yay -Syu --mflags "--nocheck"
 ```
 
 ## Why the CPU Spikes
@@ -129,7 +134,7 @@ If you only need the security fix, do not let AUR rebuilds ride along unless you
 The current ArchMerOS snapshot target is the external disk mounted at:
 
 ```bash
-/run/media/zacmero/A65602225601F439
+/run/media/zacmero/WONDERBOX/backup HD
 ```
 
 The helper checks three things before it runs:
@@ -175,6 +180,6 @@ Recovery path:
 Example restore flow:
 
 ```bash
-sudo restic -r /run/media/zacmero/A65602225601F439/ArchMerOS-restic --password-file ~/.config/archmeros/system-snapshot.pass snapshots
-sudo restic -r /run/media/zacmero/A65602225601F439/ArchMerOS-restic --password-file ~/.config/archmeros/system-snapshot.pass restore latest --target /
+sudo restic -r "/run/media/zacmero/WONDERBOX/backup HD/ArchMerOS-restic" --password-file ~/.config/archmeros/system-snapshot.pass snapshots
+sudo restic -r "/run/media/zacmero/WONDERBOX/backup HD/ArchMerOS-restic" --password-file ~/.config/archmeros/system-snapshot.pass restore latest --target /
 ```

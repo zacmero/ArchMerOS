@@ -9,8 +9,6 @@ disable_mouse = false
 hide_quick_activation = false
 hide_action_hints = false
 hide_action_hints_dmenu = true
-app_launch_prefix = "/home/zacmero/.config/archmeros/scripts/archmeros-detach.sh"
-terminal = "wezterm start --always-new-process --"
 
 [shell]
 exclusive_zone = -1
@@ -20,27 +18,15 @@ anchor_bottom = true
 anchor_left = true
 anchor_right = true
 
-[search]
-placeholder = "Launch apps, commands, and recent actions"
-
-[list]
-max_entries = 12
-show_initial_entries = true
-
-[ui]
-anchors = ["center"]
-fullscreen = false
-width = 560
-maxheight = 520
-
-[activation_mode]
-labels = "home-row"
+[placeholders]
+"default" = { input = "Launch apps, commands, and recent actions", list = "No Results" }
 
 [providers]
+max_results = 12
 default = [
   "desktopapplications",
   "calc",
-  "websearch"
+  "websearch",
 ]
 empty = ["desktopapplications"]
 

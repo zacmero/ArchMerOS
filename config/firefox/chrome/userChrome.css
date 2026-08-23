@@ -1,4 +1,14 @@
 /* Keep Firefox tab labels readable. */
+
+/*
+ * Keep delayed WebExtension rows out of native Wayland context popups.
+ * The extensions themselves remain fully active.
+ */
+#contentAreaContextMenu [id^="uBlock0_raymondhill_net-menuitem-"],
+#contentAreaContextMenu [id^="jid0-adyhmvsP91nUO8pRv0Mn2VKeB84_jetpack-menuitem-"] {
+  display: none !important;
+}
+
 /*:root {
   --tab-min-height: 42px !important;
 }

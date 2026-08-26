@@ -6,17 +6,20 @@ script_path="$(readlink -f "${BASH_SOURCE[0]}")"
 repo_root="$(cd "$(dirname "$script_path")/../../.." && pwd)"
 presets_dir="${repo_root}/config/hypr/presets"
 active_file="${repo_root}/config/hypr/transparency.conf"
+active_lua_file="${repo_root}/config/hypr/transparency.lua"
 
 apply_preset() {
   local preset_name="$1"
   local preset_file="${presets_dir}/transparency-${preset_name}.conf"
+  local preset_lua_file="${presets_dir}/transparency-${preset_name}.lua"
 
-  if [[ ! -f "$preset_file" ]]; then
+  if [[ ! -f "$preset_file" && ! -f "$preset_lua_file" ]]; then
     printf 'Unknown transparency preset: %s\n' "$preset_name" >&2
     exit 1
   fi
 
-  cp "$preset_file" "$active_file"
+  [[ -f "$preset_file" ]] && cp "$preset_file" "$active_file"
+  [[ -f "$preset_lua_file" ]] && cp "$preset_lua_file" "$active_lua_file"
   ~/.config/archmeros/scripts/archmeros-refresh-shell.sh >/dev/null
   printf 'Applied transparency preset: %s\n' "$preset_name"
 }

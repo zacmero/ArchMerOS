@@ -1,0 +1,18 @@
+-- ArchMerOS transparency preset: work-clean
+return {
+    preset_name            = "work-clean",
+    active_opacity         = 0.95,
+    inactive_opacity       = 0.88,
+    blur_enabled           = true,
+    blur_size              = 6,
+    blur_passes            = 1,
+    blur_vibrancy          = 0.10,
+    thunar_active_opacity  = 0.94,
+    thunar_inactive_opacity = 0.88,
+    walker_active_opacity  = 0.98,
+    walker_inactive_opacity = 0.95,
+    terminal_active_opacity = 0.95,
+    terminal_inactive_opacity = 0.90,
+    code_active_opacity    = 0.96,
+    code_inactive_opacity  = 0.92,
+}

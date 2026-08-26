@@ -647,6 +647,11 @@ Current managed prefs:
 
 - `full-screen-api.enabled = true`
 - `full-screen-api.ignore-widgets = false`
+- `full-screen-api.warning.timeout = 0` (suppresses the YouTube/video fullscreen popup warning)
+- `full-screen-api.warning.delay = -1`
+- `full-screen-api.transition-duration.enter = "0 0"`
+- `full-screen-api.transition-duration.leave = "0 0"`
+- WebExtension context menu rows (`Bitwarden`, `uBlock Origin`, `Raindrop`, etc.) and the fullscreen warning banner are hidden via `userChrome.css` to prevent dynamic Wayland popup resizing stutter.
 - Firefox tab labels are set to `18px` through `userChrome.css`; this is
   browser-only and does not change the OS or GTK font scale.
 
@@ -657,7 +662,7 @@ and video acceleration. `Super+B`, Walker, and the shell command `firefox`
 use this wrapper. The dedicated YouTube Music Firefox profile remains native
 Wayland as well.
 
-The linker attaches this file to the active `default-release` profile when present.
+The linker attaches `user.js` and `userChrome.css` across all active Firefox profiles.
 
 ## Web Apps
 

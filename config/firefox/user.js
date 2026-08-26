@@ -1,5 +1,9 @@
 user_pref("full-screen-api.enabled", true);
 user_pref("full-screen-api.ignore-widgets", false);
+user_pref("full-screen-api.warning.timeout", 0);
+user_pref("full-screen-api.warning.delay", -1);
+user_pref("full-screen-api.transition-duration.enter", "0 0");
+user_pref("full-screen-api.transition-duration.leave", "0 0");
 user_pref("reader.parse-on-load.enabled", false);
 user_pref("media.webspeech.synth.enabled", false);
 user_pref("layers.acceleration.disabled", false);

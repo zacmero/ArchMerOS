@@ -49,21 +49,6 @@ declare -A links=(
   ["${repo_root}/local/share/icons/ArchMerOS-Icons"]="${HOME}/.local/share/icons/ArchMerOS-Icons"
 )
 
-if [[ -f "${firefox_profiles_ini}" && -f "${config_root}/firefox/user.js" ]]; then
-  firefox_profile_rel="$(awk -F= '
-    /^\[Profile/ { in_profile=1; path=""; name="" }
-    /^\[/ && $0 !~ /^\[Profile/ { in_profile=0 }
-    in_profile && $1=="Name" { name=$2 }
-    in_profile && $1=="Path" { path=$2 }
-    in_profile && name=="default-release" && path!="" { print path; exit }
-  ' "${firefox_profiles_ini}")"
-
-  if [[ -n "${firefox_profile_rel:-}" ]]; then
-  links["${config_root}/firefox/user.js"]="${firefox_root}/${firefox_profile_rel}/user.js"
-  links["${config_root}/firefox/chrome/userChrome.css"]="${firefox_root}/${firefox_profile_rel}/chrome/userChrome.css"
-fi
-fi
-
 backup_root="${HOME}/.config/archmeros-backups/$(date +%Y%m%d-%H%M%S)"
 made_backup=0
 
@@ -83,12 +68,13 @@ backup_path() {
   made_backup=1
 }
 
-for source in "${!links[@]}"; do
-  target="${links[$source]}"
+link_entry() {
+  local source="$1"
+  local target="$2"
 
   if [[ ! -e "$source" ]]; then
     printf 'skip: missing source %s\n' "$source"
-    continue
+    return 0
   fi
 
   mkdir -p "$(dirname "$target")"
@@ -98,7 +84,7 @@ for source in "${!links[@]}"; do
     desired="$(readlink -f "$source")"
     if [[ "$current" == "$desired" ]]; then
       printf 'ok: %s already linked\n' "$target"
-      continue
+      return 0
     fi
     backup_path "$target"
   elif [[ -e "$target" ]]; then
@@ -107,7 +93,20 @@ for source in "${!links[@]}"; do
 
   ln -sfn "$source" "$target"
   printf 'linked: %s -> %s\n' "$target" "$source"
+}
+
+for source in "${!links[@]}"; do
+  link_entry "$source" "${links[$source]}"
 done
+
+if [[ -d "${firefox_root}" && -f "${config_root}/firefox/user.js" ]]; then
+  for prof in "${firefox_root}"/*; do
+    if [[ -d "$prof" && ( -f "${prof}/prefs.js" || -f "${prof}/times.json" || -f "${prof}/compatibility.ini" ) ]]; then
+      link_entry "${config_root}/firefox/user.js" "${prof}/user.js"
+      link_entry "${config_root}/firefox/chrome/userChrome.css" "${prof}/chrome/userChrome.css"
+    fi
+  done
+fi
 
 if [[ "$made_backup" -eq 1 ]]; then
   printf 'backup: conflicting paths moved to %s\n' "$backup_root"

@@ -2,10 +2,18 @@
 
 /*
  * Keep delayed WebExtension rows out of native Wayland context popups.
+ * Prevents Wayland popup dynamic resizing stutter and context menu clutter.
  * The extensions themselves remain fully active.
  */
-#contentAreaContextMenu [id^="uBlock0_raymondhill_net-menuitem-"],
-#contentAreaContextMenu [id^="jid0-adyhmvsP91nUO8pRv0Mn2VKeB84_jetpack-menuitem-"] {
+#contentAreaContextMenu [id*="-menuitem-"],
+#contentAreaContextMenu [id*="446900e4-71c2-419f-a6a7-df9c091e268b"],
+#contentAreaContextMenu [id*="uBlock0_raymondhill_net"],
+#contentAreaContextMenu [id*="jid0-adyhmvsP91nUO8pRv0Mn2VKeB84"] {
+  display: none !important;
+}
+
+/* Eliminate fullscreen warning banner ("xxx is now full screen") */
+#fullscreen-warning {
   display: none !important;
 }
 

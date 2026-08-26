@@ -2,6 +2,8 @@
 -- Migrated from hyprlang (.conf) for Hyprland v0.57+
 -- Original backup: config/hypr/legacy-conf-backup/
 
+---@diagnostic disable: undefined-global
+
 local theme = require("theme")
 local tp    = require("transparency")
 

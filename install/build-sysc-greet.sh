@@ -6,7 +6,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 src_root="${repo_root}/vendor/sysc-greet"
 build_root="${repo_root}/.build/sysc-greet"
 binary_path="${build_root}/archmeros-sysc-greet"
-data_dir="${repo_root}/config/greetd/sysc-greet/share"
+data_dir="/usr/local/share/archmeros/sysc-greet/share"
 go_cache_dir="${build_root}/gocache"
 go_mod_cache_dir="${build_root}/gomodcache"
 

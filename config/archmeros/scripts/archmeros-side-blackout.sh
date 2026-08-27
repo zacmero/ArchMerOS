@@ -5,6 +5,7 @@ set -euo pipefail
 mode="${1:-toggle}"
 window_class="archmeros-side-blackout"
 window_script="$HOME/.config/archmeros/scripts/archmeros-side-blackout-window.sh"
+dispatch_cmd="$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
 
 blackout_pids() {
   hyprctl clients -j 2>/dev/null \
@@ -18,7 +19,7 @@ blackout_running() {
 
 start_blackout() {
   blackout_running && return 0
-  hyprctl dispatch exec "$window_script" >/dev/null 2>&1 || true
+  "$dispatch_cmd" exec "$window_script" >/dev/null 2>&1 || true
 }
 
 stop_blackout() {

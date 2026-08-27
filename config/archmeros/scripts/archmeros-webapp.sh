@@ -64,6 +64,7 @@ python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" \
   >/tmp/archmeros-reopen-track-"${app_id}".log 2>&1 || true
 
 mode="none"
+dispatch_cmd="$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
 if command -v hyprctl >/dev/null 2>&1; then
   active="$(hyprctl activewindow -j 2>/dev/null || printf '{}')"
   if [[ "$active" != "{}" ]] && [[ "$(printf '%s' "$active" | jq -r '.floating // false')" == "true" ]]; then
@@ -79,7 +80,7 @@ if command -v hyprctl >/dev/null 2>&1; then
         mode="medium"
       fi
     fi
-    hyprctl dispatch alterzorder bottom >/dev/null 2>&1 || true
+    "$dispatch_cmd" alterzorder bottom >/dev/null 2>&1 || true
   fi
 fi
 

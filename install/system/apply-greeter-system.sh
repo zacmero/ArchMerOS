@@ -44,6 +44,10 @@ install -Dm755 "${repo_root}/config/greetd/sysc-greet/archmeros-greeter-session.
   /usr/local/bin/archmeros-greeter-session
 install -Dm755 "${repo_root}/config/greetd/sysc-greet/archmeros-start-hyprmero.sh" \
   /usr/local/bin/archmeros-start-hyprmero
+install -Dm755 "${repo_root}/config/greetd/sysc-greet/archmeros-start-hyprlua.sh" \
+  /usr/local/bin/archmeros-start-hyprlua
+install -Dm644 "${repo_root}/config/greetd/sysc-greet/hyprland-lua.desktop" \
+  /usr/share/wayland-sessions/hyprland-lua.desktop
 install -Dm644 "${repo_root}/install/system/etc/greetd/config.toml" \
   "${greetd_dir}/config.toml"
 install -Dm644 "${repo_root}/install/system/etc/polkit-1/rules.d/85-greeter.rules" \

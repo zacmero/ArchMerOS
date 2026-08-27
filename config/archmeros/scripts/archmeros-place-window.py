@@ -4,6 +4,10 @@ import json
 import subprocess
 import sys
 import time
+from pathlib import Path
+
+
+DISPATCH_SHIM = Path.home() / ".config" / "archmeros" / "scripts" / "archmeros-hyprctl-dispatch.sh"
 
 
 def clients():
@@ -42,7 +46,8 @@ def choose_client(app_id: str, name: str):
 
 
 def dispatch(*args: str):
-    subprocess.run(["hyprctl", "dispatch", *args], check=False)
+    command = [str(DISPATCH_SHIM), *args] if DISPATCH_SHIM.exists() else ["hyprctl", "dispatch", *args]
+    subprocess.run(command, check=False)
 
 
 def main():

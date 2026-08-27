@@ -448,6 +448,7 @@ func initialModel(config Config, screensaverMode bool) model {
 
 	var hyprManaged *sessions.Session
 	var hyprFallback *sessions.Session
+	var hyprLua *sessions.Session
 	var xfceX11 *sessions.Session
 	for i := range sess {
 		s := sess[i]
@@ -455,6 +456,12 @@ func initialModel(config Config, screensaverMode bool) model {
 		execLine := strings.ToLower(s.Exec)
 
 		if strings.Contains(name, "hyprland") {
+			// Keep the explicit Lua session distinct from HyprMero.
+			if strings.Contains(name, "lua") {
+				copy := s
+				hyprLua = &copy
+				continue
+			}
 			if strings.Contains(name, "uwsm") || strings.Contains(execLine, "uwsm") {
 				copy := s
 				hyprManaged = &copy
@@ -485,6 +492,10 @@ func initialModel(config Config, screensaverMode bool) model {
 		hyprFallback.Name = "HyprMero"
 		hyprFallback.Exec = "/usr/local/bin/archmeros-start-hyprmero"
 		curatedSessions = append(curatedSessions, *hyprFallback)
+	}
+	if hyprLua != nil {
+		hyprLua.Name = "Hyprland (Lua)"
+		curatedSessions = append(curatedSessions, *hyprLua)
 	}
 	if xfceX11 != nil {
 		xfceX11.Name = "Xfce Session"

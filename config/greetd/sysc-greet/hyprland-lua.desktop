@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Hyprland (Lua)
+Comment=ArchMerOS Hyprland session with explicit Lua configuration
+Exec=/usr/local/bin/archmeros-start-hyprlua
+Type=Application
+DesktopNames=Hyprland
+Keywords=tiling;wayland;compositor;

@@ -48,12 +48,12 @@ set_side_screensaver_state() {
     off)
       set_monitor_service_state stop
       "$blackout_script" start >/dev/null 2>&1 || true
-      hyprctl dispatch dpms off DP-2 >/dev/null 2>&1 || true
+      "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" dpms off DP-2 >/dev/null 2>&1 || true
       ;;
     on)
       "$blackout_script" stop >/dev/null 2>&1 || true
-      hyprctl dispatch dpms on DP-2 >/dev/null 2>&1 || true
-      hyprctl dispatch dpms on DP-3 >/dev/null 2>&1 || true
+      "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" dpms on DP-2 >/dev/null 2>&1 || true
+      "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" dpms on DP-3 >/dev/null 2>&1 || true
       set_monitor_service_state start
       ;;
   esac
@@ -152,7 +152,7 @@ exec $(printf '%q' "$window_launcher")
 EOF
 chmod +x "$launch_script_path"
 
-if hyprctl dispatch exec "$launch_script_path" >/dev/null 2>&1; then
+if "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" exec "$launch_script_path" >/dev/null 2>&1; then
   trap - EXIT
   exit 0
 fi

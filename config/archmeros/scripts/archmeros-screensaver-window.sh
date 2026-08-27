@@ -39,7 +39,7 @@ speed="${ARCHMEROS_SCREENSAVER_SPEED:-$(read_setting animation_speed 2)}"
 
 cleanup() {
   log "window-cleanup"
-  hyprctl dispatch dpms on >/dev/null 2>&1 || true
+  "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" dpms on >/dev/null 2>&1 || true
   "$HOME/.config/archmeros/scripts/archmeros-side-dpms.sh" on >/dev/null 2>&1 || true
   "$waybar_script" start >/dev/null 2>&1 || true
   rm -f "$lock_path" "$stamp_path" "$playlist_path" "$mpv_input_conf_path"
@@ -191,15 +191,15 @@ for c in clients:
 ' 2>/dev/null || true
     )"
     if [[ -n "$address" ]]; then
-      hyprctl dispatch focusmonitor "$main_monitor" >/dev/null 2>&1 || true
-      hyprctl dispatch focuswindow address:"$address" >/dev/null 2>&1 || true
-      hyprctl dispatch movewindow "mon:$main_monitor" >/dev/null 2>&1 || true
-      hyprctl dispatch movetoworkspacesilent "$workspace_id",address:"$address" >/dev/null 2>&1 || true
+      "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" focusmonitor "$main_monitor" >/dev/null 2>&1 || true
+      "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" focuswindow "address:$address" >/dev/null 2>&1 || true
+      "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" movewindow "mon:$main_monitor" >/dev/null 2>&1 || true
+      "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" movetoworkspacesilent "$workspace_id,address:$address" >/dev/null 2>&1 || true
       if [[ "$monitor_size" =~ ^([0-9]+)\ ([0-9]+)$ ]]; then
-        hyprctl dispatch resizeactive exact "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" >/dev/null 2>&1 || true
+        "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" resizeactive exact "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" >/dev/null 2>&1 || true
       fi
       sleep 0.1
-      hyprctl dispatch fullscreen 0,address:"$address" >/dev/null 2>&1 || true
+      "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" fullscreen "0,address:$address" >/dev/null 2>&1 || true
       break
     fi
     sleep 0.1

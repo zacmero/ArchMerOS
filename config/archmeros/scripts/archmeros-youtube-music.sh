@@ -9,6 +9,7 @@ profile_root="${XDG_DATA_HOME:-$HOME/.local/share}/archmeros/firefox/youtube-mus
 chrome_root="${profile_root}/chrome"
 workspace_id="9"
 target_monitor="DP-2"
+dispatch_cmd="$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
 
 mkdir -p "$chrome_root"
 
@@ -38,7 +39,7 @@ sync_file "${template_root}/chrome/userChrome.css" "${chrome_root}/userChrome.cs
 sync_file "${template_root}/chrome/userContent.css" "${chrome_root}/userContent.css"
 
 if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
-  hyprctl dispatch moveworkspacetomonitor "$workspace_id" "$target_monitor" >/dev/null 2>&1 || true
+  "$dispatch_cmd" moveworkspacetomonitor "$workspace_id" "$target_monitor" >/dev/null 2>&1 || true
   youtube_music_window="$(
     hyprctl clients -j 2>/dev/null \
       | jq -r '
@@ -60,8 +61,8 @@ if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
     existing_workspace="${youtube_music_window%%$'\t'*}"
     address="${youtube_music_window#*$'\t'}"
     if [[ -n "${existing_workspace:-}" && -n "${address:-}" ]]; then
-      hyprctl dispatch workspace "${existing_workspace}" >/dev/null 2>&1 || true
-      hyprctl dispatch focuswindow "address:${address}" >/dev/null 2>&1 || true
+      "$dispatch_cmd" workspace "${existing_workspace}" >/dev/null 2>&1 || true
+      "$dispatch_cmd" focuswindow "address:${address}" >/dev/null 2>&1 || true
       exit 0
     fi
   fi

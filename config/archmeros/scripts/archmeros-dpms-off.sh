@@ -6,4 +6,4 @@ if ~/.config/archmeros/scripts/archmeros-idle-media-active.sh; then
   exit 0
 fi
 
-hyprctl dispatch dpms off
+exec "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" dpms off

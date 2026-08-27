@@ -95,6 +95,8 @@ Current tracked greeter assets live here:
 - `config/greetd/sysc-greet/hyprland-greeter-config.conf`
 - `config/greetd/sysc-greet/archmeros-greeter-session.sh`
 - `config/greetd/sysc-greet/archmeros-start-hyprmero.sh`
+- `config/greetd/sysc-greet/archmeros-start-hyprlua.sh`
+- `config/greetd/sysc-greet/hyprland-lua.desktop`
 - `install/system/apply-greeter-system.sh`
 - `install/system/etc/greetd/config.toml`
 - `install/system/etc/polkit-1/rules.d/85-greeter.rules`
@@ -105,6 +107,26 @@ The current first-pass palette is:
 - green terminal framing
 - magenta accent
 - white main text
+
+## Hyprland Config Providers
+
+The login sessions select their configuration provider explicitly:
+
+- `HyprMero` starts `hyprland.conf` through `archmeros-start-hyprmero`.
+- `Hyprland (Lua)` starts `hyprland.lua` through `archmeros-start-hyprlua`.
+- Neither session relies on Hyprland's config auto-discovery order.
+
+Hyprland cannot switch between the legacy and Lua config managers with
+`hyprctl reload`. Log out and select the other session instead. ArchMerOS
+window-management helpers call `archmeros-hyprctl-dispatch.sh`, which preserves
+legacy dispatch behavior and translates supported actions in Lua sessions.
+
+Validate both providers without changing the running session:
+
+```bash
+Hyprland -c ~/.config/hypr/hyprland.conf --verify-config
+Hyprland -c ~/.config/hypr/hyprland.lua --verify-config
+```
 
 ## System Apply
 

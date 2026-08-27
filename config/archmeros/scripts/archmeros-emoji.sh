@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+dispatch_cmd="$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
+
 previous_window_address="$(
   hyprctl activewindow -j 2>/dev/null | jq -r '.address // empty' 2>/dev/null || true
 )"
@@ -26,11 +28,11 @@ selected_emoji="$(
 printf '%s' "$selected_emoji" | wl-copy
 
 if [[ -n "$previous_workspace" && "$previous_workspace" != "null" ]]; then
-  hyprctl dispatch workspace "$previous_workspace" >/dev/null 2>&1 || true
+  "$dispatch_cmd" workspace "$previous_workspace" >/dev/null 2>&1 || true
 fi
 
 if [[ -n "$previous_window_address" && "$previous_window_address" != "null" ]]; then
-  hyprctl dispatch focuswindow "address:${previous_window_address}" >/dev/null 2>&1 || true
+  "$dispatch_cmd" focuswindow "address:${previous_window_address}" >/dev/null 2>&1 || true
 fi
 
 sleep 0.18

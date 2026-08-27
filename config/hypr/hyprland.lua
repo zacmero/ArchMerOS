@@ -169,14 +169,14 @@ hl.config({
 hl.bind(mod .. " + T",               hl.dsp.exec_cmd(terminal))
 hl.bind("CTRL + ALT + T",            hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-termius.sh"))
 hl.bind("CTRL + " .. mod .. " + T",  hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-termius.sh"))
-hl.bind(mod .. " + SPACE",           hl.dsp.exec_cmd(launcher))
-hl.bind(mod .. " + SHIFT + SPACE",   hl.dsp.exec_cmd("rofi -show drun -show-icons -theme ~/.config/rofi/launchers/drun.rasi"))
+hl.bind(mod .. " + space",           hl.dsp.exec_cmd(launcher))
+hl.bind(mod .. " + SHIFT + space",   hl.dsp.exec_cmd("rofi -show drun -show-icons -theme ~/.config/rofi/launchers/drun.rasi"))
 hl.bind(mod .. " + E",               hl.dsp.exec_cmd(paraHub))
-hl.bind(mod .. " + RETURN",          hl.dsp.exec_cmd(terminal))
+hl.bind(mod .. " + Return",          hl.dsp.exec_cmd(terminal))
 
 -- Keyboard layout
-hl.bind("CTRL + ALT + SPACE",        hl.dsp.exec_cmd("hyprctl switchxkblayout current next"))
-hl.bind("SUPER + INSERT",            hl.dsp.exec_cmd("/home/zacmero/.config/archmeros/scripts/archmeros-keyboard.sh toggle"))
+hl.bind("CTRL + ALT + space",        hl.dsp.exec_cmd("hyprctl switchxkblayout current next"))
+hl.bind("SUPER + Insert",            hl.dsp.exec_cmd("/home/zacmero/.config/archmeros/scripts/archmeros-keyboard.sh toggle"))
 
 -- Wallpaper / Appearance
 hl.bind(mod .. " + ALT + P",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-wallpaper-pick.sh"))
@@ -292,15 +292,21 @@ hl.bind(mod .. " + C",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/arch
 hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-webapp.sh chatgpt"))
 hl.bind(mod .. " + B",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-firefox.sh"))
 
--- Window pop (grave / backtick)
-hl.bind(mod .. " + grave",           hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-window-pop.sh full"))
-hl.bind(mod .. " + SHIFT + grave",   hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-window-pop.sh shrink"))
-hl.bind("ALT + grave",               hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-window-pop.sh full"))
-hl.bind("ALT + SHIFT + grave",       hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-window-pop.sh medium"))
-hl.bind(mod .. " + code:49",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-window-pop.sh full"))
-hl.bind(mod .. " + SHIFT + code:49", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-window-pop.sh shrink"))
-hl.bind("ALT + code:49",             hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-window-pop.sh full"))
-hl.bind("ALT + SHIFT + code:49",     hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-window-pop.sh medium"))
+-- Window pop (grave / backtick / apostrophe / dead keys / keycode 49)
+local pop_full = hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-window-pop.sh full")
+local pop_shrink = hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-window-pop.sh shrink")
+local pop_medium = hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-window-pop.sh medium")
+
+for _, k in ipairs({"grave", "apostrophe", "dead_acute", "dead_grave", "acute"}) do
+    hl.bind(mod .. " + " .. k, pop_full)
+    hl.bind(mod .. " + SHIFT + " .. k, pop_shrink)
+    hl.bind("ALT + " .. k, pop_full)
+    hl.bind("ALT + SHIFT + " .. k, pop_medium)
+end
+hl.bind(mod .. " + SHIFT + quotedbl", pop_shrink)
+hl.bind("ALT + SHIFT + quotedbl", pop_medium)
+hl.bind(mod .. " + SHIFT + asciitilde", pop_shrink)
+hl.bind("ALT + SHIFT + asciitilde", pop_medium)
 
 -- Miscellaneous
 hl.bind(mod .. " + SHIFT + P", hl.dsp.exec_cmd("wdisplays"))
@@ -317,10 +323,10 @@ hl.bind(mod .. " + J",     hl.dsp.focus({ direction = "down" }))
 hl.bind(mod .. " + K",     hl.dsp.focus({ direction = "up" }))
 hl.bind(mod .. " + H",     hl.dsp.focus({ direction = "left" }))
 hl.bind(mod .. " + L",     hl.dsp.focus({ direction = "right" }))
-hl.bind(mod .. " + LEFT",  hl.dsp.focus({ direction = "left" }))
-hl.bind(mod .. " + RIGHT", hl.dsp.focus({ direction = "right" }))
-hl.bind(mod .. " + UP",    hl.dsp.focus({ direction = "up" }))
-hl.bind(mod .. " + DOWN",  hl.dsp.focus({ direction = "down" }))
+hl.bind(mod .. " + Left",  hl.dsp.focus({ direction = "left" }))
+hl.bind(mod .. " + Right", hl.dsp.focus({ direction = "right" }))
+hl.bind(mod .. " + Up",    hl.dsp.focus({ direction = "up" }))
+hl.bind(mod .. " + Down",  hl.dsp.focus({ direction = "down" }))
 
 -- Window move / waybar toggle
 hl.bind(mod .. " + SHIFT + J", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-move-window.py d"))
@@ -333,16 +339,21 @@ hl.bind("CTRL + SHIFT + H",    hl.dsp.exec_cmd("~/.config/archmeros/scripts/arch
 hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-move-window.py r"))
 
 -- Swap windows (arrows)
-hl.bind(mod .. " + SHIFT + LEFT",  hl.dsp.window.swap({ direction = "left" }))
-hl.bind(mod .. " + SHIFT + RIGHT", hl.dsp.window.swap({ direction = "right" }))
-hl.bind(mod .. " + SHIFT + UP",    hl.dsp.window.swap({ direction = "up" }))
-hl.bind(mod .. " + SHIFT + DOWN",  hl.dsp.window.swap({ direction = "down" }))
+hl.bind(mod .. " + SHIFT + Left",  hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-tile-window.sh l"))
+hl.bind(mod .. " + SHIFT + Right", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-tile-window.sh r"))
+hl.bind(mod .. " + SHIFT + Up",    hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-tile-window.sh u"))
+hl.bind(mod .. " + SHIFT + Down",  hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-tile-window.sh d"))
 
--- Alt-tab cycle
-hl.bind("ALT + TAB",           hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cycle-window.sh recent next"))
-hl.bind("ALT + SHIFT + TAB",   hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cycle-window.sh recent prev"))
-hl.bind(mod .. " + TAB",       hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cycle-window.sh all next"))
-hl.bind(mod .. " + SHIFT + TAB", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cycle-window.sh all prev"))
+-- Alt-tab and Super-tab cards cycle
+local cycle_recent_next = hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cycle-window.sh recent next")
+local cycle_recent_prev = hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cycle-window.sh recent prev")
+local cycle_all_next    = hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cycle-window.sh all next")
+local cycle_all_prev    = hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cycle-window.sh all prev")
+
+hl.bind("ALT + Tab",           cycle_recent_next)
+hl.bind("ALT + SHIFT + Tab",   cycle_recent_prev)
+hl.bind(mod .. " + Tab",       cycle_all_next)
+hl.bind(mod .. " + SHIFT + Tab", cycle_all_prev)
 
 -- Mouse drag/resize (bindm = {mouse = true})
 hl.bind("SHIFT + mouse:272",   hl.dsp.window.drag(),   { mouse = true })

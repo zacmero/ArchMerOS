@@ -10,6 +10,7 @@ python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" \
 mode="none"
 monitor_name=""
 workspace_id=""
+dispatch_cmd="$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
 launch_id="archmeros-mpv-$RANDOM-$RANDOM"
 
 if command -v hyprctl >/dev/null 2>&1; then
@@ -32,7 +33,7 @@ if command -v hyprctl >/dev/null 2>&1; then
       fi
     fi
     if [[ "$(printf '%s' "$active" | jq -r '.floating // false')" == "true" ]]; then
-      hyprctl dispatch alterzorder bottom >/dev/null 2>&1 || true
+      "$dispatch_cmd" alterzorder bottom >/dev/null 2>&1 || true
     fi
   fi
 fi

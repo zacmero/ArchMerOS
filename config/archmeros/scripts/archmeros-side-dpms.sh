@@ -7,6 +7,7 @@ mode="${1:-toggle}"
 monitor_service="turzx-monitor.service"
 log_file="/tmp/archmeros-side-dpms.log"
 blackout_script="$HOME/.config/archmeros/scripts/archmeros-side-blackout.sh"
+dispatch_cmd="$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
 
 monitors_json="$(hyprctl monitors -j 2>/dev/null || printf '[]')"
 
@@ -51,7 +52,7 @@ if [[ "$target_state" == "off" ]]; then
 fi
 
 for monitor in "${dpms_monitors[@]}"; do
-  if hyprctl dispatch dpms "$target_state" "$monitor" >/dev/null 2>&1; then
+  if "$dispatch_cmd" dpms "$target_state" "$monitor" >/dev/null 2>&1; then
     log "dpms ${target_state} ${monitor}"
   else
     log "dpms ${target_state} ${monitor} failed"
@@ -61,7 +62,7 @@ done
 if [[ "$target_state" == "on" ]]; then
   log "stopping DP-3 blackout"
   "$blackout_script" stop >/dev/null 2>&1 || true
-  hyprctl dispatch dpms on DP-3 >/dev/null 2>&1 || true
+  "$dispatch_cmd" dpms on DP-3 >/dev/null 2>&1 || true
   log "starting ${monitor_service}"
   set_monitor_service_state start
 fi

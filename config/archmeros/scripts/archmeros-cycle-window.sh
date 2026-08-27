@@ -4,33 +4,16 @@ set -euo pipefail
 
 cycle_scope="${1:-recent}"
 direction="${2:-next}"
+lock_file="${XDG_RUNTIME_DIR:-/tmp}/archmeros-cycle-window.lock"
+exec 9>"$lock_file"
+flock 9
 
 active="$(hyprctl activewindow -j 2>/dev/null || printf '{}')"
 [[ "$active" != "{}" ]] || exit 0
 
-monitor="$(hyprctl -j monitors | jq -r '.[] | select(.focused == true) | .name' | head -n 1)"
-monitor_width="$(hyprctl -j monitors | jq -r '.[] | select(.focused == true) | .width' | head -n 1)"
-monitor_height="$(hyprctl -j monitors | jq -r '.[] | select(.focused == true) | .height' | head -n 1)"
-
-[[ -n "${monitor:-}" && -n "${monitor_width:-}" && -n "${monitor_height:-}" ]] || exit 1
-
-floating="$(printf '%s' "$active" | jq -r '.floating // false')"
-active_width="$(printf '%s' "$active" | jq -r '.size[0] // 0')"
-active_height="$(printf '%s' "$active" | jq -r '.size[1] // 0')"
 active_address="$(printf '%s' "$active" | jq -r '.address // empty')"
 
-mode=""
-if [[ "$floating" == "true" ]]; then
-  if (( active_width >= monitor_width * 82 / 100 || active_height >= monitor_height * 82 / 100 )); then
-    mode="full"
-  elif (( active_width >= monitor_width * 64 / 100 || active_height >= monitor_height * 64 / 100 )); then
-    mode="medium"
-  fi
-fi
-
-if [[ -n "$mode" ]]; then
-  hyprctl dispatch settiled >/dev/null 2>&1 || true
-fi
+dispatch_cmd="$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
 
 target_address=""
 case "$cycle_scope" in
@@ -65,17 +48,25 @@ case "$cycle_scope" in
     )"
 
     if [[ -n "${target_address:-}" ]]; then
-      hyprctl dispatch focuswindow "address:${target_address}" >/dev/null 2>&1 || true
+      "$dispatch_cmd" focuswindow "address:${target_address}" >/dev/null 2>&1 || true
     fi
     ;;
   recent|*)
-    hyprctl dispatch focuscurrentorlast >/dev/null 2>&1 || true
+    "$dispatch_cmd" focuscurrentorlast >/dev/null 2>&1 || true
     target_address="$(hyprctl activewindow -j 2>/dev/null | jq -r '.address // empty' 2>/dev/null || true)"
     ;;
 esac
 
-hyprctl dispatch bringactivetotop >/dev/null 2>&1 || true
+"$dispatch_cmd" bringactivetotop >/dev/null 2>&1 || true
 
-if [[ -n "$mode" ]]; then
-  ~/.config/archmeros/scripts/archmeros-window-pop.sh "$mode" >/dev/null 2>&1 || true
+cycled="$(hyprctl activewindow -j 2>/dev/null || printf '{}')"
+if [[ "$(printf '%s' "$cycled" | jq -r '.floating // false')" == "true" ]]; then
+  if [[ "$direction" == "prev" ]]; then
+    offset=-36
+  else
+    offset=36
+  fi
+  "$dispatch_cmd" moveactive "$offset" 0 >/dev/null 2>&1 || true
+  sleep 0.035
+  "$dispatch_cmd" moveactive "$(( -offset ))" 0 >/dev/null 2>&1 || true
 fi

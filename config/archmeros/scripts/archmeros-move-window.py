@@ -23,8 +23,16 @@ def clients():
         return []
 
 
+from pathlib import Path
+
+DISPATCH_SHIM = Path.home() / ".config" / "archmeros" / "scripts" / "archmeros-hyprctl-dispatch.sh"
+
+
 def dispatch(*args: str):
-    subprocess.run(["hyprctl", "dispatch", *args], check=False)
+    if DISPATCH_SHIM.exists():
+        subprocess.run([str(DISPATCH_SHIM), *args], check=False)
+    else:
+        subprocess.run(["hyprctl", "dispatch", *args], check=False)
 
 
 def size_mode(width: int, height: int, monitor_width: int, monitor_height: int) -> str:

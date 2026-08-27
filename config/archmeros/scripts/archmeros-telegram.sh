@@ -3,6 +3,7 @@
 set -euo pipefail
 
 telegram_bin="$(command -v Telegram || command -v telegram-desktop || true)"
+dispatch_cmd="$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
 
 if [[ -z "${telegram_bin:-}" ]]; then
   printf 'archmeros-telegram: Telegram binary not found\n' >&2
@@ -24,8 +25,8 @@ if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
     address="${telegram_window#*$'\t'}"
 
     if [[ -n "${workspace_id:-}" && -n "${address:-}" ]]; then
-      hyprctl dispatch workspace "${workspace_id}" >/dev/null 2>&1 || true
-      hyprctl dispatch focuswindow "address:${address}" >/dev/null 2>&1 || true
+      "$dispatch_cmd" workspace "${workspace_id}" >/dev/null 2>&1 || true
+      "$dispatch_cmd" focuswindow "address:${address}" >/dev/null 2>&1 || true
       exit 0
     fi
   fi

@@ -5,9 +5,11 @@ import re
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 FULL_THRESHOLD = 85
 MEDIUM_THRESHOLD = 64
+DISPATCH_SHIM = Path.home() / ".config" / "archmeros" / "scripts" / "archmeros-hyprctl-dispatch.sh"
 
 
 def clients():
@@ -27,7 +29,8 @@ def monitors():
 
 
 def dispatch(*args: str):
-    subprocess.run(["hyprctl", "dispatch", *args], check=False)
+    command = [str(DISPATCH_SHIM), *args] if DISPATCH_SHIM.exists() else ["hyprctl", "dispatch", *args]
+    subprocess.run(command, check=False)
 
 
 def size_mode(width: int, height: int, monitor_width: int, monitor_height: int) -> str:

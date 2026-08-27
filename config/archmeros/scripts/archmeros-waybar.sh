@@ -16,8 +16,28 @@ latest_instance_dir() {
 }
 
 setup_hypr_env() {
-  local instance_dir wayland_socket
+  local instance_info sig sock
 
+  if command -v hyprctl >/dev/null 2>&1; then
+    instance_info="$(hyprctl instances -j 2>/dev/null || true)"
+    if [[ -n "${instance_info:-}" && "${instance_info}" != "[]" ]]; then
+      read -r sig sock < <(
+        jq -r --arg current "${HYPRLAND_INSTANCE_SIGNATURE:-}" '
+          ((map(select(.instance == $current)) | first) // max_by(.time))
+          | [.instance, .wl_socket]
+          | @tsv
+        ' <<<"$instance_info" 2>/dev/null || true
+      ) || true
+      if [[ -n "$sig" && -n "$sock" && -S "${runtime_dir}/${sock}" ]]; then
+        export XDG_RUNTIME_DIR="$runtime_dir"
+        export WAYLAND_DISPLAY="$sock"
+        export HYPRLAND_INSTANCE_SIGNATURE="$sig"
+        return 0
+      fi
+    fi
+  fi
+
+  local instance_dir wayland_socket
   instance_dir="$(latest_instance_dir)"
   if [[ -z "${instance_dir:-}" ]]; then
     printf 'ArchMerOS waybar: no active Hyprland instance found.\n' >&2

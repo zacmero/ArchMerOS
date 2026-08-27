@@ -1,0 +1,199 @@
+diff --git a/thunar/thunar-shortcuts-view.c b/thunar/thunar-shortcuts-view.c
+index d4b9100..76e6c7f 100644
+--- a/thunar/thunar-shortcuts-view.c
++++ b/thunar/thunar-shortcuts-view.c
+@@ -718,19 +718,13 @@ static gboolean
+ thunar_shortcuts_view_key_release_event (GtkWidget   *widget,
+                                          GdkEventKey *event)
+ {
+-  ThunarShortcutsView *view = THUNAR_SHORTCUTS_VIEW (widget);
+-
+-  /* work nicer with keyboard navigation */
++  /* Arrow keys move the highlight; Enter performs activation. */
+   switch (event->keyval)
+     {
+     case GDK_KEY_Up:
+     case GDK_KEY_Down:
+     case GDK_KEY_KP_Up:
+     case GDK_KEY_KP_Down:
+-      thunar_shortcuts_view_open (view, THUNAR_ACTION_MANAGER_CHANGE_DIRECTORY);
+-
+-      /* keep focus on us */
+-      gtk_widget_grab_focus (widget);
+       break;
+     }
+ 
+diff --git a/thunar/thunar-tree-view.c b/thunar/thunar-tree-view.c
+index a12512d..9b0bc47 100644
+--- a/thunar/thunar-tree-view.c
++++ b/thunar/thunar-tree-view.c
+@@ -884,14 +884,9 @@ thunar_tree_view_key_press_event (GtkWidget   *widget,
+     case GDK_KEY_KP_Up:
+     case GDK_KEY_Down:
+     case GDK_KEY_KP_Down:
+-      /* the default actions works good, but we want to update the right pane */
++      /* Move the highlight without opening the selected folder. */
+       GTK_WIDGET_CLASS (thunar_tree_view_parent_class)->key_press_event (widget, event);
+ 
+-      /* sync with new tree view selection */
+-      gtk_tree_path_free (path);
+-      gtk_tree_view_get_cursor (GTK_TREE_VIEW (view), &path, NULL);
+-      thunar_tree_view_open_selection (view);
+-
+       stopPropagation = TRUE;
+       break;
+ 
+diff --git a/thunar/thunar-window.c b/thunar/thunar-window.c
+index 3d558e3..ec9fa6f 100644
+--- a/thunar/thunar-window.c
++++ b/thunar/thunar-window.c
+@@ -4918,6 +4918,138 @@ thunar_window_check_uca_key_activation (ThunarWindow *window,
+ 
+ 
+ 
++static gboolean
++thunar_window_focus_is_within (GtkWidget *focus,
++                               GtkWidget *ancestor)
++{
++  return focus != NULL
++         && ancestor != NULL
++         && (focus == ancestor || gtk_widget_is_ancestor (focus, ancestor));
++}
++
++
++
++static gboolean
++thunar_window_focus_sidepane (ThunarWindow *window)
++{
++  GtkWidget *sidepane_view;
++
++  if (window->sidepane == NULL || !gtk_widget_get_visible (window->sidepane))
++    return FALSE;
++
++  sidepane_view = gtk_bin_get_child (GTK_BIN (window->sidepane));
++  if (sidepane_view == NULL)
++    return FALSE;
++
++  gtk_widget_grab_focus (sidepane_view);
++  return gtk_widget_has_focus (sidepane_view);
++}
++
++
++
++static gboolean
++thunar_window_view_cursor_is_on_top_row (GtkWidget *focus)
++{
++  GtkTreePath *path = NULL;
++  gboolean     on_top_row = FALSE;
++
++  if (GTK_IS_TREE_VIEW (focus))
++    {
++      gtk_tree_view_get_cursor (GTK_TREE_VIEW (focus), &path, NULL);
++      if (path != NULL && gtk_tree_path_get_depth (path) > 0)
++        on_top_row = gtk_tree_path_get_indices (path)[0] == 0;
++    }
++  else if (EXO_IS_ICON_VIEW (focus))
++    {
++      if (exo_icon_view_get_cursor (EXO_ICON_VIEW (focus), &path, NULL))
++        on_top_row = exo_icon_view_get_item_row (EXO_ICON_VIEW (focus), path) == 0;
++    }
++
++  if (path != NULL)
++    gtk_tree_path_free (path);
++
++  return on_top_row;
++}
++
++
++
++static gboolean
++thunar_window_propagate_list_motion (GtkWindow   *window,
++                                     GdkEventKey *key_event,
++                                     guint        keyval)
++{
++  GdkEventKey motion_event = *key_event;
++
++  motion_event.keyval = keyval;
++  return gtk_window_propagate_key_event (window, &motion_event);
++}
++
++
++
++static gboolean
++thunar_window_focus_navigation (ThunarWindow *window,
++                                GdkEventKey  *key_event)
++{
++  GtkWidget       *focus;
++  GdkModifierType  modifiers;
++  gboolean         plain;
++  gboolean         control;
++
++  focus = gtk_window_get_focus (GTK_WINDOW (window));
++  modifiers = key_event->state & gtk_accelerator_get_default_mod_mask ();
++  plain = modifiers == 0;
++  control = modifiers == GDK_CONTROL_MASK;
++
++  if (thunar_window_focus_is_within (focus, window->view))
++    {
++      if ((plain && (key_event->keyval == GDK_KEY_Left || key_event->keyval == GDK_KEY_h))
++          || (control && key_event->keyval == GDK_KEY_h))
++        {
++          return thunar_window_focus_sidepane (window);
++        }
++
++      if ((control && key_event->keyval == GDK_KEY_k)
++          || (plain && key_event->keyval == GDK_KEY_Up
++              && thunar_window_view_cursor_is_on_top_row (focus)))
++        {
++          thunar_window_start_open_location (window, NULL);
++          return TRUE;
++        }
++
++      if (plain && key_event->keyval == GDK_KEY_j)
++        return thunar_window_propagate_list_motion (GTK_WINDOW (window), key_event, GDK_KEY_Down);
++      if (plain && key_event->keyval == GDK_KEY_k)
++        return thunar_window_propagate_list_motion (GTK_WINDOW (window), key_event, GDK_KEY_Up);
++    }
++  else if (thunar_window_focus_is_within (focus, window->sidepane))
++    {
++      if ((plain && (key_event->keyval == GDK_KEY_Right || key_event->keyval == GDK_KEY_l))
++          || (control && key_event->keyval == GDK_KEY_l))
++        {
++          gtk_widget_grab_focus (window->view);
++          return TRUE;
++        }
++
++      if (plain && key_event->keyval == GDK_KEY_j)
++        return thunar_window_propagate_list_motion (GTK_WINDOW (window), key_event, GDK_KEY_Down);
++      if (plain && key_event->keyval == GDK_KEY_k)
++        return thunar_window_propagate_list_motion (GTK_WINDOW (window), key_event, GDK_KEY_Up);
++    }
++  else if (thunar_window_focus_is_within (focus, window->location_bar))
++    {
++      if ((plain && (key_event->keyval == GDK_KEY_Down || key_event->keyval == GDK_KEY_Escape))
++          || (control && key_event->keyval == GDK_KEY_j))
++        {
++          gtk_widget_grab_focus (window->view);
++          return TRUE;
++        }
++    }
++
++  return FALSE;
++}
++
++
++
+ static gboolean
+ thunar_window_propagate_key_event (GtkWindow *window,
+                                    GdkEvent  *key_event,
+@@ -4928,6 +5060,10 @@ thunar_window_propagate_key_event (GtkWindow *window,
+ 
+   _thunar_return_val_if_fail (THUNAR_IS_WINDOW (window), GDK_EVENT_PROPAGATE);
+ 
++  if (key_event->type == GDK_KEY_PRESS
++      && thunar_window_focus_navigation (thunar_window, (GdkEventKey *) key_event))
++    return GDK_EVENT_STOP;
++
+   focused_widget = gtk_window_get_focus (window);
+ 
+   /* Turn the accelerator priority around globally,

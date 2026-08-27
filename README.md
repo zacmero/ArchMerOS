@@ -1037,6 +1037,36 @@ Manual refresh command:
 ~/.config/archmeros/scripts/archmeros-desktop-sync.sh
 ```
 
+### Thunar keyboard motion contract
+
+ArchMerOS ships a Pacman-owned Thunar 4.20.9 patch from
+[`install/packages/thunar-keyboard-navigation`](install/packages/thunar-keyboard-navigation).
+The motions are implemented inside Thunar, not through global Hyprland or
+keyboard remaps, so other applications retain their native keys.
+
+| Focus | Motion | Result |
+| --- | --- | --- |
+| File view | `Left`, `h`, `Ctrl+H` | Focus the visible sidebar |
+| Sidebar | `Right`, `l`, `Ctrl+L` | Return focus to the file view |
+| File view | `Up`, `Down`, `j`, `k` | Move through files and folders |
+| File view, first row | Another `Up` | Focus and select the location entry |
+| File view | `Ctrl+K` | Focus and select the location entry directly |
+| Location entry | `Down`, `Ctrl+J`, `Escape` | Return focus to the file view |
+| Sidebar | `Up`, `Down`, `j`, `k` | Move the highlight without opening a folder |
+| Sidebar | `Enter` | Open the highlighted folder |
+
+The top boundary is intentionally a two-step motion. An `Up` that arrives at
+the first file leaves focus in the file view; only a subsequent `Up` enters the
+location bar. Custom focus navigation must run on `GDK_KEY_PRESS` only. Running
+it again on key release collapses both steps into one and makes the first file
+and path entry appear active together.
+
+The patch also disables Thunar's stock sidebar behavior that opens a directory
+on every arrow movement. Mouse activation and explicit `Enter` activation stay
+native. Full build, verification, package ownership, and upgrade instructions
+live in the package README. Revalidate the patch against every new Thunar
+version before upgrading; never copy a custom binary directly into `/usr/bin`.
+
 ### Thunar mouse history invariant
 
 Mouse side buttons are Linux/Wayland buttons `275` (Back/GDK button 8) and

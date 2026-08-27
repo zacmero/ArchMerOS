@@ -32,6 +32,15 @@ case "$cycle_scope" in
       state="$(jq -c --argjson addresses "$workspace_addresses" 'with_entries(select(.key as $key | ($addresses | index($key)) != null))' "$state_file" 2>/dev/null || printf '{}')"
     fi
 
+    if (( floating_count == 0 )); then
+      monitor_json="$(hyprctl -j monitors 2>/dev/null | jq -c '.[] | select(.focused == true)' | head -n 1)"
+      monitor_width="$(printf '%s' "$monitor_json" | jq -r '.width // 0')"
+      monitor_height="$(printf '%s' "$monitor_json" | jq -r '.height // 0')"
+      default_width="$(( monitor_width * 72 / 100 ))"
+      default_height="$(( monitor_height * 76 / 100 ))"
+      state="$(printf '%s' "$workspace_addresses" | jq -c --argjson width "$default_width" --argjson height "$default_height" 'reduce .[] as $address ({}; .[$address] = [$width, $height])')"
+    fi
+
     if [[ "$active_floating" == "true" ]]; then
       state="$(printf '%s' "$state" | jq -c --arg address "$active_address" --argjson width "$active_width" --argjson height "$active_height" '.[$address] = [$width, $height]')"
     fi
@@ -88,7 +97,12 @@ else
   card_width="$(printf '%s' "$state" | jq -r --arg address "$target_address" '.[$address][0] // 0')"
   card_height="$(printf '%s' "$state" | jq -r --arg address "$target_address" '.[$address][1] // 0')"
 
-  if (( floating_count == 0 || card_width <= 0 || card_height <= 0 )); then
+  if (( card_width <= 0 || card_height <= 0 )); then
+    card_width="$(printf '%s' "$clients_json" | jq -r --arg address "$target_address" '.[] | select(.address == $address) | .size[0] // 0')"
+    card_height="$(printf '%s' "$clients_json" | jq -r --arg address "$target_address" '.[] | select(.address == $address) | .size[1] // 0')"
+  fi
+
+  if (( card_width <= 0 || card_height <= 0 )); then
     monitor_json="$(hyprctl -j monitors 2>/dev/null | jq -c '.[] | select(.focused == true)' | head -n 1)"
     monitor_width="$(printf '%s' "$monitor_json" | jq -r '.width // 0')"
     monitor_height="$(printf '%s' "$monitor_json" | jq -r '.height // 0')"

@@ -12,7 +12,7 @@ xkb_keymap {
     };
 
     xkb_symbols {
-        include "pc+br(abnt2)+us:2+group(alt_shift_toggle)+level3(ralt_switch)"
+        include "pc+br(abnt2)+us:2+group(alt_shift_toggle)+level3(ralt_switch)+inet(evdev)"
 
         // Keep BR ABNT2 ]/} on BKSL, but expose AltGr+] as bar.
         key <BKSL> {

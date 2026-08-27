@@ -205,21 +205,12 @@ hl.bind(mod .. " + SHIFT + Sys_Req", hl.dsp.exec_cmd("~/.config/archmeros/script
 hl.bind(mod .. " + F12",             hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-screenshot.sh region"))
 hl.bind(mod .. " + SHIFT + F12",     hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-screenshot.sh full"))
 
--- Audio media keys (XF86 names)
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+"))
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"))
 hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
-hl.bind("XF86AudioPrev",        hl.dsp.exec_cmd("playerctl previous"))
-hl.bind("XF86AudioPlay",        hl.dsp.exec_cmd("playerctl play-pause"))
-hl.bind("XF86AudioNext",        hl.dsp.exec_cmd("playerctl next"))
-
--- Audio media keys (keycodes for USB/BT keyboards)
-hl.bind("code:121", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
-hl.bind("code:122", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"))
-hl.bind("code:123", hl.dsp.exec_cmd("wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+"))
-hl.bind("code:173", hl.dsp.exec_cmd("playerctl previous"))
-hl.bind("code:172", hl.dsp.exec_cmd("playerctl play-pause"))
-hl.bind("code:171", hl.dsp.exec_cmd("playerctl next"))
+hl.bind("XF86AudioPrev",        hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-media-control.sh previous"))
+hl.bind("XF86AudioPlay",        hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-media-control.sh play-pause"))
+hl.bind("XF86AudioNext",        hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-media-control.sh next"))
 
 -- Volume bracket keys
 hl.bind(mod .. " + bracketleft",  hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"))

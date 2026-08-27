@@ -21,7 +21,7 @@ case "${1:-verify}" in
     ;;
   apply)
     verify_lua
-    printf 'No files changed. Log out and select Hyprland (Lua) for an explicit Lua session.\n'
+    printf 'No files changed. Log out and select HyprMero(Lua) for an explicit Lua session.\n'
     ;;
   revert)
     printf 'No files changed. HyprMero explicitly loads ~/.config/hypr/hyprland.conf.\n'

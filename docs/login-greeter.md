@@ -112,8 +112,8 @@ The current first-pass palette is:
 
 The login sessions select their configuration provider explicitly:
 
-- `HyprMero` starts `hyprland.conf` through `archmeros-start-hyprmero`.
-- `Hyprland (Lua)` starts `hyprland.lua` through `archmeros-start-hyprlua`.
+- `HyprMero(Lua)` is listed first and starts `hyprland.lua` through `archmeros-start-hyprlua`.
+- `HyprMero` remains available as the legacy `hyprland.conf` fallback through `archmeros-start-hyprmero`.
 - Neither session relies on Hyprland's config auto-discovery order.
 
 Hyprland cannot switch between the legacy and Lua config managers with

@@ -455,9 +455,9 @@ func initialModel(config Config, screensaverMode bool) model {
 		name := strings.ToLower(s.Name)
 		execLine := strings.ToLower(s.Exec)
 
-		if strings.Contains(name, "hyprland") {
+		if strings.Contains(name, "hyprland") || strings.Contains(execLine, "archmeros-start-hypr") {
 			// Keep the explicit Lua session distinct from HyprMero.
-			if strings.Contains(name, "lua") {
+			if strings.Contains(name, "lua") || strings.Contains(execLine, "hyprlua") {
 				copy := s
 				hyprLua = &copy
 				continue
@@ -484,6 +484,11 @@ func initialModel(config Config, screensaverMode bool) model {
 	}
 
 	curatedSessions := []sessions.Session{}
+	if hyprLua != nil {
+		hyprLua.Name = "HyprMero(Lua)"
+		hyprLua.Exec = "/usr/local/bin/archmeros-start-hyprlua"
+		curatedSessions = append(curatedSessions, *hyprLua)
+	}
 	if hyprManaged != nil {
 		hyprManaged.Name = "HyprMero"
 		hyprManaged.Exec = "/usr/local/bin/archmeros-start-hyprmero"
@@ -492,10 +497,6 @@ func initialModel(config Config, screensaverMode bool) model {
 		hyprFallback.Name = "HyprMero"
 		hyprFallback.Exec = "/usr/local/bin/archmeros-start-hyprmero"
 		curatedSessions = append(curatedSessions, *hyprFallback)
-	}
-	if hyprLua != nil {
-		hyprLua.Name = "Hyprland (Lua)"
-		curatedSessions = append(curatedSessions, *hyprLua)
 	}
 	if xfceX11 != nil {
 		xfceX11.Name = "Xfce Session"
@@ -560,7 +561,7 @@ func initialModel(config Config, screensaverMode bool) model {
 
 	for i, s := range sess {
 		name := strings.ToLower(s.Name)
-		if strings.Contains(name, "hyprland") {
+		if strings.Contains(name, "lua") {
 			selectedSession = &sess[i]
 			sessionIndex = i
 			break
@@ -667,6 +668,9 @@ func initialModel(config Config, screensaverMode bool) model {
 	themeApplied := false
 	if !m.config.TestMode {
 		if prefs, err := cache.LoadPreferences(); err == nil && prefs != nil {
+			if prefs.Session == "Hyprland (Lua)" {
+				prefs.Session = "HyprMero(Lua)"
+			}
 			if prefs.Theme != "" {
 				m.currentTheme = prefs.Theme
 				logDebug("Loaded cached theme: %s", prefs.Theme)

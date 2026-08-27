@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Hyprland (Lua)
+Name=HyprMero(Lua)
 Comment=ArchMerOS Hyprland session with explicit Lua configuration
 Exec=/usr/local/bin/archmeros-start-hyprlua
 Type=Application

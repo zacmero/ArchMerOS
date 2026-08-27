@@ -1,0 +1,114 @@
+# Arch Linux Waybar package with the upstream Hyprland Lua IPC fixes backported.
+
+pkgname=waybar
+pkgver=0.15.0
+pkgrel=2.1
+pkgdesc='Highly customizable Wayland bar for Sway and Wlroots based compositors'
+arch=('x86_64')
+url='https://github.com/Alexays/Waybar/'
+license=('MIT')
+depends=(
+  'atkmm'
+  'cairomm'
+  'fmt'
+  'glib2'
+  'glibc'
+  'glibmm'
+  'gpsd'
+  'gtk-layer-shell'
+  'gtk3'
+  'gtkmm3'
+  'jack'
+  'jsoncpp'
+  'libdbusmenu-gtk3'
+  'libevdev'
+  'libgcc'
+  'libinput'
+  'libmpdclient'
+  'libnl'
+  'libpipewire'
+  'libpulse'
+  'libsigc++'
+  'libstdc++'
+  'libwireplumber'
+  'libxkbcommon'
+  'playerctl'
+  'sndio'
+  'spdlog'
+  'systemd-libs'
+  'upower'
+  'wayland'
+)
+makedepends=(
+  'catch2'
+  'cmake'
+  'glib2-devel'
+  'meson'
+  'scdoc'
+  'wayland-protocols'
+)
+backup=(
+  'etc/xdg/waybar/config.jsonc'
+  'etc/xdg/waybar/style.css'
+)
+optdepends=('otf-font-awesome: Icons in the default configuration')
+source=(
+  "$pkgname-$pkgver.tar.gz::https://github.com/Alexays/Waybar/archive/$pkgver.tar.gz"
+  '0001-hyprland-lua-dispatch.patch::https://github.com/Alexays/Waybar/commit/e17c0d9f0a73acc370df60ec8c532b1ed2385c73.patch'
+  '0002-hyprland-current-monitor.patch::https://github.com/Alexays/Waybar/commit/cdb792af41e78d01263c2152d8b5050c40705ea9.patch'
+  '0003-hyprland-read-only-detection.patch::https://github.com/Alexays/Waybar/commit/74cf45d53017da6ab9ccf54b6740d488d2bfa977.patch'
+)
+b2sums=(
+  '3f0eb6cbf4ba189ddd37e82678ef87f877f6f48cf0bb699624c5d697c7164b11c3e25bf8fe382564c1e5891a6070d7c7e6d3009f8461a7087294dffccb78de95'
+  'ee03a99a3593574248ffb407651f48234dfcff974923c5080f55030fb8905c8cc05ff6d75fde0ff5f9c2721dc008691a8f3bf671edf0c4f0c711ecf20e326f12'
+  '1ddad35686b41f3eb31d840f7b97b58c8357d82821bf3997c5b2d56f06a15ed736355b14926465d30b8beadc1b1bf36e5d18a5432728303aaafe035099d74989'
+  'efc89765d73ecb0e7838c6e3c8d33165c5540f82cebe13d65fcd7e1267324c7bf71d6071dd5dde29728bd5a150a5cb6fe15304c6e3218242acee804357010325'
+)
+
+prepare() {
+  cd "Waybar-$pkgver"
+  sed '/^diff --git a\/src\/modules\/hyprland\/workspaces.cpp/,$d' \
+    ../0001-hyprland-lua-dispatch.patch > ../0001-hyprland-lua-click.patch
+  patch -Np1 -i ../0001-hyprland-lua-click.patch
+  patch -Np1 -i ../0002-hyprland-current-monitor.patch
+  patch -Np1 -i ../0003-hyprland-read-only-detection.patch
+}
+
+build() {
+  cd "Waybar-$pkgver"
+  meson --prefix=/usr \
+    --buildtype=plain \
+    --auto-features=enabled \
+    --wrap-mode=nodownload \
+    -Dcpp_std=c++20 \
+    -Dexperimental=true \
+    -Dcava=disabled \
+    -Dtests=enabled \
+    build
+  meson compile -C build --jobs 2
+}
+
+check() {
+  cd "Waybar-$pkgver"
+  env -u HYPRLAND_INSTANCE_SIGNATURE \
+    meson test -C build --print-errorlogs --no-rebuild --suite waybar
+}
+
+package() {
+  depends+=(
+    'libatkmm-1.6.so'
+    'libcairomm-1.0.so'
+    'libgtk-3.so'
+    'libjack.so'
+    'libjsoncpp.so'
+    'libpipewire-0.3.so'
+    'libsndio.so'
+    'libspdlog.so'
+    'libudev.so'
+    'libupower-glib.so'
+  )
+
+  cd "Waybar-$pkgver"
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

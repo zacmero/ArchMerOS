@@ -285,6 +285,7 @@ hl.bind(mod .. " + Q",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/arch
 hl.bind(mod .. " + O",         hl.dsp.exec_cmd("python3 ~/.config/archmeros/scripts/archmeros-reopen-history.py reopen-folders"))
 hl.bind(mod .. " + SHIFT + O", hl.dsp.exec_cmd("python3 ~/.config/archmeros/scripts/archmeros-reopen-history.py reopen-general"))
 hl.bind(mod .. " + V",         hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mod .. " + SHIFT + V", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-tile-window.sh"))
 hl.bind(mod .. " + F",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-fullscreen.sh"))
 
 -- Web apps
@@ -339,10 +340,10 @@ hl.bind("CTRL + SHIFT + H",    hl.dsp.exec_cmd("~/.config/archmeros/scripts/arch
 hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-move-window.py r"))
 
 -- Swap windows (arrows)
-hl.bind(mod .. " + SHIFT + Left",  hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-tile-window.sh l"))
-hl.bind(mod .. " + SHIFT + Right", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-tile-window.sh r"))
-hl.bind(mod .. " + SHIFT + Up",    hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-tile-window.sh u"))
-hl.bind(mod .. " + SHIFT + Down",  hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-tile-window.sh d"))
+hl.bind(mod .. " + SHIFT + Left",  hl.dsp.window.swap({ direction = "left" }))
+hl.bind(mod .. " + SHIFT + Right", hl.dsp.window.swap({ direction = "right" }))
+hl.bind(mod .. " + SHIFT + Up",    hl.dsp.window.swap({ direction = "up" }))
+hl.bind(mod .. " + SHIFT + Down",  hl.dsp.window.swap({ direction = "down" }))
 
 -- Alt-tab and Super-tab cards cycle
 local cycle_recent_next = hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cycle-window.sh recent next")

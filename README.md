@@ -491,6 +491,7 @@ Taskbar behavior:
 These are the bindings that should be treated as current ArchMerOS behavior unless changed deliberately.
 
 - `Ctrl+Alt+T`: open WezTerm
+- `Super+T`: open WezTerm directly at its final tiled or inherited card geometry
 - `Super+Return`: open WezTerm
 - `Super+Space`: launcher
 - `Super+E`: PARA hub / file access
@@ -510,11 +511,12 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Alt+Tab`: cycle to next window on the active workspace
 - `Alt+Shift+Tab`: cycle to previous window
 - `Alt+Tab`: toggle between the current window and the previously focused window, while handing the centered spotlight state across when applicable
-- `Super+Tab`: cycle across all windows on the current workspace/screen, while handing the centered spotlight state across when applicable
+- `Super+Tab`: rotate card mode across the current workspace; an all-tiled layout starts at medium size, then each window retains its own card size
 - `Super+Shift+Left/Right/Up/Down`: swap windows
 - `Shift + Left Mouse`: drag a window
 - `Shift + Right Mouse`: resize a window
 - `Super+V`: toggle floating
+- `Super+Shift+V`: return the active floating card to tiling
 - `Super+Alt+P`: wallpaper picker
 - `Super+P`: wallpaper picker fallback for the ZX-K22 keyboard modifier bug
 - `Super+F`: fullscreen

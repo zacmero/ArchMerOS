@@ -805,7 +805,7 @@ Productivity launcher:
 
 ## Bluetooth
 
-Current Bluetooth USB workaround:
+Current Bluetooth USB configuration:
 
 - tracked config: [install/system/etc/modprobe.d/archmeros-bluetooth.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-bluetooth.conf)
 - tracked udev rule: [install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules](/home/zacmero/projects/ArchMerOS/install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules)
@@ -818,65 +818,20 @@ Current Bluetooth USB workaround:
 options btusb enable_autosuspend=n reset=y
 ```
 
-Why this exists:
+Supported USB Adapters:
+- `2357:0604` — TP-Link UB500 (Realtek RTL8761BU chipset, primary)
+- `0a12:0001` — CSR8510 USB dongle (fallback)
 
-- the CSR USB dongle started failing BLE keyboard pairing after the machine moved to `linux-lts 6.18.18-1` and `bluez 5.86-4` on March 17, 2026
-- the controller was repeatedly falling into `PowerState: off-blocked`
-- disabling `btusb` autosuspend and forcing reset on initialization is the current mitigation
-- ArchMerOS also pins the CSR dongle to `power/control=on` and sets `AutoEnable=true` in BlueZ so the adapter does not idle itself away
-- `blueman-applet` is also started from Hyprland so Bluetooth approval prompts have a desktop agent in-session
+Adapter & Keyboard Pairing Setup:
+- Udev rules pin USB power policy to `power/control=on` for both `2357:0604` and `0a12:0001` to prevent sleep/autosuspend disconnects.
+- `AutoEnable=true` is enabled in `/etc/bluetooth/main.conf`.
+- If a new adapter initializes in an `off-blocked` state, unblock via `rfkill unblock bluetooth && bluetoothctl power on`.
+- ZX-K22 3-mode mechanical keyboard (`F0:C6:8F:18:5E:67`) pairs via BLE HID (`UUID 00001812`).
+- To bind to a new adapter, hold the profile key (`Fn + 1` / `Fn + Q`) for 6–8 seconds until the LED strobes fast, then pair and trust via `bluetoothctl`.
 
-Current rollback state:
-
-- downgraded from cache to `bluez 5.86-2`
-- downgraded from cache to `linux-lts 6.12.73-1`
-- downgraded from cache to `linux-firmware 20260110-1`
-- a reboot is required before the downgraded kernel modules and firmware are actually active
-
-What the actual problem was:
-
-- it was not mainly a missing approval popup
-- the CSR Bluetooth dongle was unstable on the newer stack and the controller was repeatedly dropping, re-enumerating, or failing BLE HID reads during keyboard pairing
-- Hyprland also had no Bluetooth desktop agent running, which made approval prompts harder to surface when they did matter
-- a stray `rtbth-dkms` package was also present and was removed during cleanup
-
-What finally fixed it:
-
-1. track and apply the `btusb` workaround:
-
-```conf
-options btusb enable_autosuspend=n reset=y
-```
-
-2. pin the CSR dongle USB power policy to `on` with the tracked udev rule
-3. set BlueZ `AutoEnable=true`
-4. downgrade to the cached pre-regression stack:
-   - `bluez 5.86-2`
-   - `bluez-libs 5.86-2`
-   - `bluez-utils 5.86-2`
-   - `linux-lts 6.12.73-1`
-   - `linux-firmware 20260110-1`
-5. reboot into the downgraded kernel
-6. remove `rtbth-dkms`
-7. start `blueman-applet` from Hyprland
-8. pair from a live terminal `bluetoothctl` agent
-
-Final successful pairing path:
-
-```bash
-bluetoothctl
-agent on
-default-agent
-power on
-scan on
-pair <MAC>
-trust <MAC>
-connect <MAC>
-```
-
-The successful keyboard MAC during recovery was:
-
-- `E3:13:39:DC:A4:86`
+Active Keyboard Device:
+- Model: `ZX-K22 BT5.1` (`F0:C6:8F:18:5E:67`)
+- hwdb mapping: [install/system/etc/udev/hwdb.d/90-archmeros-zx-k22.hwdb](/home/zacmero/projects/ArchMerOS/install/system/etc/udev/hwdb.d/90-archmeros-zx-k22.hwdb)
 
 ## Fullscreen Behavior
 

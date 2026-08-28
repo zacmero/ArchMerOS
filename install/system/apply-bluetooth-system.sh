@@ -24,7 +24,9 @@ udevadm trigger --subsystem-match=usb
 
 for d in /sys/bus/usb/devices/*; do
   [[ -f "$d/idVendor" && -f "$d/idProduct" ]] || continue
-  if [[ "$(cat "$d/idVendor")" == "0a12" && "$(cat "$d/idProduct")" == "0001" ]]; then
+  vendor="$(cat "$d/idVendor")"
+  product="$(cat "$d/idProduct")"
+  if [[ ("$vendor" == "0a12" && "$product" == "0001") || ("$vendor" == "2357" && "$product" == "0604") ]]; then
     if [[ -w "$d/power/control" ]]; then
       printf 'on' > "$d/power/control"
     fi

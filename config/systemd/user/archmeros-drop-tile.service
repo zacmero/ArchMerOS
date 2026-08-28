@@ -1,0 +1,13 @@
+[Unit]
+Description=Tile floating windows after cross-monitor mouse drops
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.config/archmeros/scripts/archmeros-drop-tile.py
+Restart=on-failure
+RestartSec=1
+
+[Install]
+WantedBy=graphical-session.target

@@ -74,8 +74,7 @@ disable_spawn_rule() {
 }
 trap disable_spawn_rule EXIT
 
-if [[ "${occupied_windows:-1}" == "0" &&
-      -n "${focused_workspace:-}" &&
+if [[ -n "${focused_workspace:-}" &&
       -n "$target_width" &&
       -n "$target_height" ]] &&
    hyprctl systeminfo 2>/dev/null | grep -q 'configProvider: lua'; then

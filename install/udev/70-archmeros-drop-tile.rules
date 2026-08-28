@@ -1,0 +1,2 @@
+# Grant the active desktop session read-only event access to the ArchMerOS mouse.
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{idVendor}=="18f8", ATTRS{idProduct}=="0f97", ENV{ID_INPUT_MOUSE}=="1", TAG+="uaccess"

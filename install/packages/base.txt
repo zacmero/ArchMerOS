@@ -18,6 +18,7 @@ bluez-utils
 blueman
 thunar
 thunar-volman
+yazi
 file-roller
 7zip
 tumbler

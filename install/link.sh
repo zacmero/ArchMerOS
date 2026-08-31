@@ -22,6 +22,8 @@ declare -A links=(
   ["${config_root}/rofimoji.rc"]="${HOME}/.config/rofimoji.rc"
 
   ["${config_root}/thunar/uca.xml"]="${HOME}/.config/Thunar/uca.xml"
+  ["${config_root}/xdg-desktop-portal/hyprland-portals.conf"]="${HOME}/.config/xdg-desktop-portal/hyprland-portals.conf"
+  ["${config_root}/xdg-desktop-portal-termfilechooser/config"]="${HOME}/.config/xdg-desktop-portal-termfilechooser/config"
   ["${config_root}/mimeapps.list"]="${HOME}/.config/mimeapps.list"
   ["${config_root}/systemd/user"]="${HOME}/.config/systemd/user"
   ["${repo_root}/local/share/applications/thunar.desktop"]="${HOME}/.local/share/applications/thunar.desktop"

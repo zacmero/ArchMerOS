@@ -1031,9 +1031,12 @@ XFConf defaults only when those user files do not already exist. Runtime window
 geometry, column widths, sorting, and other evolving Thunar state remain
 per-user and are deliberately not symlinked into Git.
 
-Thunar is the explicit `inode/directory` default. Browser upload dialogs are
-provided by the desktop portal's GTK FileChooser backend, not by Thunar, so the
-MIME default cannot replace that dialog with the file manager.
+Thunar is the explicit `inode/directory` default. Browser upload and save
+dialogs use Yazi through `xdg-desktop-portal-termfilechooser`, launched in a
+dedicated WezTerm window with full previews. Only the FileChooser interface is
+overridden; Hyprland continues to own screenshots and screen sharing. GTK is
+listed second as a failure fallback when the terminal backend is unavailable.
+See [`docs/yazi-filechooser.md`](docs/yazi-filechooser.md).
 
 ### Thunar mouse history invariant
 

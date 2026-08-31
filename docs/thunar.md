@@ -64,9 +64,7 @@ and reopen history.
 ## File upload dialogs
 
 Firefox and other sandbox-aware applications request file selection through
-`xdg-desktop-portal`. In HyprMero, the FileChooser interface is supplied by
-`xdg-desktop-portal-gtk`. That chooser is a GTK dialog, not a Thunar window.
-Setting Thunar as the directory MIME handler makes folders open in Thunar, but
-cannot make browser upload dialogs inherit Thunar previews, zoom, or navigation.
-A different upload chooser requires selecting another compatible portal backend;
-it is independent of the system file-manager default.
+`xdg-desktop-portal`. ArchMerOS routes only the FileChooser interface to Yazi
+through `xdg-desktop-portal-termfilechooser`; GTK remains the fallback. This is
+independent of Thunar's role as the directory MIME handler. See
+`docs/yazi-filechooser.md` for ownership and recovery commands.

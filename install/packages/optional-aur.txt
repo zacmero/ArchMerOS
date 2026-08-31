@@ -11,3 +11,4 @@ elephant-websearch
 elephant-windows
 fabric-ai-bin
 python-mammoth
+xdg-desktop-portal-termfilechooser

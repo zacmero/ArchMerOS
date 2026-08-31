@@ -95,9 +95,26 @@ link_entry() {
   printf 'linked: %s -> %s\n' "$target" "$source"
 }
 
+seed_entry() {
+  local source="$1"
+  local target="$2"
+
+  if [[ -e "$target" || -L "$target" ]]; then
+    printf 'ok: preserving runtime config %s\n' "$target"
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$target")"
+  cp -a "$source" "$target"
+  printf 'seeded: %s from %s\n' "$target" "$source"
+}
+
 for source in "${!links[@]}"; do
   link_entry "$source" "${links[$source]}"
 done
+
+seed_entry "${config_root}/thunar/accels.scm" "${HOME}/.config/Thunar/accels.scm"
+seed_entry "${config_root}/thunar/xfconf-defaults.xml" "${HOME}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
 
 if [[ -d "${firefox_root}" && -f "${config_root}/firefox/user.js" ]]; then
   for prof in "${firefox_root}"/*; do

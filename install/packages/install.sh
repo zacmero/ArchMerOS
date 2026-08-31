@@ -111,6 +111,8 @@ if [[ "${#repo_packages[@]}" -gt 0 ]]; then
   sudo pacman -S --needed --noconfirm "${repo_packages[@]}"
 fi
 
+bash "${repo_root}/install/packages/thunar-keyboard-navigation/install.sh"
+
 if [[ "${#aur_packages[@]}" -gt 0 ]]; then
   printf 'installing aur packages: %s\n' "${aur_packages[*]}"
   yay -S --needed --answerclean All --noconfirm "${aur_packages[@]}"

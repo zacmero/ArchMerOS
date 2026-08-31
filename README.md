@@ -1001,16 +1001,17 @@ keyboard remaps, so other applications retain their native keys.
 
 | Focus | Motion | Result |
 | --- | --- | --- |
-| File view | `Left`, `h`, `Ctrl+H` | Focus the visible sidebar |
-| Sidebar | `Right`, `l`, `Ctrl+L` | Return focus to the file view |
-| File view | `Up`, `Down`, `j`, `k` | Move through files and folders |
+| File view | `Left`, `Ctrl+H` | Focus the visible sidebar |
+| Sidebar | `Right`, `Ctrl+L` | Return focus to the file view |
+| File view | `Up`, `Down` | Move through files and folders |
 | File view, first row | Another `Up` | Focus and select the location entry |
 | File view | `Ctrl+K` | Focus and select the location entry directly |
 | Location entry | `Down`, `Ctrl+J`, `Escape` | Return focus to the file view |
-| Sidebar | `Up`, `Down`, `j`, `k` | Move the highlight without opening a folder |
+| Sidebar | `Up`, `Down` | Move the highlight without opening a folder |
 | Sidebar | `Enter` | Open the highlighted folder |
 
-The top boundary is intentionally a two-step motion. An `Up` that arrives at
+Bare letters remain available for native filename type-ahead. The top boundary
+is intentionally a two-step motion. An `Up` that arrives at
 the first file leaves focus in the file view; only a subsequent `Up` enters the
 location bar. Custom focus navigation must run on `GDK_KEY_PRESS` only. Running
 it again on key release collapses both steps into one and makes the first file
@@ -1019,8 +1020,20 @@ and path entry appear active together.
 The patch also disables Thunar's stock sidebar behavior that opens a directory
 on every arrow movement. Mouse activation and explicit `Enter` activation stay
 native. Full build, verification, package ownership, and upgrade instructions
-live in the package README. Revalidate the patch against every new Thunar
-version before upgrading; never copy a custom binary directly into `/usr/bin`.
+live in the package README. The complete factory ownership map is documented in
+[`docs/thunar.md`](docs/thunar.md). Revalidate the patch against every new
+Thunar version before upgrading; never copy a custom binary directly into
+`/usr/bin`.
+
+ArchMerOS installs the patched Pacman package during its normal package phase,
+links the tracked custom actions and desktop entry, and seeds accelerator and
+XFConf defaults only when those user files do not already exist. Runtime window
+geometry, column widths, sorting, and other evolving Thunar state remain
+per-user and are deliberately not symlinked into Git.
+
+Thunar is the explicit `inode/directory` default. Browser upload dialogs are
+provided by the desktop portal's GTK FileChooser backend, not by Thunar, so the
+MIME default cannot replace that dialog with the file manager.
 
 ### Thunar mouse history invariant
 

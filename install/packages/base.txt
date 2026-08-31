@@ -1,4 +1,10 @@
 # Core ArchMerOS session packages
+base-devel
+git
+glib2-devel
+gobject-introspection
+xfce4-dev-tools
+xfce4-panel
 hyprland
 hypridle
 greetd

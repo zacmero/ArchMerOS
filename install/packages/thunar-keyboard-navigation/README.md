@@ -9,16 +9,17 @@ remaps.
 
 | Focus | Key | Result |
 | --- | --- | --- |
-| File view | `Left`, `h`, `Ctrl+H` | Focus the visible sidebar |
-| Sidebar | `Right`, `l`, `Ctrl+L` | Focus the file view |
-| File view | `Up`, `Down`, `j`, `k` | Traverse files and folders |
+| File view | `Left`, `Ctrl+H` | Focus the visible sidebar |
+| Sidebar | `Right`, `Ctrl+L` | Focus the file view |
+| File view | `Up`, `Down` | Traverse files and folders |
 | File view, first row | Another `Up` | Focus and select the location entry |
 | File view | `Ctrl+K` | Focus and select the location entry directly |
 | Location entry | `Down`, `Escape`, `Ctrl+J` | Return focus to the file view |
-| Sidebar | `Up`, `Down`, `j`, `k` | Move the highlight only |
+| Sidebar | `Up`, `Down` | Move the highlight only |
 | Sidebar | `Enter` | Open the highlighted folder |
 
-The file-view top boundary is intentionally two-step: the first `Up` reaches
+Bare letters remain available for native filename type-ahead. The file-view
+top boundary is intentionally two-step: the first `Up` reaches
 the first row and a separate second `Up` focuses the location entry. `Ctrl+H`
 only changes focus while the file view owns focus. Text typed in the location
 entry and unrelated GTK shortcuts remain untouched.
@@ -42,10 +43,13 @@ activation, and explicit `Enter` remain intact.
 
 ## Build and install
 
+The ArchMerOS factory package phase invokes `install.sh` in this directory after
+installing repository packages. For a manual rebuild:
+
 ```bash
 cd install/packages/thunar-keyboard-navigation
 makepkg --cleanbuild --clean --syncdeps
-sudo pacman -U ./thunar-4.20.9-1.1-x86_64.pkg.tar.zst
+sudo pacman -U ./thunar-4.20.9-1.2-x86_64.pkg.tar.zst
 thunar --quit
 ```
 
@@ -65,9 +69,10 @@ Test with a directory containing at least three items:
    move; the current directory must not change.
 5. Press `Enter`: the highlighted sidebar directory must open.
 6. Press `Right`: focus must return to the file view.
-7. Repeat zone and traversal tests with `h`, `j`, `k`, `l` and
-   `Ctrl+H/J/K/L`.
-8. Confirm package ownership after installation:
+7. Type filename prefixes beginning with `h`, `j`, `k`, and `l`; native
+   type-ahead must select matching files rather than moving focus.
+8. Repeat zone transitions with `Ctrl+H/J/K/L`.
+9. Confirm package ownership after installation:
 
 ```bash
 pacman -Q thunar
@@ -83,7 +88,7 @@ and GID mismatches for root-owned files.
 The patch and package version are intentionally pinned to Thunar 4.20.9.
 Before accepting an upstream Thunar upgrade:
 
-1. Update `pkgver` and reset `pkgrel` to `1.1`.
+1. Update `pkgver` and reset `pkgrel` to `1`.
 2. Refresh the upstream source and patch checksums.
 3. Confirm all three patch hunks still target the same upstream behavior.
 4. Build and run the complete live verification sequence above.

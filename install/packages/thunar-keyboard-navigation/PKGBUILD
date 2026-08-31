@@ -2,7 +2,7 @@
 
 pkgname=thunar
 pkgver=4.20.9
-pkgrel=1.1
+pkgrel=1.2
 pkgdesc="Modern, fast and easy-to-use file manager for Xfce"
 arch=('x86_64')
 url="https://docs.xfce.org/xfce/thunar/start"
@@ -20,11 +20,12 @@ optdepends=('catfish: file searching'
 source=("git+https://gitlab.xfce.org/xfce/thunar.git#tag=$pkgname-$pkgver"
         '0001-archmeros-keyboard-focus-navigation.patch')
 sha256sums=('2d2933bb56b82c76b31d604dd69afdacaca654ddf13833f2df13a1a8ee51081b'
-            'a1da7ead53205a91af037ac8b9a27a2d57ee876a5ee34da33dbd314842ad7976')
+            '406c97bf28a7fbd1bddcd201b60d02671495b06c64f32aafee3c40b7dbf29f3b')
 
 prepare() {
   cd "$pkgname"
   patch -Np1 -i "$srcdir/0001-archmeros-keyboard-focus-navigation.patch"
+  cp /usr/share/libtool/build-aux/ltmain.sh .
   NOCONFIGURE=1 ./autogen.sh
 }
 

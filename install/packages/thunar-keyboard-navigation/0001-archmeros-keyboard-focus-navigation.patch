@@ -1,5 +1,5 @@
 diff --git a/thunar/thunar-shortcuts-view.c b/thunar/thunar-shortcuts-view.c
-index d4b9100..76e6c7f 100644
+index d4b9100fa..76e6c7f57 100644
 --- a/thunar/thunar-shortcuts-view.c
 +++ b/thunar/thunar-shortcuts-view.c
 @@ -718,19 +718,13 @@ static gboolean
@@ -24,7 +24,7 @@ index d4b9100..76e6c7f 100644
      }
  
 diff --git a/thunar/thunar-tree-view.c b/thunar/thunar-tree-view.c
-index a12512d..9b0bc47 100644
+index a12512d4d..9b0bc47fd 100644
 --- a/thunar/thunar-tree-view.c
 +++ b/thunar/thunar-tree-view.c
 @@ -884,14 +884,9 @@ thunar_tree_view_key_press_event (GtkWidget   *widget,
@@ -44,10 +44,10 @@ index a12512d..9b0bc47 100644
        break;
  
 diff --git a/thunar/thunar-window.c b/thunar/thunar-window.c
-index 3d558e3..ec9fa6f 100644
+index 3d558e3ce..6765b34c9 100644
 --- a/thunar/thunar-window.c
 +++ b/thunar/thunar-window.c
-@@ -4918,6 +4918,138 @@ thunar_window_check_uca_key_activation (ThunarWindow *window,
+@@ -4918,6 +4918,117 @@ thunar_window_check_uca_key_activation (ThunarWindow *window,
  
  
  
@@ -107,19 +107,6 @@ index 3d558e3..ec9fa6f 100644
 +
 +
 +static gboolean
-+thunar_window_propagate_list_motion (GtkWindow   *window,
-+                                     GdkEventKey *key_event,
-+                                     guint        keyval)
-+{
-+  GdkEventKey motion_event = *key_event;
-+
-+  motion_event.keyval = keyval;
-+  return gtk_window_propagate_key_event (window, &motion_event);
-+}
-+
-+
-+
-+static gboolean
 +thunar_window_focus_navigation (ThunarWindow *window,
 +                                GdkEventKey  *key_event)
 +{
@@ -135,7 +122,7 @@ index 3d558e3..ec9fa6f 100644
 +
 +  if (thunar_window_focus_is_within (focus, window->view))
 +    {
-+      if ((plain && (key_event->keyval == GDK_KEY_Left || key_event->keyval == GDK_KEY_h))
++      if ((plain && key_event->keyval == GDK_KEY_Left)
 +          || (control && key_event->keyval == GDK_KEY_h))
 +        {
 +          return thunar_window_focus_sidepane (window);
@@ -149,24 +136,16 @@ index 3d558e3..ec9fa6f 100644
 +          return TRUE;
 +        }
 +
-+      if (plain && key_event->keyval == GDK_KEY_j)
-+        return thunar_window_propagate_list_motion (GTK_WINDOW (window), key_event, GDK_KEY_Down);
-+      if (plain && key_event->keyval == GDK_KEY_k)
-+        return thunar_window_propagate_list_motion (GTK_WINDOW (window), key_event, GDK_KEY_Up);
 +    }
 +  else if (thunar_window_focus_is_within (focus, window->sidepane))
 +    {
-+      if ((plain && (key_event->keyval == GDK_KEY_Right || key_event->keyval == GDK_KEY_l))
++      if ((plain && key_event->keyval == GDK_KEY_Right)
 +          || (control && key_event->keyval == GDK_KEY_l))
 +        {
 +          gtk_widget_grab_focus (window->view);
 +          return TRUE;
 +        }
 +
-+      if (plain && key_event->keyval == GDK_KEY_j)
-+        return thunar_window_propagate_list_motion (GTK_WINDOW (window), key_event, GDK_KEY_Down);
-+      if (plain && key_event->keyval == GDK_KEY_k)
-+        return thunar_window_propagate_list_motion (GTK_WINDOW (window), key_event, GDK_KEY_Up);
 +    }
 +  else if (thunar_window_focus_is_within (focus, window->location_bar))
 +    {
@@ -186,7 +165,7 @@ index 3d558e3..ec9fa6f 100644
  static gboolean
  thunar_window_propagate_key_event (GtkWindow *window,
                                     GdkEvent  *key_event,
-@@ -4928,6 +5060,10 @@ thunar_window_propagate_key_event (GtkWindow *window,
+@@ -4928,6 +5039,10 @@ thunar_window_propagate_key_event (GtkWindow *window,
  
    _thunar_return_val_if_fail (THUNAR_IS_WINDOW (window), GDK_EVENT_PROPAGATE);
  

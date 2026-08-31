@@ -1,4 +1,5 @@
 [Default Applications]
+inode/directory=thunar.desktop
 text/plain=nvim.desktop
 text/markdown=nvim.desktop
 application/x-shellscript=nvim.desktop

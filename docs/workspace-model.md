@@ -82,21 +82,26 @@ Start with a conservative layout instead of a large workspace matrix.
 - workspace 2: second active coding project or browser-heavy work
 - workspace 3: notes, docs, AI support, temporary overflow
 - workspace 4: personal admin, comms, or creative overflow
+- workspace 5: tasks and project planning
 - workspace 6: overflow for extra long-lived code/projects
 - workspace 7: experimental or temporary tool groups
+- workspace 8: additional long-lived project or research
+- workspace 9: additional long-lived project or research
 
 These should be switched with:
 
-- `Super+F1` through `Super+F4`
+- `Alt+1` through `Alt+9` or `Super+1` through `Super+9`
 
-This preserves the user’s existing preference for function-key workspace access.
+Windows move directly to these workspaces with `Super+Shift+F1` through
+`Super+Shift+F9`.
 
 ### Persistent Monitor Roles
 
 - left monitor remains anchored to terminal-oriented work
 - center monitor cycles the main project workspaces
 - right monitor remains anchored to utility/media support
-- new workspaces beyond V light up immediately across every Waybar instance; spaces `6` and `7` are no longer hard-locked, while `8/9` stay hidden for the left/right special monitors
+- center workspaces `1-9` light up across every Waybar instance when created
+- hidden service workspace `10` stays on the left monitor and `11` stays on the right monitor
 
 This should be implemented with monitor-specific workspace assignment and selective movement bindings.
 

@@ -42,7 +42,7 @@ case "$app_id" in
   youtube-music)
     name="YouTube Music"
     url="https://music.youtube.com/"
-    target_workspace="9"
+    target_workspace="11"
     ;;
   *)
     printf 'Unknown web app: %s\n' "$app_id" >&2

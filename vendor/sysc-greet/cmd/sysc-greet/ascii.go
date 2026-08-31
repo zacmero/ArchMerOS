@@ -161,10 +161,10 @@ func normalizeSessionName(sessionName string) string {
 		return ""
 	}
 
-	switch fields[0] {
-	case "hyprmero", "hyprland":
+	switch {
+	case strings.HasPrefix(fields[0], "hyprmero"), fields[0] == "hyprland":
 		return "hyprland"
-	case "xfce":
+	case fields[0] == "xfce":
 		return "xfce"
 	default:
 		return fields[0]

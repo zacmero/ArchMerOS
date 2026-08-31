@@ -27,7 +27,7 @@ correctly.
 ArchMerOS installs the tracked `waybar 0.15.0-2.1` backport from
 `install/packages/waybar-lua-backport`. It translates only the workspace IPC
 dispatch and retains the existing module, styling, persistent `1-5` buttons,
-hidden service workspaces `8-10`, all-output behavior, and per-monitor bars.
+hidden service workspaces `10/11`, all-output behavior, and per-monitor bars.
 
 Do not replace this module with `ext/workspaces`; that would fix activation at
 the cost of the persistent and filtering behavior above.

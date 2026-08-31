@@ -61,8 +61,10 @@ hl.workspace_rule({ workspace = "4", monitor = "HDMI-A-1" })
 hl.workspace_rule({ workspace = "5", monitor = "HDMI-A-1" })
 hl.workspace_rule({ workspace = "6", monitor = "HDMI-A-1" })
 hl.workspace_rule({ workspace = "7", monitor = "HDMI-A-1" })
-hl.workspace_rule({ workspace = "8", monitor = "DP-3",     default = true })
-hl.workspace_rule({ workspace = "9", monitor = "DP-2",     default = true })
+hl.workspace_rule({ workspace = "8", monitor = "HDMI-A-1" })
+hl.workspace_rule({ workspace = "9", monitor = "HDMI-A-1" })
+hl.workspace_rule({ workspace = "10", monitor = "DP-3",    default = true })
+hl.workspace_rule({ workspace = "11", monitor = "DP-2",    default = true })
 
 -----------------------
 ---- LOOK AND FEEL ----
@@ -225,6 +227,8 @@ hl.bind("ALT + 4", hl.dsp.focus({ workspace = 4 }))
 hl.bind("ALT + 5", hl.dsp.focus({ workspace = 5 }))
 hl.bind("ALT + 6", hl.dsp.focus({ workspace = 6 }))
 hl.bind("ALT + 7", hl.dsp.focus({ workspace = 7 }))
+hl.bind("ALT + 8", hl.dsp.focus({ workspace = 8 }))
+hl.bind("ALT + 9", hl.dsp.focus({ workspace = 9 }))
 
 -- Workspace switching (ALT + numpad)
 hl.bind("ALT + KP_1", hl.dsp.focus({ workspace = 1 }))
@@ -232,6 +236,10 @@ hl.bind("ALT + KP_2", hl.dsp.focus({ workspace = 2 }))
 hl.bind("ALT + KP_3", hl.dsp.focus({ workspace = 3 }))
 hl.bind("ALT + KP_4", hl.dsp.focus({ workspace = 4 }))
 hl.bind("ALT + KP_5", hl.dsp.focus({ workspace = 5 }))
+hl.bind("ALT + KP_6", hl.dsp.focus({ workspace = 6 }))
+hl.bind("ALT + KP_7", hl.dsp.focus({ workspace = 7 }))
+hl.bind("ALT + KP_8", hl.dsp.focus({ workspace = 8 }))
+hl.bind("ALT + KP_9", hl.dsp.focus({ workspace = 9 }))
 
 -- Workspace switching (ALT + numpad keycodes, numlock-off fallback)
 hl.bind("ALT + code:87", hl.dsp.focus({ workspace = 1 }))
@@ -239,6 +247,10 @@ hl.bind("ALT + code:88", hl.dsp.focus({ workspace = 2 }))
 hl.bind("ALT + code:89", hl.dsp.focus({ workspace = 3 }))
 hl.bind("ALT + code:83", hl.dsp.focus({ workspace = 4 }))
 hl.bind("ALT + code:84", hl.dsp.focus({ workspace = 5 }))
+hl.bind("ALT + code:85", hl.dsp.focus({ workspace = 6 }))
+hl.bind("ALT + code:79", hl.dsp.focus({ workspace = 7 }))
+hl.bind("ALT + code:80", hl.dsp.focus({ workspace = 8 }))
+hl.bind("ALT + code:81", hl.dsp.focus({ workspace = 9 }))
 
 -- Workspace switching (SUPER + number)
 hl.bind(mod .. " + 1", hl.dsp.focus({ workspace = 1 }))
@@ -248,6 +260,8 @@ hl.bind(mod .. " + 4", hl.dsp.focus({ workspace = 4 }))
 hl.bind(mod .. " + 5", hl.dsp.focus({ workspace = 5 }))
 hl.bind(mod .. " + 6", hl.dsp.focus({ workspace = 6 }))
 hl.bind(mod .. " + 7", hl.dsp.focus({ workspace = 7 }))
+hl.bind(mod .. " + 8", hl.dsp.focus({ workspace = 8 }))
+hl.bind(mod .. " + 9", hl.dsp.focus({ workspace = 9 }))
 
 -- Workspace navigation (adjacent)
 hl.bind("CTRL + ALT + LEFT",      hl.dsp.focus({ workspace = "m-1" }))
@@ -269,6 +283,8 @@ hl.bind(mod .. " + SHIFT + F4", hl.dsp.window.move({ workspace = 4 }))
 hl.bind(mod .. " + SHIFT + F5", hl.dsp.window.move({ workspace = 5 }))
 hl.bind(mod .. " + SHIFT + F6", hl.dsp.window.move({ workspace = 6 }))
 hl.bind(mod .. " + SHIFT + F7", hl.dsp.window.move({ workspace = 7 }))
+hl.bind(mod .. " + SHIFT + F8", hl.dsp.window.move({ workspace = 8 }))
+hl.bind(mod .. " + SHIFT + F9", hl.dsp.window.move({ workspace = 9 }))
 
 -- Window management
 hl.bind(mod .. " + W",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-close.sh"))
@@ -303,7 +319,7 @@ hl.bind("ALT + SHIFT + asciitilde", pop_medium)
 -- Miscellaneous
 hl.bind(mod .. " + SHIFT + P", hl.dsp.exec_cmd("wdisplays"))
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-refresh-shell.sh"))
-hl.bind(mod .. " + M",         hl.dsp.exec_cmd("[workspace 9 silent] ~/.config/archmeros/scripts/archmeros-youtube-music.sh"))
+hl.bind(mod .. " + M",         hl.dsp.exec_cmd("[workspace 11 silent] ~/.config/archmeros/scripts/archmeros-youtube-music.sh"))
 hl.bind(mod .. " + N",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-note.sh"))
 hl.bind(mod .. " + SHIFT + N", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-productivity.sh"))
 hl.bind(mod .. " + G",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-telegram.sh"))
@@ -467,7 +483,7 @@ hl.window_rule({
 hl.window_rule({
     name  = "side-blackout",
     match = { class = "^(archmeros-side-blackout)$" },
-    workspace  = "8 silent",
+    workspace  = "10 silent",
     float      = true,
     fullscreen = 1,
     opacity    = "1.0 1.0",
@@ -546,9 +562,9 @@ hl.window_rule({
 
 -- YouTube Music auto-workspace
 hl.window_rule({
-    name  = "youtube-music-ws9",
+    name  = "youtube-music-ws11",
     match = { title = "^(.* - )?YouTube Music$" },
-    workspace = "9 silent",
+    workspace = "11 silent",
 })
 
 -- Todoist auto-workspace

@@ -38,8 +38,8 @@ chmod 755 "${system_binary}"
 
 install -Dm644 "${repo_root}/config/greetd/sysc-greet/kitty-greeter.conf" \
   "${greetd_dir}/kitty-greeter.conf"
-install -Dm644 "${repo_root}/config/greetd/sysc-greet/hyprland-greeter-config.conf" \
-  "${greetd_dir}/hyprland-greeter-config.conf"
+install -Dm644 "${repo_root}/config/greetd/sysc-greet/hyprland-greeter-config.lua" \
+  "${greetd_dir}/hyprland-greeter-config.lua"
 install -Dm755 "${repo_root}/config/greetd/sysc-greet/archmeros-greeter-session.sh" \
   /usr/local/bin/archmeros-greeter-session
 install -Dm755 "${repo_root}/config/greetd/sysc-greet/archmeros-start-hyprmero.sh" \

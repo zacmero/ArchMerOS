@@ -7,7 +7,7 @@ script_dir="$(cd -- "$(dirname -- "$script_path")" && pwd)"
 template_root="${script_dir}/../../firefox/profiles/youtube-music"
 profile_root="${XDG_DATA_HOME:-$HOME/.local/share}/archmeros/firefox/youtube-music"
 chrome_root="${profile_root}/chrome"
-workspace_id="9"
+workspace_id="11"
 target_monitor="DP-2"
 dispatch_cmd="$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
 

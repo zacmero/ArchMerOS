@@ -10,7 +10,7 @@ workspace numbers render normally but mouse clicks do nothing. The configured
 
 Switching to `ext/workspaces` would make activation protocol-native, but it
 would remove ArchMerOS behavior: persistent `1-5` buttons, filtering of service
-workspaces `8-10`, and the current multi-output presentation. This backport
+workspaces `10/11`, and the current multi-output presentation. This backport
 keeps `hyprland/workspaces` and every existing Waybar configuration unchanged.
 
 ## Backport

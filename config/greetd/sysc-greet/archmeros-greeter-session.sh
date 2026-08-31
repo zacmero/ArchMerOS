@@ -15,5 +15,5 @@ mkdir -p \
   "${XDG_STATE_HOME}" \
   "${XDG_DATA_HOME}"
 
-exec Hyprland -c /etc/greetd/hyprland-greeter-config.conf \
+exec start-hyprland -- -c /etc/greetd/hyprland-greeter-config.lua \
   >/var/cache/sysc-greet/greeter-hyprland.log 2>&1

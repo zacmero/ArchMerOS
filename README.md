@@ -498,9 +498,9 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+S` or `Super+Alt+S`: side-screen standby toggle. The right side display uses DPMS, the left AOC display gets a black fullscreen cover because it does not expose DDC/CI power control, and `mero-monitor` is stopped/started with the same action.
 - `Super+Print`: region screenshot
 - `Super+Shift+Print`: full screenshot
-- `Alt+1` to `Alt+5`: switch main workspaces
-- `Alt+KP_1` to `Alt+KP_5`: switch main workspaces from the numpad with NumLock on
-- `Alt+numpad 1-5` also has raw `code:` fallback binds in Hyprland for stubborn keypad mappings
+- `Alt+1` to `Alt+9`: switch main workspaces
+- `Alt+KP_1` to `Alt+KP_9`: switch main workspaces from the numpad with NumLock on
+- `Alt+numpad 1-9` also has raw `code:` fallback binds in Hyprland for stubborn keypad mappings
 - `Ctrl+Alt+Left` / `Ctrl+Alt+Right`: cycle workspaces
 - `Ctrl+Alt+code:105` / `Ctrl+Alt+code:106`: raw arrow fallback binds for stubborn keyboards
 - `Super+mouse wheel`: cycle workspaces
@@ -701,7 +701,7 @@ Chromium-backed web apps launch in isolated profiles under:
 
 Current YouTube Music path:
 
-- `Super+M` launches a dedicated Firefox profile directly on workspace `9`
+- `Super+M` launches a dedicated Firefox profile directly on workspace `11`
 - the launcher is [config/archmeros/scripts/archmeros-youtube-music.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-youtube-music.sh)
 - the profile templates are repo-owned:
   - [config/firefox/profiles/youtube-music/user.js](/home/zacmero/projects/ArchMerOS/config/firefox/profiles/youtube-music/user.js)
@@ -755,13 +755,16 @@ Center monitor workspaces:
 - `3` -> `III`
 - `4` -> `IV`
 - `5` -> `V`
+- `6` -> `VI`
+- `7` -> `VII`
+- `8` -> `VIII`
+- `9` -> `IX`
 
-To add another center workspace later:
+Side monitor service workspaces:
 
-- add `workspace = <n>, monitor:HDMI-A-1` in [hyprland.conf](/home/zacmero/projects/ArchMerOS/config/hypr/hyprland.conf)
-- add the `Alt+<n>` and `$mod+<n>` binds in [hyprland.conf](/home/zacmero/projects/ArchMerOS/config/hypr/hyprland.conf)
-- add the Roman numeral label and persistent workspace entry in the Waybar workspace configs
-- reload Hyprland
+- `10` -> left `DP-3` (blackout/terminal role)
+- `11` -> right `DP-2` (YouTube Music/media role)
+- Waybar hides `10/11` while exposing center workspaces through `IX`
 
 ## Notes And Editor
 
@@ -846,7 +849,7 @@ Current rule:
 
 Current web-app placement rules:
 
-- `YouTube Music` -> workspace `9` on the right monitor
+- `YouTube Music` -> workspace `11` on the right monitor
 - `ChatGPT` -> medium-centered floating window
 - `Todoist` -> native Flatpak when available, workspace `5` / `V`
 - `Obsidian` -> normal app launch through `archmeros-obsidian.sh`

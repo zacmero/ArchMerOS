@@ -33,16 +33,16 @@
       "5": "V",
       "6": "VI",
       "7": "VII",
-      "10": "X",
-      "8": "T",
-      "9": "R"
+      "8": "VIII",
+      "9": "IX",
+      "10": "T",
+      "11": "R"
     },
     "sort-by-number": true,
     "show-special": false,
     "ignore-workspaces": [
-      "8",
-      "9",
-      "10"
+      "10",
+      "11"
     ],
     "persistent-workspaces": {
       "*": [

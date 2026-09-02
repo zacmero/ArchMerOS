@@ -61,6 +61,7 @@ Current known state on this workstation:
 - new login-shell Bash sessions source an ArchMerOS shell hook from `~/.bash_profile`
 - local GTK, cursor, and icon theme assets are deployed under `~/.local/share`
 - the active Firefox `default-release` profile can be fed from a repo-owned `user.js`
+- Bottles (`com.usebottles.bottles`) is integrated as the default Windows gaming and compatibility runner with DXVK/VKD3D acceleration (see [docs/bottles.md](/home/zacmero/projects/ArchMerOS/docs/bottles.md))
 - `mero_terminal` remains separate and untouched
 - the repo-tracked `sysc-greet` design is now the official ArchMerOS greeter default and login-manager target
 
@@ -146,6 +147,7 @@ Tracked system overrides:
 - [docs/waybar.md](/home/zacmero/projects/ArchMerOS/docs/waybar.md)
 - [docs/nvidia-pascal.md](/home/zacmero/projects/ArchMerOS/docs/nvidia-pascal.md)
 - [docs/ai-flow.md](/home/zacmero/projects/ArchMerOS/docs/ai-flow.md)
+- [docs/bottles.md](/home/zacmero/projects/ArchMerOS/docs/bottles.md)
 
 ## Current Setup Steps
 
@@ -176,7 +178,7 @@ bash install/packages/install.sh
 
 This installs the core repo packages, AUR package manifest, and Flatpak app manifest.
 
-The default app set includes Firefox, Obsidian, Todoist, Termius, Walker, and the Elephant provider stack. Todoist and Termius are installed through the Flatpak manifest. Evernote is not part of the default ArchMerOS app set.
+The default app set includes Firefox, Obsidian, Todoist, Termius, Bottles, Walker, and the Elephant provider stack. Todoist, Termius, and Bottles are installed through the Flatpak manifest. Evernote is not part of the default ArchMerOS app set.
 
 Use flags when you want the workstation or NVIDIA profiles too:
 

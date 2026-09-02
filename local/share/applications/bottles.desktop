@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Bottles
+Comment=Run Windows software and games with ease
+Exec=/home/zacmero/.config/archmeros/scripts/archmeros-bottles.sh %u
+Terminal=false
+Type=Application
+Icon=com.usebottles.bottles
+StartupWMClass=bottles
+Categories=Utility;Game;Emulator;
+Keywords=wine;windows;gaming;bottles;prefix;dxvk;vkd3d;

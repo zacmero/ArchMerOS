@@ -1,0 +1,13 @@
+[Unit]
+Description=Mero Controller - Layered physical command daemon for 8BitDo & Gamepads
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/uv run --project %h/projects/mero-controller mero-controller daemon
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=default.target

@@ -19,5 +19,6 @@ fi
 launch_class="archmeros-night-drive-$RANDOM-$RANDOM"
 
 exec "${HOME}/.config/archmeros/scripts/archmeros-launch-detached.sh" \
+  --native-spawn "$launch_class" \
   /usr/bin/wezterm start --always-new-process --class "$launch_class" --cwd "$HOME" -- \
   python3 "$script" "$@"

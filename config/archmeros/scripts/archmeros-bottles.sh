@@ -8,6 +8,7 @@ python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" \
   >/tmp/archmeros-reopen-track-bottles.log 2>&1 || true
 
 if command -v flatpak >/dev/null 2>&1 && flatpak info com.usebottles.bottles >/dev/null 2>&1; then
+  flatpak override --user --filesystem=xdg-download --filesystem=~/Games com.usebottles.bottles 2>/dev/null || true
   exec flatpak run \
     --branch=stable \
     --arch=x86_64 \

@@ -603,6 +603,8 @@ Detached GUI launches now inherit ArchMerOS window-promotion behavior:
 
 - on an empty workspace, the new app opens as a near-full centered card
 - on an occupied workspace, the new app opens as a medium centered card
+- launchers with a unique class, including WezTerm, Browser Open, and Night Drive, receive their final geometry before the first mapped frame so they do not visibly shrink after opening
+- dedicated ChatGPT and Gemini app classes remain tiled by design
 - if a centered spotlight window is active, it is pushed back
 - the newly opened GUI app is promoted onto the currently focused workspace/monitor and kept focused
 - this is handled by [config/archmeros/scripts/archmeros-launch-detached.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-launch-detached.sh) and [config/archmeros/scripts/archmeros-promote-pid.py](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-promote-pid.py)

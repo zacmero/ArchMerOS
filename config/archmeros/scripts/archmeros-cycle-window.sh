@@ -45,32 +45,36 @@ case "$cycle_scope" in
       state="$(printf '%s' "$state" | jq -c --arg address "$active_address" --argjson width "$active_width" --argjson height "$active_height" '.[$address] = [$width, $height]')"
     fi
 
-    target_address="$(
-      printf '%s' "$clients_json" \
-        | jq -r \
-            --arg active "$active_address" \
-            --argjson workspace "${active_workspace:-0}" \
-            --arg direction "$direction" '
-            [
-              .[]
-              | select(.mapped == true and .hidden == false)
-              | select((.workspace.id // -1) == $workspace)
-            ]
-            | sort_by(.focusHistoryID // -1)
-            | reverse
-            | (map(.address) as $addresses
-               | ($addresses | index($active)) as $idx
-               | if ($idx == null) or ($addresses | length) <= 1 then
-                   empty
-                 else
-                   if $direction == "prev" then
-                     $addresses[($idx - 1 + ($addresses | length)) % ($addresses | length)]
+    if (( floating_count == 0 )); then
+      target_address="$active_address"
+    else
+      target_address="$(
+        printf '%s' "$clients_json" \
+          | jq -r \
+              --arg active "$active_address" \
+              --argjson workspace "${active_workspace:-0}" \
+              --arg direction "$direction" '
+              [
+                .[]
+                | select(.mapped == true and .hidden == false)
+                | select((.workspace.id // -1) == $workspace)
+              ]
+              | sort_by(.focusHistoryID // -1)
+              | reverse
+              | (map(.address) as $addresses
+                 | ($addresses | index($active)) as $idx
+                 | if ($idx == null) or ($addresses | length) <= 1 then
+                     empty
                    else
-                     $addresses[($idx + 1) % ($addresses | length)]
-                   end
-                 end)
-          ' 2>/dev/null || true
-    )"
+                     if $direction == "prev" then
+                       $addresses[($idx - 1 + ($addresses | length)) % ($addresses | length)]
+                     else
+                       $addresses[($idx + 1) % ($addresses | length)]
+                     end
+                   end)
+            ' 2>/dev/null || true
+      )"
+    fi
 
     ;;
   recent|*)

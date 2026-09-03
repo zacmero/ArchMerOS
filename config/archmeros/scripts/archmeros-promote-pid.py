@@ -19,6 +19,18 @@ def clients():
         return []
 
 
+def client_by_address(address: str) -> dict:
+    return next((client for client in clients() if client.get("address") == address), {})
+
+
+def active_address() -> str:
+    try:
+        data = subprocess.check_output(["hyprctl", "-j", "activewindow"], text=True)
+        return str(json.loads(data).get("address") or "")
+    except Exception:
+        return ""
+
+
 def dispatch(*args: str):
     command = [str(DISPATCH_SHIM), *args] if DISPATCH_SHIM.exists() else ["hyprctl", "dispatch", *args]
     subprocess.run(command, check=False)
@@ -45,10 +57,16 @@ def target_size(mode: str, monitor_width: int, monitor_height: int) -> tuple[int
 
 
 def stabilize_focus(address: str):
+    dispatch("focuswindow", f"address:{address}")
+    dispatch("bringactivetotop")
+
+
+def focus_window(address: str):
     for _ in range(10):
         dispatch("focuswindow", f"address:{address}")
-        dispatch("bringactivetotop")
-        time.sleep(0.05)
+        if active_address() == address:
+            return
+        time.sleep(0.02)
 
 
 def main() -> int:
@@ -80,7 +98,8 @@ def main() -> int:
     if not address:
         return 0
 
-    dispatch("focuswindow", f"address:{address}")
+    target = client_by_address(address) or target
+    focus_window(address)
 
     if monitor_name:
         dispatch("movewindow", f"mon:{monitor_name}")
@@ -123,9 +142,13 @@ def main() -> int:
         return 0
     target_w, target_h = size
 
-    if not target.get("floating"):
-        dispatch("togglefloating")
+    dispatch("setfloating")
+    for _ in range(10):
+        time.sleep(0.02)
+        if client_by_address(address).get("floating"):
+            break
 
+    focus_window(address)
     dispatch("resizeactive", "exact", str(target_w), str(target_h))
     dispatch("centerwindow", "1")
     stabilize_focus(address)

@@ -493,7 +493,7 @@ Taskbar behavior:
 These are the bindings that should be treated as current ArchMerOS behavior unless changed deliberately.
 
 - `Ctrl+Alt+T`: open WezTerm
-- `Super+T`: open WezTerm directly at its final tiled or inherited card geometry
+- `Super+T`: open WezTerm as a near-full card on an empty workspace or a medium card on an occupied workspace
 - `Super+Return`: open WezTerm
 - `Super+Space`: launcher
 - `Super+E`: PARA hub / file access
@@ -506,6 +506,7 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Ctrl+Alt+Left` / `Ctrl+Alt+Right`: cycle workspaces
 - `Ctrl+Alt+code:105` / `Ctrl+Alt+code:106`: raw arrow fallback binds for stubborn keyboards
 - `Super+mouse wheel`: cycle workspaces
+- `Super+Shift+F1` through `Super+Shift+F9`: move the focused window to that workspace, return it to tiling, and keep it focused
 - `Super+Shift+H`: toggle all Waybar bars together
 - `Super+Shift+1/2/3`: toggle the left, center, or right Waybar bar individually
 - `Super+H/J/K/L`: move focus
@@ -588,7 +589,7 @@ The general launcher path is now:
   - [config/systemd/user/archmeros-elephant.service](/home/zacmero/projects/ArchMerOS/config/systemd/user/archmeros-elephant.service)
   - [config/systemd/user/archmeros-walker.service](/home/zacmero/projects/ArchMerOS/config/systemd/user/archmeros-walker.service)
 - Walker opens as a normal centered floating window instead of the oversized frame-like layer shell surface
-- Walker sizing is controlled by Hyprland window rules for class `dev.benz.walker`
+- Walker matches both observed classes (`walker` and `dev.benz.walker`) and opens focused on the invoking workspace/monitor with its border tight to the centered `600x574` UI
 
 If you need to launch a GUI app from a terminal without tying it to that terminal session, use:
 
@@ -600,8 +601,10 @@ Replace `mousepad` with any GUI command you want to detach.
 
 Detached GUI launches now inherit ArchMerOS window-promotion behavior:
 
+- on an empty workspace, the new app opens as a near-full centered card
+- on an occupied workspace, the new app opens as a medium centered card
 - if a centered spotlight window is active, it is pushed back
-- the newly opened GUI app is promoted onto the currently focused workspace/monitor
+- the newly opened GUI app is promoted onto the currently focused workspace/monitor and kept focused
 - this is handled by [config/archmeros/scripts/archmeros-launch-detached.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-launch-detached.sh) and [config/archmeros/scripts/archmeros-promote-pid.py](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-promote-pid.py)
 - focus is reasserted briefly after launch so apps opened from a floating source window do not instantly lose focus back to the launcher
 

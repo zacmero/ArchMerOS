@@ -4,9 +4,19 @@ set -euo pipefail
 
 [[ $# -gt 0 ]] || exit 1
 
+native_spawn=0
+spawn_class=""
+if [[ "${1:-}" == "--native-spawn" ]]; then
+  [[ $# -ge 3 && -n "${2:-}" ]] || exit 2
+  native_spawn=1
+  spawn_class="$2"
+  shift 2
+fi
+
 process_name="$(basename -- "$1" 2>/dev/null || printf '%s' "$1")"
-native_spawn="${ARCHMEROS_NATIVE_SPAWN:-0}"
-spawn_class="${ARCHMEROS_SPAWN_CLASS:-}"
+force_pop_mode="${ARCHMEROS_FORCE_POP_MODE:-}"
+skip_history="${ARCHMEROS_SKIP_HISTORY:-0}"
+unset ARCHMEROS_NATIVE_SPAWN ARCHMEROS_SPAWN_CLASS ARCHMEROS_FORCE_POP_MODE ARCHMEROS_SKIP_HISTORY
 
 json_or_default() {
   local raw="${1:-}"
@@ -21,31 +31,31 @@ json_or_default() {
   esac
 }
 
-track_command=(
-  python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py"
-  track-launch general "" "" "$process_name" --
-  "$HOME/.config/archmeros/scripts/archmeros-launch-detached.sh" "$@"
-)
-if [[ "$native_spawn" == "1" ]]; then
-  nohup "${track_command[@]}" >/tmp/archmeros-reopen-track-general.log 2>&1 &
-else
-  "${track_command[@]}" >/tmp/archmeros-reopen-track-general.log 2>&1 || true
+if [[ "$skip_history" != "1" ]]; then
+  track_command=(
+    python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py"
+    track-launch general "" "" "$process_name" --
+    "$HOME/.config/archmeros/scripts/archmeros-launch-detached.sh" "$@"
+  )
+  if [[ "$native_spawn" == "1" ]]; then
+    nohup "${track_command[@]}" >/tmp/archmeros-reopen-track-general.log 2>&1 &
+  else
+    "${track_command[@]}" >/tmp/archmeros-reopen-track-general.log 2>&1 || true
+  fi
 fi
 
 mode="none"
 monitor_name=""
 workspace_id=""
 dispatch_cmd="$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
-full_threshold=85
-medium_threshold=64
 monitor_width=0
 monitor_height=0
 lua_provider=0
 spawn_rule_active=0
 spawn_rule_var=""
 
-if [[ -n "${ARCHMEROS_FORCE_POP_MODE:-}" ]]; then
-  mode="$ARCHMEROS_FORCE_POP_MODE"
+if [[ -n "$force_pop_mode" ]]; then
+  mode="$force_pop_mode"
 fi
 
 if command -v hyprctl >/dev/null 2>&1; then
@@ -57,20 +67,21 @@ if command -v hyprctl >/dev/null 2>&1; then
   workspace_json="$(json_or_default "$(hyprctl activeworkspace -j 2>/dev/null || true)" '{}')"
   workspace_id="$(printf '%s' "$workspace_json" | jq -r '.id // empty' 2>/dev/null || true)"
   active="$(json_or_default "$(hyprctl activewindow -j 2>/dev/null || true)" '{}')"
+  monitor_size="$(printf '%s' "$monitors_json" | jq -r '.[] | select(.focused == true) | .width, .height' | paste -sd" " -)"
+  monitor_width="$(printf '%s' "$monitor_size" | awk '{print $1}')"
+  monitor_height="$(printf '%s' "$monitor_size" | awk '{print $2}')"
 
-  if [[ "$mode" == "none" && "$active" != "{}" ]]; then
-    width="$(printf '%s' "$active" | jq -r '.size[0] // 0')"
-    height="$(printf '%s' "$active" | jq -r '.size[1] // 0')"
-    monitor_size="$(printf '%s' "$monitors_json" | jq -r '.[] | select(.focused == true) | .width, .height' | paste -sd" " -)"
-    monitor_width="$(printf '%s' "$monitor_size" | awk '{print $1}')"
-    monitor_height="$(printf '%s' "$monitor_size" | awk '{print $2}')"
-    if [[ -n "${monitor_width:-}" && -n "${monitor_height:-}" && "$monitor_width" != "0" && "$monitor_height" != "0" ]]; then
-      if (( width * 100 / monitor_width >= full_threshold || height * 100 / monitor_height >= full_threshold )); then
-        mode="full"
-      elif (( width * 100 / monitor_width >= medium_threshold || height * 100 / monitor_height >= medium_threshold )); then
-        mode="medium"
-      fi
+  if [[ "$mode" == "none" && -n "$workspace_id" ]]; then
+    clients_json="$(json_or_default "$(hyprctl -j clients 2>/dev/null || true)" '[]')"
+    occupied_windows="$(printf '%s' "$clients_json" | jq -r --argjson workspace "$workspace_id" '[.[] | select(.mapped == true and .hidden == false) | select((.workspace.id // -1) == $workspace)] | length')"
+    if [[ "$occupied_windows" == "0" ]]; then
+      mode="full"
+    else
+      mode="medium"
     fi
+  fi
+
+  if [[ "$active" != "{}" ]]; then
     if [[ "$(printf '%s' "$active" | jq -r '.floating // false')" == "true" ]]; then
       "$dispatch_cmd" alterzorder bottom >/dev/null 2>&1 || true
     fi

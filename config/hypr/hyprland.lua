@@ -151,6 +151,7 @@ hl.config({
     misc = {
         disable_hyprland_logo    = true,
         disable_splash_rendering = true,
+        focus_on_activate        = true,
     },
 
     binds = {
@@ -276,15 +277,9 @@ hl.bind("mouse:275", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-imv-
 hl.bind("mouse:276", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-imv-mouse-nav.sh next"), { repeating = true })
 
 -- Move window to workspace
-hl.bind(mod .. " + SHIFT + F1", hl.dsp.window.move({ workspace = 1 }))
-hl.bind(mod .. " + SHIFT + F2", hl.dsp.window.move({ workspace = 2 }))
-hl.bind(mod .. " + SHIFT + F3", hl.dsp.window.move({ workspace = 3 }))
-hl.bind(mod .. " + SHIFT + F4", hl.dsp.window.move({ workspace = 4 }))
-hl.bind(mod .. " + SHIFT + F5", hl.dsp.window.move({ workspace = 5 }))
-hl.bind(mod .. " + SHIFT + F6", hl.dsp.window.move({ workspace = 6 }))
-hl.bind(mod .. " + SHIFT + F7", hl.dsp.window.move({ workspace = 7 }))
-hl.bind(mod .. " + SHIFT + F8", hl.dsp.window.move({ workspace = 8 }))
-hl.bind(mod .. " + SHIFT + F9", hl.dsp.window.move({ workspace = 9 }))
+for workspace = 1, 9 do
+    hl.bind(mod .. " + SHIFT + F" .. workspace, hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-move-to-workspace.sh " .. workspace))
+end
 
 -- Window management
 hl.bind(mod .. " + W",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-close.sh"))
@@ -386,10 +381,10 @@ hl.window_rule({
 -- Walker launcher
 hl.window_rule({
     name  = "walker-float",
-    match = { class = "^(dev\\.benz\\.walker)$" },
+    match = { class = "^(walker|dev\\.benz\\.walker)$" },
     float   = true,
     center  = true,
-    size    = "34% 42%",
+    size    = "600 574",
     opacity = tp.walker_active_opacity .. " " .. tp.walker_inactive_opacity,
 })
 

@@ -42,8 +42,17 @@ main() {
     togglefloating)
       lua_dispatch 'hl.dsp.window.float({ action = "toggle" })'
       ;;
+    setfloating)
+      target="${args[0]:-}"
+      fields='action = "enable"'
+      [[ -z "$target" ]] || fields+=", window = $(lua_string "$target")"
+      lua_dispatch "hl.dsp.window.float({ $fields })"
+      ;;
     settiled)
-      lua_dispatch 'hl.dsp.window.float({ action = "disable" })'
+      target="${args[0]:-}"
+      fields='action = "disable"'
+      [[ -z "$target" ]] || fields+=", window = $(lua_string "$target")"
+      lua_dispatch "hl.dsp.window.float({ $fields })"
       ;;
     fullscreen)
       arg="${args[0]:-0}"
@@ -88,8 +97,16 @@ main() {
       lua_dispatch "hl.dsp.window.swap({ direction = $(lua_string "$arg") })"
       ;;
     movetoworkspace)
-      workspace="${args[0]:-1}"
-      lua_dispatch "hl.dsp.window.move({ workspace = $(lua_string "$workspace"), follow = true })"
+      target="${args[0]:-1}"
+      selector=""
+      workspace="$target"
+      if [[ "$target" == *,address:* ]]; then
+        workspace="${target%%,*}"
+        selector="${target#*,}"
+      fi
+      fields="workspace = $(lua_string "$workspace"), follow = true"
+      [[ -z "$selector" ]] || fields+=", window = $(lua_string "$selector")"
+      lua_dispatch "hl.dsp.window.move({ $fields })"
       ;;
     movetoworkspacesilent)
       target="${args[0]:-1}"

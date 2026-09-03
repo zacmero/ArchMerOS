@@ -93,7 +93,8 @@ These should be switched with:
 - `Alt+1` through `Alt+9` or `Super+1` through `Super+9`
 
 Windows move directly to these workspaces with `Super+Shift+F1` through
-`Super+Shift+F9`.
+`Super+Shift+F9`. A moved floating card returns to the tiled layout and stays
+focused in the destination workspace.
 
 ### Persistent Monitor Roles
 

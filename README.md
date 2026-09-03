@@ -493,7 +493,7 @@ Taskbar behavior:
 These are the bindings that should be treated as current ArchMerOS behavior unless changed deliberately.
 
 - `Ctrl+Alt+T`: open WezTerm
-- `Super+T`: open WezTerm as a near-full card on an empty workspace or a medium card on an occupied workspace
+- `Super+T`: open WezTerm at level-four maximum size on an empty workspace or as a medium card on an occupied workspace
 - `Super+Return`: open WezTerm
 - `Super+Space`: launcher
 - `Super+E`: PARA hub / file access
@@ -601,7 +601,7 @@ Replace `mousepad` with any GUI command you want to detach.
 
 Detached GUI launches now inherit ArchMerOS window-promotion behavior:
 
-- on an empty workspace, the new app opens as a near-full centered card
+- on an empty workspace, the new app opens at level-four maximum size inside the usable monitor area
 - on an occupied workspace, the new app opens as a medium centered card
 - launchers with a unique class, including WezTerm, Browser Open, and Night Drive, receive their final geometry before the first mapped frame so they do not visibly shrink after opening
 - dedicated ChatGPT and Gemini app classes remain tiled by design

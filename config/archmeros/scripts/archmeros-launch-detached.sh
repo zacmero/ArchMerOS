@@ -50,6 +50,8 @@ workspace_id=""
 dispatch_cmd="$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
 monitor_width=0
 monitor_height=0
+target_width=0
+target_height=0
 lua_provider=0
 spawn_rule_active=0
 spawn_rule_var=""
@@ -75,7 +77,7 @@ if command -v hyprctl >/dev/null 2>&1; then
     clients_json="$(json_or_default "$(hyprctl -j clients 2>/dev/null || true)" '[]')"
     occupied_windows="$(printf '%s' "$clients_json" | jq -r --argjson workspace "$workspace_id" '[.[] | select(.mapped == true and .hidden == false) | select((.workspace.id // -1) == $workspace)] | length')"
     if [[ "$occupied_windows" == "0" ]]; then
-      mode="full"
+      mode="max"
     else
       mode="medium"
     fi
@@ -88,15 +90,28 @@ if command -v hyprctl >/dev/null 2>&1; then
   fi
 fi
 
-if [[ "$native_spawn" == "1" && "$lua_provider" == "1" && -n "$spawn_class" && "$mode" =~ ^(full|medium)$ ]]; then
-  if [[ "$mode" == "full" ]]; then
+if (( monitor_width > 0 && monitor_height > 0 )); then
+  if [[ "$mode" == "max" ]]; then
+    monitor_json="$(printf '%s' "$monitors_json" | jq -c '.[] | select(.focused == true)' | head -n 1)"
+    reserved_left="$(printf '%s' "$monitor_json" | jq -r '.reserved[0] // 0')"
+    reserved_top="$(printf '%s' "$monitor_json" | jq -r '.reserved[1] // 0')"
+    reserved_right="$(printf '%s' "$monitor_json" | jq -r '.reserved[2] // 0')"
+    reserved_bottom="$(printf '%s' "$monitor_json" | jq -r '.reserved[3] // 0')"
+    gaps_css="$(hyprctl getoption general:gaps_out -j 2>/dev/null | jq -r '.css // "10 10 10 10"')"
+    read -r gap_top gap_right gap_bottom gap_left <<< "$gaps_css"
+    border_size="$(hyprctl getoption general:border_size -j 2>/dev/null | jq -r '.int // 2')"
+    target_width="$(( monitor_width - reserved_left - reserved_right - gap_left - gap_right - border_size * 2 ))"
+    target_height="$(( monitor_height - reserved_top - reserved_bottom - gap_top - gap_bottom - border_size * 2 ))"
+  elif [[ "$mode" == "full" ]]; then
     target_width="$(( monitor_width * 96 / 100 ))"
     target_height="$(( monitor_height * 92 / 100 ))"
-  else
+  elif [[ "$mode" == "medium" ]]; then
     target_width="$(( monitor_width * 72 / 100 ))"
     target_height="$(( monitor_height * 76 / 100 ))"
   fi
+fi
 
+if [[ "$native_spawn" == "1" && "$lua_provider" == "1" && -n "$spawn_class" && "$mode" =~ ^(max|full|medium)$ ]]; then
   spawn_rule_var="archmeros_wezterm_spawn_${spawn_class//[^a-zA-Z0-9_]/_}"
   if (( target_width > 0 && target_height > 0 )) && hyprctl eval \
     "_G[\"${spawn_rule_var}\"] = hl.window_rule({ name = \"${spawn_rule_var}\", match = { class = \"^${spawn_class}$\", workspace = \"${workspace_id}\" }, float = true, size = {${target_width}, ${target_height}}, center = true })" \
@@ -130,6 +145,7 @@ fi
 
 nohup python3 "$HOME/.config/archmeros/scripts/archmeros-promote-pid.py" \
   "$app_pid" "$mode" "${monitor_name:-}" "${workspace_id:-}" \
+  "$target_width" "$target_height" \
   >/tmp/archmeros-promote-pid.log 2>&1 &
 
 disown || true

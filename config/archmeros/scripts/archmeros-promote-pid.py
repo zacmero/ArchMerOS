@@ -81,6 +81,8 @@ def main() -> int:
     mode = sys.argv[2] if len(sys.argv) > 2 else "none"
     monitor_name = sys.argv[3] if len(sys.argv) > 3 else ""
     workspace_id = sys.argv[4] if len(sys.argv) > 4 else ""
+    requested_width = int(sys.argv[5]) if len(sys.argv) > 5 else 0
+    requested_height = int(sys.argv[6]) if len(sys.argv) > 6 else 0
 
     target = None
     for _ in range(80):
@@ -114,7 +116,7 @@ def main() -> int:
             int(target.get("monitorHeight", 0) or 0),
         )
 
-    if mode not in {"full", "medium"}:
+    if mode not in {"max", "full", "medium"}:
         stabilize_focus(address)
         return 0
 
@@ -136,11 +138,14 @@ def main() -> int:
         stabilize_focus(address)
         return 0
 
-    size = target_size(mode, width, height)
-    if size is None:
-        stabilize_focus(address)
-        return 0
-    target_w, target_h = size
+    if requested_width > 0 and requested_height > 0:
+        target_w, target_h = requested_width, requested_height
+    else:
+        size = target_size(mode, width, height)
+        if size is None:
+            stabilize_focus(address)
+            return 0
+        target_w, target_h = size
 
     dispatch("setfloating")
     for _ in range(10):

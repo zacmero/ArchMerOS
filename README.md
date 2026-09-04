@@ -128,6 +128,7 @@ Tracked system overrides:
 - [install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules](/home/zacmero/projects/ArchMerOS/install/system/etc/udev/rules.d/99-archmeros-btusb-power.rules)
 - [install/system/apply-bluetooth-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-bluetooth-system.sh)
 - [install/system/apply-keyboard-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-keyboard-system.sh)
+- [install/system/apply-sleep-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-sleep-system.sh)
 - [install/system/etc/udev/hwdb.d/90-archmeros-zx-k22.hwdb](/home/zacmero/projects/ArchMerOS/install/system/etc/udev/hwdb.d/90-archmeros-zx-k22.hwdb)
 - [install/system/apply-nvidia-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-nvidia-system.sh)
 - [install/system/apply-kernel-install-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-kernel-install-system.sh)
@@ -146,6 +147,7 @@ Tracked system overrides:
 - [docs/bootloader.md](/home/zacmero/projects/ArchMerOS/docs/bootloader.md)
 - [docs/waybar.md](/home/zacmero/projects/ArchMerOS/docs/waybar.md)
 - [docs/nvidia-pascal.md](/home/zacmero/projects/ArchMerOS/docs/nvidia-pascal.md)
+- [docs/suspend-resume.md](/home/zacmero/projects/ArchMerOS/docs/suspend-resume.md)
 - [docs/ai-flow.md](/home/zacmero/projects/ArchMerOS/docs/ai-flow.md)
 - [docs/bottles.md](/home/zacmero/projects/ArchMerOS/docs/bottles.md)
 
@@ -201,6 +203,7 @@ This currently applies:
 - keyboard hwdb overrides
 - build throttle for package and DKMS jobs
 - monitor-service polkit rule for the side-screen standby hotkey
+- `s2idle` suspend policy for reliable resume on this workstation
 - post-update graphics safety hook
 - ArchMerOS bootloader defaults
 - ArchMerOS greetd/sysc-greet login defaults

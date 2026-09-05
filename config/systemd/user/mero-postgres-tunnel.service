@@ -1,0 +1,17 @@
+[Unit]
+Description=Mero Protocol private PostgreSQL tunnel
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/test -S %t/mero-cloud-ssh-agent.sock
+ExecStart=/usr/bin/ssh -F %h/projects/mero-protocol/suzy-mero-steele/ops/suzy-cloud.ssh.conf -o IdentityAgent=%t/mero-cloud-ssh-agent.sock -o BatchMode=yes -o ControlMaster=no -o ControlPath=none -o ControlPersist=no -o ExitOnForwardFailure=yes -N -L 127.0.0.1:55432:127.0.0.1:5432 suzy-cloud-db-tunnel
+Restart=always
+RestartSec=5
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=default.target

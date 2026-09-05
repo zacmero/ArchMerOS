@@ -368,6 +368,14 @@ hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 ---- WINDOW RULES ----
 --------------------------------
 
+-- Telegram notifications must not steal focus or switch workspaces.
+-- Explicit focus through the Telegram launcher remains available.
+hl.window_rule({
+    name = "telegram-no-activation",
+    match = { class = "^(TelegramDesktop|org\\.telegram\\.desktop|telegram-desktop)$" },
+    suppress_event = "activate activatefocus",
+})
+
 -- Thunar file manager
 hl.window_rule({
     name  = "thunar-float",

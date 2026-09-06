@@ -1,0 +1,1 @@
+../../bottles/scripts/archmeros-bottles-debug.sh

@@ -416,6 +416,24 @@ hl.window_rule({
     opacity = "0.94 0.90",
 })
 
+-- Bottles (Wine manager)
+hl.window_rule({
+    name  = "bottles-float",
+    match = { class = "^(com\\.usebottles\\.bottles|bottles|Bottles)$" },
+    float   = true,
+    center  = true,
+    size    = "72% 76%",
+    opacity = "0.96 0.92",
+    idle_inhibit = "always",
+})
+
+-- Wine / Proton gaming (inhibit screensaver and idle standby while running)
+hl.window_rule({
+    name  = "wine-games-idle-inhibit",
+    match = { class = "^(.*\\.exe|wine|steam_proton|gamescope)$" },
+    idle_inhibit = "always",
+})
+
 -- Wallpaper picker
 hl.window_rule({
     name  = "wallpaper-picker",

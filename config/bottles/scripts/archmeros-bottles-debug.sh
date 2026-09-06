@@ -19,6 +19,9 @@ Commands:
   link-drive <bottle> <letter> <path>
                              Symlink a mount point (e.g. /mnt/windows-ssd) to dosdevices/X: in the bottle
   fix-videos <movie_dir>     Remux cutscene MP4s to H.264 Baseline (removes QuickTime tmcd tracks)
+  sync-sentinel              Synchronize all Bottles prefixes into Sentinel achievement configuration
+  setup-achievements <bottle_or_dir> <appid>
+                             Provision Goldberg emulator achievement schema & bypass config for Sentinel
   help                       Show this help message
 
 HELP
@@ -70,9 +73,31 @@ cmd_status() {
   # 4. Sentinel Achievement Watcher Status
   printf '\n[*] Sentinel Achievement Watcher:\n'
   if systemctl --user is-active --quiet archmeros-sentinel.service 2>/dev/null; then
-    printf '    [✓] archmeros-sentinel.service: RUNNING (background achievement watcher active)\n'
+    printf '    [✓] archmeros-sentinel.service: RUNNING (background systemd service active)\n'
+  elif pgrep -x sentinel >/dev/null 2>&1; then
+    local spid
+    spid="$(pgrep -x sentinel | tr '\n' ' ')"
+    printf '    [✓] sentinel process:         RUNNING (PID: %s)\n' "$spid"
   else
     printf '    [-] archmeros-sentinel.service: INACTIVE (start via: systemctl --user start archmeros-sentinel.service)\n'
+  fi
+  if [[ -f "${HOME}/.config/sentinel/config.json" ]]; then
+    local prefixes
+    prefixes="$(python3 -c '
+import json, os
+try:
+    with open(os.path.expanduser("~/.config/sentinel/config.json")) as f:
+        d = json.load(f)
+    paths = [p.get("path","") for p in d.get("prefixes",[])]
+    names = [os.path.basename(p) for p in paths if p]
+    if names:
+        print(", ".join(names))
+except Exception:
+    pass
+' 2>/dev/null || true)"
+    if [[ -n "$prefixes" ]]; then
+      printf '    [✓] Monitored Bottles:        %s\n' "$prefixes"
+    fi
   fi
 
   # 5. Bottles Prefix Inspection
@@ -251,6 +276,218 @@ cmd_fix_videos() {
   printf '\n[✓] Video normalization completed successfully.\n'
 }
 
+cmd_sync_sentinel() {
+  printf '=== ArchMerOS Sentinel Prefix Synchronization ===\n\n'
+  python3 - <<PY
+import json, os, sys
+
+bottles_dir = os.path.expanduser("$BOTTLES_DIR")
+config_path = os.path.expanduser("~/.config/sentinel/config.json")
+
+if not os.path.exists(config_path):
+    os.makedirs(os.path.dirname(config_path), exist_ok=True)
+    data = {
+        "language": {"displayName": "English", "api": "english", "webapi": "en"},
+        "emulators": [
+            {"id": "goldberg-steamemu", "path": "AppData/Roaming/Goldberg SteamEmu Saves", "shouldNotify": True},
+            {"id": "gse", "path": "AppData/Roaming/GSE Saves", "shouldNotify": True},
+            {"id": "codex", "path": "Documents/Steam/CODEX", "shouldNotify": True},
+            {"id": "rune", "path": "Documents/Steam/RUNE", "shouldNotify": True}
+        ],
+        "prefixes": [],
+        "SteamAPIKey": "",
+        "steamDataSource": "external",
+        "steamApiKeyMasked": "",
+        "notificationSound": "steam-deck.wav",
+        "logLevel": "info",
+        "startOnLogin": True
+    }
+else:
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        print(f"[-] Warning: Failed to parse {config_path}: {e}")
+        data = {}
+
+# Ensure emulators have required relative paths for Sentinel watcher
+expected_paths = {
+    "goldberg-steamemu": "AppData/Roaming/Goldberg SteamEmu Saves",
+    "gse": "AppData/Roaming/GSE Saves",
+    "codex": "Documents/Steam/CODEX",
+    "rune": "Documents/Steam/RUNE",
+}
+changed = False
+for emu in data.setdefault("emulators", []):
+    eid = emu.get("id")
+    if eid in expected_paths and not emu.get("path"):
+        emu["path"] = expected_paths[eid]
+        changed = True
+
+prefixes = data.setdefault("prefixes", [])
+existing_paths = {p.get("path") for p in prefixes if isinstance(p, dict) and "path" in p}
+
+if os.path.isdir(bottles_dir):
+    for entry in sorted(os.listdir(bottles_dir)):
+        full_path = os.path.join(bottles_dir, entry)
+        if os.path.isdir(full_path) and full_path not in existing_paths:
+            prefixes.append({"path": full_path})
+            existing_paths.add(full_path)
+            changed = True
+            print(f"  + Registered bottle prefix: {entry}")
+
+if changed or not os.path.exists(config_path):
+    with open(config_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    print("[✓] Updated Sentinel configuration at ~/.config/sentinel/config.json")
+else:
+    names = [os.path.basename(p) for p in existing_paths if p]
+    print(f"[✓] All {len(names)} existing Bottles prefixes are already registered ({', '.join(names)})")
+PY
+
+  if command -v systemctl >/dev/null 2>&1; then
+    if systemctl --user is-active --quiet archmeros-sentinel.service 2>/dev/null; then
+      systemctl --user reload-or-restart archmeros-sentinel.service 2>/dev/null || systemctl --user restart archmeros-sentinel.service 2>/dev/null || true
+      printf '[✓] Reloaded archmeros-sentinel.service to monitor updated prefixes\n'
+    else
+      systemctl --user enable --now archmeros-sentinel.service 2>/dev/null || true
+      printf '[✓] Started and enabled archmeros-sentinel.service\n'
+    fi
+  fi
+}
+
+cmd_setup_achievements() {
+  local target="${1:-}"
+  local appid="${2:-}"
+
+  if [[ -z "$target" || -z "$appid" ]]; then
+    printf 'Usage: %s setup-achievements <game_dir_or_bottle> <steam_appid>\n' "$(basename "$0")" >&2
+    printf 'Examples:\n' >&2
+    printf '  %s setup-achievements "/mnt/windows-ssd/Games/Spyro Reignited Trilogy" 996580\n' "$(basename "$0")" >&2
+    printf '  %s setup-achievements Spyro 996580\n' "$(basename "$0")" >&2
+    exit 1
+  fi
+
+  printf '=== Provisioning Goldberg & Sentinel Achievements ===\n\n'
+  printf 'Target: %s\n' "$target"
+  printf 'Steam AppID: %s\n\n' "$appid"
+
+  python3 - "$target" "$appid" "$BOTTLES_DIR" <<'PY'
+import json, os, sys, glob, urllib.request
+
+target = sys.argv[1]
+appid = sys.argv[2]
+bottles_dir = os.path.expanduser(sys.argv[3])
+
+target_dirs = set()
+
+if os.path.isdir(target):
+    for root, dirs, files in os.walk(target):
+        for f in files:
+            if f.lower() in ("steam_api64.dll", "steam_api.dll"):
+                target_dirs.add(root)
+    if not target_dirs:
+        target_dirs.add(os.path.abspath(target))
+else:
+    bdir = os.path.join(bottles_dir, target)
+    if os.path.isdir(bdir):
+        for root, dirs, files in os.walk(bdir):
+            for f in files:
+                if f.lower() in ("steam_api64.dll", "steam_api.dll"):
+                    target_dirs.add(root)
+        if not target_dirs:
+            target_dirs.add(bdir)
+    else:
+        print(f"Error: Target '{target}' is neither an existing directory nor a known bottle name.", file=sys.stderr)
+        sys.exit(1)
+
+achievements = []
+source = ""
+
+# 1. Check local Sentinel cache
+local_cache = os.path.expanduser(f"~/.local/share/sentinel/games/english/{appid}.json")
+if os.path.exists(local_cache):
+    try:
+        with open(local_cache, "r", encoding="utf-8") as f:
+            cdata = json.load(f)
+        items = cdata.get("Achievement", {}).get("List", [])
+        for item in items:
+            achievements.append({
+                "name": item.get("Name", ""),
+                "displayName": item.get("DisplayName", ""),
+                "description": item.get("Description", ""),
+                "hidden": str(item.get("Hidden", 0)),
+                "icon": "",
+                "icongray": ""
+            })
+        if achievements:
+            source = f"local Sentinel cache ({local_cache})"
+    except Exception:
+        pass
+
+# 2. Check SteamHunters API
+if not achievements:
+    try:
+        url = f"https://steamhunters.com/api/apps/{appid}/achievements"
+        req = urllib.request.Request(url, headers={"User-Agent": "ArchMerOS/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        for item in data:
+            achievements.append({
+                "name": item.get("apiName", ""),
+                "displayName": item.get("name", ""),
+                "description": item.get("description", ""),
+                "hidden": "1" if item.get("hidden") else "0",
+                "icon": "",
+                "icongray": ""
+            })
+        if achievements:
+            source = "SteamHunters API"
+    except Exception:
+        pass
+
+if achievements:
+    print(f"[✓] Retrieved {len(achievements)} achievement definitions via {source}")
+else:
+    print(f"[-] Could not retrieve achievements schema online/cached. Writing empty schema with bypass mode enabled.")
+    achievements = []
+
+ini_content = """[main::misc]
+achievements_bypass=1
+offline=1
+"""
+
+for d in sorted(target_dirs):
+    settings_dir = os.path.join(d, "steam_settings")
+    os.makedirs(settings_dir, exist_ok=True)
+
+    with open(os.path.join(settings_dir, "steam_appid.txt"), "w", encoding="utf-8") as f:
+        f.write(f"{appid}\n")
+
+    with open(os.path.join(settings_dir, "configs.main.ini"), "w", encoding="utf-8") as f:
+        f.write(ini_content)
+
+    with open(os.path.join(settings_dir, "achievements.json"), "w", encoding="utf-8") as f:
+        json.dump(achievements, f, indent=2)
+
+    print(f"[✓] Created Goldberg settings in: {settings_dir}")
+    print(f"    • steam_appid.txt -> {appid}")
+    print(f"    • configs.main.ini -> achievements_bypass=1, offline=1")
+    print(f"    • achievements.json -> {len(achievements)} definitions")
+
+PY
+
+  printf '\n'
+  cmd_sync_sentinel
+
+  # Restart warning check if wine/game processes are active
+  if pgrep -x wineserver >/dev/null 2>&1; then
+    printf '\n[!] IMPORTANT NOTICE:\n'
+    printf '    wineserver is currently active. If the game is running, you MUST RESTART THE GAME\n'
+    printf '    for the Steam API DLL to load the newly provisioned achievements.json map into memory!\n'
+  fi
+}
+
 case "${1:-status}" in
   status)
     cmd_status
@@ -266,6 +503,13 @@ case "${1:-status}" in
   fix-videos)
     shift
     cmd_fix_videos "$@"
+    ;;
+  sync-sentinel)
+    cmd_sync_sentinel
+    ;;
+  setup-achievements)
+    shift
+    cmd_setup_achievements "$@"
     ;;
   help|--help|-h)
     usage

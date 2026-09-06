@@ -157,3 +157,23 @@ archmeros-bottles-debug.sh link-drive "Spyro" d "/mnt/windows-ssd/Games"
 # Batch-fix and remux cutscenes in a game directory
 archmeros-bottles-debug.sh fix-videos "/mnt/windows-ssd/Games/Spyro Reignited Trilogy/Falcon/Content/Movies"
 ```
+
+---
+
+## 8. Offline Achievements & Screen Notifications (Sentinel)
+
+ArchMerOS integrates **Sentinel** (`~/.local/bin/sentinel`) as an achievement tracker and notification daemon for Wine/Proton games running Steam emulators:
+
+### Architecture
+1. **In-Game Emulation**:
+   - The game uses **Goldberg Steam Emulator** (`steam_api64.dll` with `steam_settings/steam_appid.txt`).
+   - Whenever an achievement condition is met, the emulator writes the unlock event and timestamp directly to `%APPDATA%/Goldberg SteamEmu Saves/<AppID>/achievements.json`.
+2. **Real-Time Daemon (`archmeros-sentinel.service`)**:
+   - Sentinel runs as a `systemd --user` background service, monitoring Wine bottle prefixes via `fsnotify`.
+   - Upon detecting an achievement write, it triggers a desktop notification toast via `mako` (Wayland notification server) and plays a customizable achievement sound effect (`steam-deck.wav`, `playstation5.wav`, `xbox.wav`, etc.).
+3. **Interactive Dashboard**:
+   - Launch Sentinel anytime from the application menu (Walker) or terminal (`sentinel`).
+   - The UI displays:
+     - Game library cards with total achievement counts and completion percentages.
+     - Full achievement lists with badges, official Steam icons, titles, and descriptions (cached locally under `~/.local/share/sentinel/games/`).
+     - Progress bars for multi-step achievements and unlock timestamps.

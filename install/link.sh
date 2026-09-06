@@ -49,6 +49,7 @@ declare -A links=(
   ["${repo_root}/local/share/applications/qbittorrent.desktop"]="${HOME}/.local/share/applications/qbittorrent.desktop"
   ["${repo_root}/local/share/applications/com.usebottles.bottles.desktop"]="${HOME}/.local/share/applications/com.usebottles.bottles.desktop"
   ["${repo_root}/local/share/applications/bottles.desktop"]="${HOME}/.local/share/applications/bottles.desktop"
+  ["${repo_root}/local/share/applications/sentinel.desktop"]="${HOME}/.local/share/applications/sentinel.desktop"
   ["${repo_root}/local/share/icons/ArchMerOS-Icons"]="${HOME}/.local/share/icons/ArchMerOS-Icons"
 )
 

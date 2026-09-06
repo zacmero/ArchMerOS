@@ -67,7 +67,15 @@ cmd_status() {
     printf '    [-] Screensaver Inhibit: INACTIVE (normal idle timeouts apply)\n'
   fi
 
-  # 4. Bottles Prefix Inspection
+  # 4. Sentinel Achievement Watcher Status
+  printf '\n[*] Sentinel Achievement Watcher:\n'
+  if systemctl --user is-active --quiet archmeros-sentinel.service 2>/dev/null; then
+    printf '    [✓] archmeros-sentinel.service: RUNNING (background achievement watcher active)\n'
+  else
+    printf '    [-] archmeros-sentinel.service: INACTIVE (start via: systemctl --user start archmeros-sentinel.service)\n'
+  fi
+
+  # 5. Bottles Prefix Inspection
   printf '\n[*] Managed Bottles Prefixes:\n'
   if [[ ! -d "$BOTTLES_DIR" ]]; then
     printf '    No bottles directory found at %s\n' "$BOTTLES_DIR"

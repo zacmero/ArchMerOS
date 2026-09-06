@@ -39,7 +39,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("~/.config/archmeros/scripts/archmeros-session-appearance.sh")
     hl.exec_cmd("~/.config/archmeros/scripts/archmeros-audio-policy.sh")
     hl.exec_cmd("sh -lc 'command -v systemctl >/dev/null 2>&1 && systemctl --user restart hypridle.service >/tmp/archmeros-hypridle.log 2>&1'")
-    hl.exec_cmd("systemctl --user start archmeros-elephant.service archmeros-walker.service archmeros-reopen-listener.service archmeros-notification-focus.service")
+    hl.exec_cmd("systemctl --user start archmeros-elephant.service archmeros-walker.service archmeros-reopen-listener.service archmeros-notification-focus.service archmeros-sentinel.service")
     hl.exec_cmd("/usr/lib/polkit-kde-authentication-agent-1")
     hl.exec_cmd("blueman-applet")
 end)
@@ -432,6 +432,16 @@ hl.window_rule({
     name  = "wine-games-idle-inhibit",
     match = { class = "^(.*\\.exe|wine|steam_proton|gamescope)$" },
     idle_inhibit = "always",
+})
+
+-- Sentinel (achievement watcher)
+hl.window_rule({
+    name  = "sentinel-float",
+    match = { class = "^(sentinel|Sentinel)$" },
+    float   = true,
+    center  = true,
+    size    = "74% 78%",
+    opacity = "0.96 0.92",
 })
 
 -- Wallpaper picker

@@ -1,0 +1,39 @@
+{
+  "language": {
+    "displayName": "English",
+    "api": "english",
+    "webapi": "en"
+  },
+  "emulators": [
+    {
+      "id": "goldberg-steamemu",
+      "shouldNotify": true
+    },
+    {
+      "id": "gse",
+      "shouldNotify": true
+    },
+    {
+      "id": "codex",
+      "shouldNotify": true
+    },
+    {
+      "id": "rune",
+      "shouldNotify": true
+    }
+  ],
+  "prefixes": [
+    {
+      "path": "/home/zacmero/.var/app/com.usebottles.bottles/data/bottles/bottles/Spyro"
+    },
+    {
+      "path": "/home/zacmero/.var/app/com.usebottles.bottles/data/bottles/bottles/ThereIsNoLight"
+    }
+  ],
+  "SteamAPIKey": "",
+  "steamDataSource": "external",
+  "steamApiKeyMasked": "",
+  "notificationSound": "steam-deck.wav",
+  "logLevel": "info",
+  "startOnLogin": true
+}

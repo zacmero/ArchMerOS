@@ -7,18 +7,22 @@
   "emulators": [
     {
       "id": "goldberg-steamemu",
+      "path": "AppData/Roaming/Goldberg SteamEmu Saves",
       "shouldNotify": true
     },
     {
       "id": "gse",
+      "path": "AppData/Roaming/GSE Saves",
       "shouldNotify": true
     },
     {
       "id": "codex",
+      "path": "Documents/Steam/CODEX",
       "shouldNotify": true
     },
     {
       "id": "rune",
+      "path": "Documents/Steam/RUNE",
       "shouldNotify": true
     }
   ],

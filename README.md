@@ -180,7 +180,7 @@ bash install/packages/install.sh
 
 This installs the core repo packages, AUR package manifest, and Flatpak app manifest.
 
-The default app set includes Firefox, Obsidian, Todoist, Termius, Bottles, Walker, and the Elephant provider stack. Todoist, Termius, and Bottles are installed through the Flatpak manifest. Evernote is not part of the default ArchMerOS app set.
+The default app set includes Firefox, Obsidian, Todoist, Termius, Bottles, Sentinel, Walker, and the Elephant provider stack. Todoist, Termius, and Bottles are installed through the Flatpak manifest. Sentinel uses a checksum-pinned upstream Arch package and starts on demand through Bottles for achievement notifications. Evernote is not part of the default ArchMerOS app set.
 
 Use flags when you want the workstation or NVIDIA profiles too:
 

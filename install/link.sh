@@ -20,6 +20,8 @@ declare -A links=(
   ["${config_root}/gtk-3.0"]="${HOME}/.config/gtk-3.0"
   ["${config_root}/gtk-4.0"]="${HOME}/.config/gtk-4.0"
   ["${config_root}/rofimoji.rc"]="${HOME}/.config/rofimoji.rc"
+  ["${config_root}/bottles"]="${HOME}/.config/bottles"
+  ["${config_root}/sentinel"]="${HOME}/.config/sentinel"
 
   ["${config_root}/thunar/uca.xml"]="${HOME}/.config/Thunar/uca.xml"
   ["${config_root}/xdg-desktop-portal/hyprland-portals.conf"]="${HOME}/.config/xdg-desktop-portal/hyprland-portals.conf"

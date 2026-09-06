@@ -156,24 +156,54 @@ archmeros-bottles-debug.sh link-drive "Spyro" d "/mnt/windows-ssd/Games"
 
 # Batch-fix and remux cutscenes in a game directory
 archmeros-bottles-debug.sh fix-videos "/mnt/windows-ssd/Games/Spyro Reignited Trilogy/Falcon/Content/Movies"
+
+# Automatically sync Bottles prefixes into Sentinel achievement watcher
+archmeros-bottles-debug.sh sync-sentinel
+
+# Automatically provision Goldberg emulator achievements schema & configs for a game
+archmeros-bottles-debug.sh setup-achievements "/mnt/windows-ssd/Games/Spyro Reignited Trilogy" 996580
 ```
 
 ---
 
 ## 8. Offline Achievements & Screen Notifications (Sentinel)
 
-ArchMerOS integrates **Sentinel** (`~/.local/bin/sentinel`) as an achievement tracker and notification daemon for Wine/Proton games running Steam emulators:
+ArchMerOS integrates **Sentinel** (`~/.local/bin/sentinel`) as an achievement tracker and on-screen notification daemon for Wine/Proton games running Steam emulators (Goldberg, GSE, Codex, Rune):
 
-### Architecture
-1. **In-Game Emulation**:
-   - The game uses **Goldberg Steam Emulator** (`steam_api64.dll` with `steam_settings/steam_appid.txt`).
-   - Whenever an achievement condition is met, the emulator writes the unlock event and timestamp directly to `%APPDATA%/Goldberg SteamEmu Saves/<AppID>/achievements.json`.
+### System Architecture
+1. **In-Game Emulation (Goldberg Emulator)**:
+   - Games using Goldberg replace `steam_api64.dll` (or `steam_api.dll`).
+   - On startup, the DLL checks for `steam_settings/achievements.json` in the binary directory.
+   - **Crucial Requirement**: If `steam_settings/achievements.json` is missing or empty, Goldberg's internal achievement map contains zero entries. Any `SetAchievement()` call issued by the game engine will be silently dropped without registering an unlock!
+   - Setting `achievements_bypass=1` in `steam_settings/configs.main.ini` forces Goldberg to accept and unlock any achievement ID emitted by the game, preventing lost achievements even if the definition file is incomplete.
+   - When unlocked, Goldberg writes the achievement ID and timestamp to `%APPDATA%/Goldberg SteamEmu Saves/<AppID>/achievements.json` within the bottle's Wine prefix.
+
 2. **Real-Time Daemon (`archmeros-sentinel.service`)**:
-   - Sentinel runs as a `systemd --user` background service, monitoring Wine bottle prefixes via `fsnotify`.
-   - Upon detecting an achievement write, it triggers a desktop notification toast via `mako` (Wayland notification server) and plays a customizable achievement sound effect (`steam-deck.wav`, `playstation5.wav`, `xbox.wav`, etc.).
-3. **Interactive Dashboard**:
+   - Runs as a systemd user daemon (`archmeros-sentinel.service`) started on demand by the Bottles launcher. Login autostart is disabled; the watcher remains available until logout after its first launch.
+   - Watches Wine bottle prefixes (`~/.var/app/com.usebottles.bottles/data/bottles/bottles/<Bottle>/`) via `fsnotify`.
+   - On detection of an achievement write, it triggers a desktop notification toast via `mako` (Wayland notification server) and plays a notification sound (`steam-deck.wav`, `playstation5.wav`, `xbox.wav`).
+
+3. **Interactive Dashboard (Walker / Sentinel UI)**:
    - Launch Sentinel anytime from the application menu (Walker) or terminal (`sentinel`).
-   - The UI displays:
+   - Window is automatically floated (`74% 78%`) and centered via Hyprland window rules.
+   - Features:
      - Game library cards with total achievement counts and completion percentages.
-     - Full achievement lists with badges, official Steam icons, titles, and descriptions (cached locally under `~/.local/share/sentinel/games/`).
+     - Full achievement lists with badges, official Steam icons, titles, and descriptions (cached under `~/.local/share/sentinel/games/`).
      - Progress bars for multi-step achievements and unlock timestamps.
+
+### Automated Setup for Any Future Game
+To enable achievement tracking and on-screen notifications for any game:
+
+1. **Find the game's Steam AppID** (e.g. from SteamDB or Steam store URL: Spyro is `996580`).
+2. **Run the provisioning command**:
+   ```bash
+   archmeros-bottles-debug.sh setup-achievements "<path_to_game_or_bottle_name>" <steam_appid>
+   ```
+   This automated command:
+   - Searches the game directory for `steam_api64.dll` / `steam_api.dll`.
+   - Generates `steam_settings/steam_appid.txt` and `steam_settings/configs.main.ini` (`achievements_bypass=1`, `offline=1`).
+   - Fetches and writes all official achievement definitions to `steam_settings/achievements.json` (from Sentinel cache or SteamHunters API).
+   - Registers the Bottle prefix with Sentinel in `~/.config/sentinel/config.json`.
+   - Ensures `archmeros-sentinel.service` is running.
+3. **Launch the game in Bottles**.
+   *(Note: If the game was already running during setup, restart it so the Steam API DLL loads the new definitions into memory).*

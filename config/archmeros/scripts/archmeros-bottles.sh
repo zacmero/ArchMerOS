@@ -7,8 +7,10 @@ python3 "$HOME/.config/archmeros/scripts/archmeros-reopen-history.py" \
   "$HOME/.config/archmeros/scripts/archmeros-bottles.sh" "$@" \
   >/tmp/archmeros-reopen-track-bottles.log 2>&1 || true
 
-# Ensure Sentinel achievement companion service is active
-if command -v systemctl >/dev/null 2>&1; then
+# Ensure Sentinel achievement companion service is active and prefixes synced
+if [[ -x "$HOME/.config/archmeros/scripts/archmeros-bottles-debug.sh" ]]; then
+  "$HOME/.config/archmeros/scripts/archmeros-bottles-debug.sh" sync-sentinel >/dev/null 2>&1 || true
+elif command -v systemctl >/dev/null 2>&1; then
   systemctl --user start archmeros-sentinel.service >/dev/null 2>&1 || true
 fi
 

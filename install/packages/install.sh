@@ -132,4 +132,6 @@ if [[ "${#flatpak_apps[@]}" -gt 0 ]]; then
   sudo flatpak install -y flathub "${flatpak_apps[@]}"
 fi
 
+bash "${repo_root}/install/packages/sentinel/install.sh"
+
 printf 'archmeros package manifests applied\n'

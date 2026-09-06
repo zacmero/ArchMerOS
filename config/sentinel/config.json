@@ -39,5 +39,5 @@
   "steamApiKeyMasked": "",
   "notificationSound": "steam-deck.wav",
   "logLevel": "info",
-  "startOnLogin": true
+  "startOnLogin": false
 }

@@ -300,15 +300,14 @@ if not os.path.exists(config_path):
         "steamApiKeyMasked": "",
         "notificationSound": "steam-deck.wav",
         "logLevel": "info",
-        "startOnLogin": True
+        "startOnLogin": False
     }
 else:
     try:
         with open(config_path, "r", encoding="utf-8") as f:
             data = json.load(f)
     except Exception as e:
-        print(f"[-] Warning: Failed to parse {config_path}: {e}")
-        data = {}
+        raise SystemExit(f"Cannot parse {config_path}; leaving configuration untouched: {e}")
 
 # Ensure emulators have required relative paths for Sentinel watcher
 expected_paths = {
@@ -317,7 +316,8 @@ expected_paths = {
     "codex": "Documents/Steam/CODEX",
     "rune": "Documents/Steam/RUNE",
 }
-changed = False
+changed = data.get("startOnLogin") is not False
+data["startOnLogin"] = False
 for emu in data.setdefault("emulators", []):
     eid = emu.get("id")
     if eid in expected_paths and not emu.get("path"):
@@ -350,8 +350,8 @@ PY
       systemctl --user reload-or-restart archmeros-sentinel.service 2>/dev/null || systemctl --user restart archmeros-sentinel.service 2>/dev/null || true
       printf '[✓] Reloaded archmeros-sentinel.service to monitor updated prefixes\n'
     else
-      systemctl --user enable --now archmeros-sentinel.service 2>/dev/null || true
-      printf '[✓] Started and enabled archmeros-sentinel.service\n'
+      systemctl --user start archmeros-sentinel.service
+      printf '[✓] Started archmeros-sentinel.service on demand\n'
     fi
   fi
 }
@@ -449,11 +449,10 @@ if not achievements:
 if achievements:
     print(f"[✓] Retrieved {len(achievements)} achievement definitions via {source}")
 else:
-    print(f"[-] Could not retrieve achievements schema online/cached. Writing empty schema with bypass mode enabled.")
-    achievements = []
+    raise SystemExit("Could not retrieve achievement definitions. No game settings were written; retry when the schema is available.")
 
 ini_content = """[main::misc]
-achievements_bypass=1
+achievements_bypass=0
 offline=1
 """
 
@@ -472,7 +471,7 @@ for d in sorted(target_dirs):
 
     print(f"[✓] Created Goldberg settings in: {settings_dir}")
     print(f"    • steam_appid.txt -> {appid}")
-    print(f"    • configs.main.ini -> achievements_bypass=1, offline=1")
+    print(f"    • configs.main.ini -> achievements_bypass=0, offline=1")
     print(f"    • achievements.json -> {len(achievements)} definitions")
 
 PY

@@ -22,6 +22,7 @@ declare -A links=(
   ["${config_root}/rofimoji.rc"]="${HOME}/.config/rofimoji.rc"
   ["${config_root}/bottles"]="${HOME}/.config/bottles"
   ["${config_root}/sentinel"]="${HOME}/.config/sentinel"
+  ["${config_root}/elephant/elephant.toml"]="${HOME}/.config/elephant/elephant.toml"
 
   ["${config_root}/thunar/uca.xml"]="${HOME}/.config/Thunar/uca.xml"
   ["${config_root}/xdg-desktop-portal/hyprland-portals.conf"]="${HOME}/.config/xdg-desktop-portal/hyprland-portals.conf"

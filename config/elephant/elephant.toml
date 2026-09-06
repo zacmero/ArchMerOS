@@ -1,0 +1,9 @@
+auto_detect_launch_prefix = false
+before_load = []
+git_on_demand = true
+ignored_providers = []
+launch_prefix = '~/.config/archmeros/scripts/archmeros-walker-launch.sh uwsm-app --'
+overload_local_env = false
+terminal_cmd = ''
+
+[provider_hosts]

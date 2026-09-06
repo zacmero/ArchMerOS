@@ -125,8 +125,20 @@ manual achievement setup is needed each time for an already configured game.
 Sentinel is not enabled at login (`startOnLogin=false`, no Hyprland exec-once,
 no enabled systemd target link). It remains running after Bottles opens until
 logout, so closing the Bottles window does not interrupt a running game's
-notifications. Launching a game directly through a raw Wine/Flatpak command
-bypasses this launcher; start Bottles first in that case.
+notifications.
+
+Walker game shortcuts are covered too: Elephant's tracked launch prefix runs
+`archmeros-walker-launch.sh` before the existing `uwsm-app --` launch path.
+It recognizes Flatpak commands targeting `com.usebottles.bottles` and native
+`bottles` / `bottles-cli` commands, synchronizes prefixes, and starts Sentinel
+before launching. This includes existing and future Bottles game shortcuts;
+individual desktop files do not need rewriting. Other applications retain
+their command arguments and the normal UWSM launch path. Installation links
+`config/elephant/elephant.toml` into the user configuration.
+
+A raw Wine/Flatpak command executed outside Walker or the ArchMerOS Bottles
+launcher bypasses these hooks; start Bottles first in that case. Starting the
+watcher does not add achievement support to games with incompatible sources.
 
 ## Spyro Repair and Verification (2026-09-06)
 

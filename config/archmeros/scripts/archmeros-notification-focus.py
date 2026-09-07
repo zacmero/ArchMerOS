@@ -90,6 +90,9 @@ def parse_mako_list(output: str) -> list[dict]:
         match = re.match(r"^\s+App name:\s*(.*)$", line)
         if match:
             current["app_name"] = match.group(1).strip()
+        match = re.match(r"^\s+Urgency:\s*(.*)$", line)
+        if match:
+            current["urgency"] = match.group(1).strip().lower()
 
     if current:
         notifications.append(current)
@@ -119,6 +122,9 @@ def dismiss_notification(notification_id: int) -> None:
 
 
 def notification_matches_window(notification: dict, window: dict) -> bool:
+    # Achievement toasts and other critical alerts must survive app focus.
+    if notification.get("urgency") == "critical":
+        return False
     app_name = compact(notification.get("app_name"))
     summary = compact(notification.get("summary"))
     if not app_name and not summary:

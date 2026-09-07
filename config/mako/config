@@ -12,5 +12,6 @@ width=360
 height=140
 margin=12
 anchor=top-right
+layer=overlay
 icons=1
 max-visible=5

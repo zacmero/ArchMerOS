@@ -15,3 +15,10 @@ anchor=top-right
 layer=overlay
 icons=1
 max-visible=5
+
+# Trophy toasts stay on the center gaming monitor when focus moves elsewhere.
+[category=archmeros-achievement]
+output=HDMI-A-1
+layer=overlay
+default-timeout=15000
+ignore-timeout=1

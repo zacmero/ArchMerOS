@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Only Sentinel's service uses this PATH; keep game titles and notification IDs.
+exec /usr/bin/notify-send --category=archmeros-achievement "$@"

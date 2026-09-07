@@ -1,5 +1,22 @@
 # Workspace Model
 
+## New Windows Above Floating Cards
+
+The Lua `window.open` handler promotes a newly focused tiled window to a
+centered 72% x 76% floating card when its workspace already contains a mapped,
+non-hidden floating window. Keyboard focus alone cannot raise a tiled window
+above the floating layer. The handler runs at window opening, without a delayed
+resize worker, and leaves existing window sizes unchanged.
+
+Already-floating windows keep their launcher sizing. Fully tiled workspaces
+keep native tiling. Windows that open without focus are not promoted, avoiding
+background workspace activation and preserving Telegram notification behavior.
+
+Live regression on 2026-09-07: disposable Kitty windows reproduced the focused
+but covered tiled-window case. After the fix, the new window was focused and
+floating at 1382 x 820 on a 1920 x 1080 monitor; the existing 1600 x 950 card
+retained its size. Empty and fully tiled workspace launches remained tiled.
+
 ## Migration Rule
 
 XFCE stays installed at the beginning.

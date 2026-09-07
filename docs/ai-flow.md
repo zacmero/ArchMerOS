@@ -1,5 +1,26 @@
 # AI Flow
 
+## Codex Permission Default
+
+The requested default for the owner's Codex installations is full filesystem
+access without approval prompts. Persist these settings at the top level of
+each user's `~/.codex/config.toml`, before any TOML table:
+
+```toml
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+```
+
+Back up the existing file before merging these keys; preserve models, MCP
+servers, profiles, and sessions. This is a user-wide default for new sessions
+across projects, not a setting propagated automatically to other machines.
+Explicit launch flags, project configuration, or managed policies may override
+it. The current `codexh-native-provider` launcher inherits these settings because
+it overrides only provider and Headroom MCP options. Never place these defaults
+in a repository-local config as a substitute for the user-wide configuration.
+
+Applied and TOML-validated on this machine on 2026-09-07 with Codex 0.153.4.
+
 ArchMerOS now has an ArchMerOS-only AI overlay flow built on top of WezTerm.
 
 The goal is to add a fast local AI HUD for this machine without mutating normal WezTerm behavior or assuming every machine uses ArchMerOS.

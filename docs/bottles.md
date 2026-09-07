@@ -162,6 +162,21 @@ Restart a game normally after changing its emulator settings; they are read
 at process startup. A previously discarded unlock may need its condition
 triggered again. Do not fake achievement JSON writes as a gameplay test.
 
+## Achievement Notification Placement
+
+Sentinel's systemd service prepends `~/.config/sentinel/bin` to its PATH.
+Its small `notify-send` adapter adds category `archmeros-achievement` while
+preserving the upstream game name, urgency, body and returned notification ID.
+Mako routes this category to the center monitor (`HDMI-A-1`) on the overlay
+layer for 15 seconds, independent of keyboard focus. Other notifications keep
+their existing routing and timeout. Update this output name if monitors change.
+The focus-dismiss helper exempts critical notifications, including trophies.
+
+This avoids patching Sentinel itself. A tagged display test was verified on
+Hyprland layer 3 on HDMI-A-1. Both "Using Your Head" and "Warm up the Crowd"
+were present in Mako history before this change; missing visibility was not a
+missing achievement record. No game restart is required after this adjustment.
+
 ## There Is No Light
 
 The existing `ThereIsNoLight` bottle is registered with Sentinel. The installed

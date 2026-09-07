@@ -7,6 +7,27 @@
 local theme = require("theme")
 local tp    = require("transparency")
 
+-- Tiled windows cannot be raised above floating cards. Promote a newly
+-- focused tiled window only when it would otherwise open beneath a card.
+hl.on("window.open", function(window)
+    if not window.active or window.floating or not window.workspace or not window.monitor then
+        return
+    end
+    for _, other in ipairs(hl.get_workspace_windows(window.workspace)) do
+        if other.address ~= window.address and other.mapped and other.floating and not other.hidden then
+            hl.dispatch(hl.dsp.window.float({ action = "enable", window = "address:" .. window.address }))
+            hl.dispatch(hl.dsp.window.resize({
+                x = math.floor(window.monitor.width * 0.72),
+                y = math.floor(window.monitor.height * 0.76),
+                relative = false,
+            }))
+            hl.dispatch(hl.dsp.window.center())
+            hl.dispatch(hl.dsp.window.bring_to_top())
+            return
+        end
+    end
+end)
+
 -----------------------
 ---- MY PROGRAMS ------
 -----------------------

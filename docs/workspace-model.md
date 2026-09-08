@@ -1,5 +1,58 @@
 # Workspace Model
 
+## Display Settings Window
+
+`Super+Shift+P` runs `archmeros-wdisplays.py`. It keeps the current GTK theme and
+font scaling, but uses an app-only derivative theme without client-side shadow
+margins. Those margins previously occupied about 100 pixels on each side and
+clipped the controls inside the compositor's window bounds. Other GTK apps are
+unaffected. The wrapper refreshes its derivative from the current theme on launch.
+
+The `wdisplays-fit` rule floats and centers this utility. The resulting window
+was checked visually on the 1366 x 768 monitor; its controls fit, and no monitor
+configuration was changed during testing.
+
+## Scratchpad (Lua Session)
+
+- `Super+Ctrl+P` with an empty slot adopts the focused window and hides it.
+- The same key summons the assigned window above other windows on the focused
+  monitor, or hides it when already shown there. Summoning from another monitor
+  transfers the overlay there. It is independent of numbered workspaces.
+- The native special-workspace animation slides up from below and hides downward.
+- The window stays floating and centered when summoned. Its current dimensions
+  survive hide/show and reloads, including manual size changes. Oversized windows
+  are clamped to the destination monitor's usable area, respecting scale,
+  rotation, reserved bars, outer gaps, and borders. Existing size-cycle keys work.
+- `Alt+Tab` or `Super+Tab` while the scratchpad is focused releases it into the current normal
+  workspace as a card at its current size. Following presses use the normal card
+  rotation. `Super+Shift+V` releases and tiles it instead. The size-cycle script
+  skips monitor-move dispatches for special workspaces: even a move to the same
+  monitor would otherwise eject the window into the normal workspace.
+- Closing or releasing the window frees the single slot. No application is
+  preselected or launched, and no session data or persistent window IDs are stored.
+- New apps opened while the scratchpad is visible go to the regular workspace
+  underneath; they do not become extra scratchpad windows.
+- Wallpaper selection remains on `Super+P`, with its previous `Super+Alt+P`
+  alias moved to `Super+Alt+Shift+P`.
+
+Implementation: `config/hypr/scratchpad.lua` owns native compositor operations;
+`archmeros-scratchpad.sh` provides the entry point shared by the keybinding and
+existing card/tile scripts. The special workspace itself owns the slot, so there
+is no file-state race or stale assignment after closing a window. Each toggle
+runs as one compositor Lua evaluation. The legacy `.conf` bindings are unchanged.
+
+Opt-in live regression (requires Kitty and empty workspaces 9 and 90):
+
+```bash
+rtk python3 tests/scratchpad-live.py
+rtk python3 tests/scratchpad-sizing-live.py
+```
+
+The test creates disposable windows, checks hide/show, manual sizes, reload,
+monitor transfer, isolation of new apps, card/tile release and slot reuse, then
+closes its own windows and restores monitor workspaces and focus. Pixel sampling
+on 2026-09-07 also verified the vertical entrance and downward exit.
+
 ## New Windows Above Floating Cards
 
 The Lua `window.open` handler promotes a newly focused tiled window to a

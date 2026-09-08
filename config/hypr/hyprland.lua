@@ -6,6 +6,7 @@
 
 local theme = require("theme")
 local tp    = require("transparency")
+archmeros_scratchpad = require("scratchpad")
 
 -- Tiled windows cannot be raised above floating cards. Promote a newly
 -- focused tiled window only when it would otherwise open beneath a card.
@@ -86,6 +87,7 @@ hl.workspace_rule({ workspace = "8", monitor = "HDMI-A-1" })
 hl.workspace_rule({ workspace = "9", monitor = "HDMI-A-1" })
 hl.workspace_rule({ workspace = "10", monitor = "DP-3",    default = true })
 hl.workspace_rule({ workspace = "11", monitor = "DP-2",    default = true })
+hl.workspace_rule({ workspace = "special:archmeros-scratchpad", animation = "slidevert" })
 
 -----------------------
 ---- LOOK AND FEEL ----
@@ -148,6 +150,7 @@ hl.animation({ leaf = "border",       enabled = true, speed = 8, bezier = "curve
 hl.animation({ leaf = "borderangle",  enabled = true, speed = 8, bezier = "curve" })
 hl.animation({ leaf = "fade",         enabled = true, speed = 5, bezier = "curve" })
 hl.animation({ leaf = "workspaces",   enabled = true, speed = 6, bezier = "curve", style = "slidefade 18%" })
+hl.animation({ leaf = "specialWorkspace", enabled = true, speed = 5, bezier = "curve", style = "slidevert" })
 
 ---------------
 ---- INPUT ----
@@ -203,8 +206,9 @@ hl.bind("CTRL + ALT + space",        hl.dsp.exec_cmd("hyprctl switchxkblayout cu
 hl.bind("SUPER + Insert",            hl.dsp.exec_cmd("/home/zacmero/.config/archmeros/scripts/archmeros-keyboard.sh toggle"))
 
 -- Wallpaper / Appearance
-hl.bind(mod .. " + ALT + P",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-wallpaper-pick.sh"))
-hl.bind(mod .. " + ALT + code:33",   hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-wallpaper-pick.sh"))
+-- Use one physical P binding; a second named binding can fire twice.
+hl.bind(mod .. " + CTRL + code:33",  hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-scratchpad.sh"))
+hl.bind(mod .. " + ALT + SHIFT + P", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-wallpaper-pick.sh"))
 hl.bind(mod .. " + ALT + A",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-appearance.sh"))
 hl.bind(mod .. " + ALT + T",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-theme-select.sh"))
 hl.bind(mod .. " + P",               hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-wallpaper-pick.sh"))
@@ -333,7 +337,7 @@ hl.bind(mod .. " + SHIFT + asciitilde", pop_shrink)
 hl.bind("ALT + SHIFT + asciitilde", pop_medium)
 
 -- Miscellaneous
-hl.bind(mod .. " + SHIFT + P", hl.dsp.exec_cmd("wdisplays"))
+hl.bind(mod .. " + SHIFT + P", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-wdisplays.py"))
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-refresh-shell.sh"))
 hl.bind(mod .. " + M",         hl.dsp.exec_cmd("[workspace 11 silent] ~/.config/archmeros/scripts/archmeros-youtube-music.sh"))
 hl.bind(mod .. " + N",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-note.sh"))
@@ -395,6 +399,15 @@ hl.window_rule({
     name = "telegram-no-activation",
     match = { class = "^(TelegramDesktop|org\\.telegram\\.desktop|telegram-desktop)$" },
     suppress_event = "activate activatefocus",
+})
+
+-- Display settings utility
+hl.window_rule({
+    name = "wdisplays-fit",
+    match = { class = "^wdisplays$" },
+    float = true,
+    size = "90% 90%",
+    center = true,
 })
 
 -- Thunar file manager

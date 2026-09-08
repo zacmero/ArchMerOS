@@ -107,6 +107,10 @@ if [[ "$floating" != "true" ]]; then
   "$dispatch_cmd" togglefloating >/dev/null 2>&1 || true
 fi
 
-"$dispatch_cmd" movewindow "mon:${monitor}" >/dev/null 2>&1 || true
+# Moving even to the current monitor ejects a special-workspace window.
+# Resizing must preserve its workspace assignment.
+if [[ "$(printf '%s' "$active" | jq -r '.workspace.name // ""')" != special:* ]]; then
+  "$dispatch_cmd" movewindow "mon:${monitor}" >/dev/null 2>&1 || true
+fi
 "$dispatch_cmd" resizeactive exact "$width" "$height" >/dev/null 2>&1 || true
 "$dispatch_cmd" centerwindow 1 >/dev/null 2>&1 || true

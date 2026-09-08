@@ -8,6 +8,10 @@ lock_file="${XDG_RUNTIME_DIR:-/tmp}/archmeros-cycle-window.lock"
 exec 9>"$lock_file"
 flock 9
 
+if "$HOME/.config/archmeros/scripts/archmeros-scratchpad.sh" release >/dev/null; then
+  exit 0
+fi
+
 active="$(hyprctl activewindow -j 2>/dev/null || printf '{}')"
 [[ "$active" != "{}" ]] || exit 0
 

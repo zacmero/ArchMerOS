@@ -523,6 +523,9 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Shift + Right Mouse`: resize a window
 - `Super+V`: toggle floating
 - `Super+Shift+V`: return the active floating card to tiling
+- `Super+Ctrl+P`: adopt and hide the focused window as the single scratchpad; subsequent presses summon/hide it on the current monitor, preserving its size within that screen's usable bounds
+- With the scratchpad focused, `Alt+Tab` or `Super+Tab` releases it into card mode and `Super+Shift+V` releases it into tiling; resizing preserves the assignment
+- `Super+Alt+Shift+P`: wallpaper picker (also still available on `Super+P`)
 - `Super+Alt+P`: wallpaper picker
 - `Super+P`: wallpaper picker fallback for the ZX-K22 keyboard modifier bug
 - `Super+F`: fullscreen

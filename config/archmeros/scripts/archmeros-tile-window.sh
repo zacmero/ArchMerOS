@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+"$HOME/.config/archmeros/scripts/archmeros-scratchpad.sh" release >/dev/null || true
+
 active="$(hyprctl activewindow -j 2>/dev/null || printf '{}')"
 [[ "$active" != "{}" ]] || exit 0
 

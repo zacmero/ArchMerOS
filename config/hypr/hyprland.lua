@@ -298,8 +298,8 @@ hl.bind(mod .. " + mouse_up",     hl.dsp.focus({ workspace = "m-1" }))
 hl.bind(mod .. " + mouse_down",   hl.dsp.focus({ workspace = "m+1" }))
 
 -- Mouse nav buttons for image viewer (bindr = repeating)
-hl.bind("mouse:275", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-imv-mouse-nav.sh prev"), { repeating = true })
-hl.bind("mouse:276", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-imv-mouse-nav.sh next"), { repeating = true })
+hl.bind("mouse:275", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-imv-mouse-nav.sh prev"), { release = true })
+hl.bind("mouse:276", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-imv-mouse-nav.sh next"), { release = true })
 
 -- Move window to workspace
 for workspace = 1, 9 do
@@ -383,11 +383,21 @@ hl.bind("ALT + SHIFT + Tab",   cycle_recent_prev)
 hl.bind(mod .. " + Tab",       cycle_all_next)
 hl.bind(mod .. " + SHIFT + Tab", cycle_all_prev)
 
--- Mouse drag/resize (bindm = {mouse = true})
-hl.bind("SHIFT + mouse:272",   hl.dsp.window.drag(),   { mouse = true })
-hl.bind("SHIFT + mouse:273",   hl.dsp.window.resize(), { mouse = true })
-hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
-hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+-- Mouse drag/resize (bindm = {mouse = true}). Tag drag intent before the
+-- compositor starts moving the window so cross-monitor drops stay deterministic.
+local function drag_window(mode)
+  return function()
+    hl.exec_cmd("~/.config/archmeros/scripts/archmeros-drop-tile.py --arm " .. mode)
+    hl.dispatch(hl.dsp.window.drag())
+  end
+end
+
+hl.bind("SHIFT + mouse:272",   drag_window("free"),     { mouse = true })
+hl.bind("SHIFT + mouse:273",   hl.dsp.window.resize(),  { mouse = true })
+hl.bind("ALT + mouse:272",     drag_window("free"),     { mouse = true })
+hl.bind("ALT + mouse:273",     hl.dsp.window.resize(),  { mouse = true })
+hl.bind(mod .. " + mouse:272", drag_window("tile"),     { mouse = true })
+hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(),  { mouse = true })
 
 --------------------------------
 ---- WINDOW RULES ----

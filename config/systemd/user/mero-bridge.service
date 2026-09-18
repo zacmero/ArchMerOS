@@ -1,0 +1,13 @@
+[Unit]
+Description=Mero Monitor Unified Companion Bridge (Media + DarkHorse Cam)
+After=graphical-session.target pipewire.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -u /home/zacmero/projects/mero-monitor-#2/scripts/mero_bridge.py
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=default.target

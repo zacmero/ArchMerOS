@@ -21,6 +21,8 @@ MOUSE_DEVICE = Path(
     )
 )
 DISPATCH_SHIM = Path.home() / ".config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
+ARM_PATH = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")) / "archmeros-drop-tile-arm.json"
+ARM_MAX_AGE = 30.0
 
 
 def normalize_address(address: str) -> str:
@@ -100,6 +102,33 @@ def active_client(env: dict[str, str]) -> dict:
     return result if isinstance(result, dict) else {}
 
 
+def arm_drag(env: dict[str, str], mode: str) -> None:
+    if mode not in {"tile", "free"}:
+        raise ValueError(f"invalid drag mode: {mode}")
+    client = active_client(env)
+    address = normalize_address(str(client.get("address", "")))
+    if address == "0x":
+        return
+    payload = {"address": address, "mode": mode, "time": time.monotonic()}
+    temporary = ARM_PATH.with_suffix(".tmp")
+    temporary.write_text(json.dumps(payload), encoding="utf-8")
+    temporary.replace(ARM_PATH)
+
+
+def consume_drag_mode(address: str) -> str | None:
+    try:
+        payload = json.loads(ARM_PATH.read_text(encoding="utf-8"))
+        ARM_PATH.unlink(missing_ok=True)
+    except (OSError, ValueError, TypeError):
+        return None
+    if normalize_address(str(payload.get("address", ""))) != normalize_address(address):
+        return None
+    if time.monotonic() - float(payload.get("time", 0)) > ARM_MAX_AGE:
+        return None
+    mode = payload.get("mode")
+    return mode if mode in {"tile", "free"} else None
+
+
 def client_by_address(env: dict[str, str], address: str) -> dict:
     clients = hyprctl_json(env, "clients")
     if not isinstance(clients, list):
@@ -118,19 +147,23 @@ def client_by_address(env: dict[str, str], address: str) -> dict:
 def tile_pending(env: dict[str, str], pending: tuple[str, int]) -> None:
     time.sleep(0.06)
     address, _ = pending
-    client = active_client(env)
-    if (
-        normalize_address(str(client.get("address", ""))) != address
-        or client.get("floating") is not True
-    ):
+    if consume_drag_mode(address) != "tile":
         return
-    subprocess.run(
-        [str(DISPATCH_SHIM), "settiled"],
-        check=False,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        env=env,
-    )
+    client = client_by_address(env, address)
+    if client.get("floating") is not True:
+        return
+    for action, argument in (
+        ("settiled", f"address:{address}"),
+        ("focuswindow", f"address:{address}"),
+        ("bringactivetotop", ""),
+    ):
+        subprocess.run(
+            [str(DISPATCH_SHIM), action, argument],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            env=env,
+        )
 
 
 def handle_hypr_event(state: DropState, env: dict[str, str], line: str) -> None:
@@ -209,9 +242,25 @@ def self_test() -> None:
     assert state.button(0) == ("0xabc", 0)
     assert state.pending is None and not state.left_down
 
+    ARM_PATH.write_text(
+        json.dumps({"address": "0xabc", "mode": "tile", "time": time.monotonic()}),
+        encoding="utf-8",
+    )
+    assert consume_drag_mode("abc") == "tile"
+    assert not ARM_PATH.exists()
+
+    ARM_PATH.write_text(
+        json.dumps({"address": "0xabc", "mode": "free", "time": time.monotonic()}),
+        encoding="utf-8",
+    )
+    assert consume_drag_mode("def") is None
+    assert not ARM_PATH.exists()
+
 
 if __name__ == "__main__":
     if sys.argv[1:] == ["--self-test"]:
         self_test()
+    elif len(sys.argv) == 3 and sys.argv[1] == "--arm":
+        arm_drag(os.environ.copy(), sys.argv[2])
     else:
         run()

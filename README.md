@@ -49,7 +49,7 @@ Current known state on this workstation:
 - Walker is the general launcher
 - Walker providers are installed through Elephant and started as user services from Hyprland
 - Walker and the Elephant provider packages are tracked in `install/packages/optional-aur.txt` for fresh installs
-- `mako` notifications use ArchMerOS timeout rules, and app notifications are dismissed automatically when their app regains focus
+- `mako` notifications use ArchMerOS timeout rules; app and agent-finished notifications dismiss after their matching app/workspace remains focused briefly, notifications born on the focused workspace are suppressed, and only `archmeros-achievement` notifications are exempt
 - `Super+E` syncs the trusted Windows Desktop intersection into `~/Desktop` and opens `thunar`
 - `Super+A` opens the ArchMerOS floating `aichat` HUD backed by OpenRouter's free auto router, and `Super+Shift+A` opens the Fabric browser overlay
 - `rofi` remains available as the launcher fallback if Walker fails
@@ -519,8 +519,12 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Alt+Tab`: toggle between the current window and the previously focused window, while handing the centered spotlight state across when applicable
 - `Super+Tab`: rotate card mode across the current workspace; an all-tiled layout starts at medium size, then each window retains its own card size
 - `Super+Shift+Left/Right/Up/Down`: swap windows
-- `Shift + Left Mouse`: drag a window
+- `Shift + Left Mouse`: drag a window freely
 - `Shift + Right Mouse`: resize a window
+- `Left Alt + Left Mouse`: drag a window freely across monitors; keep it floating on release
+- `Left Alt + Right Mouse`: resize a window
+- `Super + Left Mouse`: drag a window; a cross-monitor drop tiles and raises it on release
+- `Super + Right Mouse`: resize a window
 - `Super+V`: toggle floating
 - `Super+Shift+V`: return the active floating card to tiling
 - `Super+Ctrl+P`: adopt and hide the focused window as the single scratchpad; subsequent presses summon/hide it on the current monitor, preserving its size within that screen's usable bounds

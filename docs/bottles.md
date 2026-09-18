@@ -170,7 +170,9 @@ preserving the upstream game name, urgency, body and returned notification ID.
 Mako routes this category to the center monitor (`HDMI-A-1`) on the overlay
 layer for 15 seconds, independent of keyboard focus. Other notifications keep
 their existing routing and timeout. Update this output name if monitors change.
-The focus-dismiss helper exempts critical notifications, including trophies.
+The focus-dismiss helper exempts the dedicated `archmeros-achievement` category,
+so trophy notifications survive focus changes without exempting unrelated
+critical notifications.
 
 This avoids patching Sentinel itself. A tagged display test was verified on
 Hyprland layer 3 on HDMI-A-1. Both "Using Your Head" and "Warm up the Crowd"

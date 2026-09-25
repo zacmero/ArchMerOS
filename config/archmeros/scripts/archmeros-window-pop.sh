@@ -70,7 +70,8 @@ case "$requested_mode" in
     ;;
 esac
 
-if [[ "$floating" == "true" && "$current_mode" == "$mode" ]]; then
+if [[ "$floating" == "true" && "$current_mode" == "$mode" \
+  && "$active_width" -le "$max_width" && "$active_height" -le "$max_height" ]]; then
   exit 0
 fi
 

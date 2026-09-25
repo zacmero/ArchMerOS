@@ -33,6 +33,7 @@ def normalize_address(address: str) -> str:
 class DropState:
     def __init__(self) -> None:
         self.left_down = False
+        self.press_started = 0.0
         self.monitors: dict[str, int] = {}
         self.pending: tuple[str, int] | None = None
 
@@ -58,6 +59,7 @@ class DropState:
     def button(self, value: int) -> tuple[str, int] | None:
         if value == 1:
             self.left_down = True
+            self.press_started = time.monotonic()
             self.pending = None
             return None
         if value != 0:
@@ -102,28 +104,23 @@ def active_client(env: dict[str, str]) -> dict:
     return result if isinstance(result, dict) else {}
 
 
-def arm_drag(env: dict[str, str], mode: str) -> None:
+def arm_drag(mode: str) -> None:
     if mode not in {"tile", "free"}:
         raise ValueError(f"invalid drag mode: {mode}")
-    client = active_client(env)
-    address = normalize_address(str(client.get("address", "")))
-    if address == "0x":
-        return
-    payload = {"address": address, "mode": mode, "time": time.monotonic()}
+    payload = {"mode": mode, "time": time.monotonic()}
     temporary = ARM_PATH.with_suffix(".tmp")
     temporary.write_text(json.dumps(payload), encoding="utf-8")
     temporary.replace(ARM_PATH)
 
 
-def consume_drag_mode(address: str) -> str | None:
+def consume_drag_mode(press_started: float) -> str | None:
     try:
         payload = json.loads(ARM_PATH.read_text(encoding="utf-8"))
         ARM_PATH.unlink(missing_ok=True)
     except (OSError, ValueError, TypeError):
         return None
-    if normalize_address(str(payload.get("address", ""))) != normalize_address(address):
-        return None
-    if time.monotonic() - float(payload.get("time", 0)) > ARM_MAX_AGE:
+    armed_at = float(payload.get("time", 0))
+    if armed_at < press_started - 0.15 or time.monotonic() - armed_at > ARM_MAX_AGE:
         return None
     mode = payload.get("mode")
     return mode if mode in {"tile", "free"} else None
@@ -144,14 +141,33 @@ def client_by_address(env: dict[str, str], address: str) -> dict:
     )
 
 
-def tile_pending(env: dict[str, str], pending: tuple[str, int]) -> None:
+def tile_pending(env: dict[str, str], pending: tuple[str, int], press_started: float) -> None:
     time.sleep(0.06)
     address, _ = pending
-    if consume_drag_mode(address) != "tile":
+    if consume_drag_mode(press_started) != "tile":
         return
     client = client_by_address(env, address)
     if client.get("floating") is not True:
         return
+    workspace_id = (client.get("workspace") or {}).get("id")
+    all_clients = hyprctl_json(env, "clients")
+    if workspace_id is not None:
+        for other in all_clients if isinstance(all_clients, list) else []:
+            if (
+                normalize_address(str(other.get("address", ""))) != address
+                and other.get("mapped") is True
+                and other.get("hidden") is False
+                and other.get("floating") is True
+                and other.get("pinned") is not True
+                and (other.get("workspace") or {}).get("id") == workspace_id
+            ):
+                subprocess.run(
+                    [str(DISPATCH_SHIM), "settiled", f"address:{other['address']}"],
+                    check=False,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    env=env,
+                )
     for action, argument in (
         ("settiled", f"address:{address}"),
         ("focuswindow", f"address:{address}"),
@@ -214,7 +230,7 @@ def run() -> None:
                     if event_type == EV_KEY and code == BTN_LEFT:
                         pending = state.button(value)
                         if pending:
-                            tile_pending(env, pending)
+                            tile_pending(env, pending, state.press_started)
                 continue
 
             data = hypr.recv(65536)
@@ -246,14 +262,14 @@ def self_test() -> None:
         json.dumps({"address": "0xabc", "mode": "tile", "time": time.monotonic()}),
         encoding="utf-8",
     )
-    assert consume_drag_mode("abc") == "tile"
+    assert consume_drag_mode(time.monotonic() - 0.01) == "tile"
     assert not ARM_PATH.exists()
 
     ARM_PATH.write_text(
         json.dumps({"address": "0xabc", "mode": "free", "time": time.monotonic()}),
         encoding="utf-8",
     )
-    assert consume_drag_mode("def") is None
+    assert consume_drag_mode(time.monotonic() - 0.01) == "free"
     assert not ARM_PATH.exists()
 
 
@@ -261,6 +277,6 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["--self-test"]:
         self_test()
     elif len(sys.argv) == 3 and sys.argv[1] == "--arm":
-        arm_drag(os.environ.copy(), sys.argv[2])
+        arm_drag(sys.argv[2])
     else:
         run()

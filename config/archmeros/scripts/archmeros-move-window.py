@@ -53,13 +53,16 @@ def target_size(mode: str, monitor_width: int, monitor_height: int) -> tuple[int
     return None
 
 
-def find_client(address: str):
-    for _ in range(15):
+def find_client(address: str, source_monitor: int):
+    found = None
+    for _ in range(3):
         for client in clients():
             if client.get("address") == address:
-                return client
+                found = client
+                if client.get("monitor") != source_monitor:
+                    return client
         time.sleep(0.03)
-    return None
+    return found
 
 
 def main() -> int:
@@ -78,7 +81,7 @@ def main() -> int:
     if not address:
         return 0
 
-    source_monitor = int(window.get("monitor", -1) or -1)
+    source_monitor = int(window.get("monitor", -1))
     size = window.get("size") or [0, 0]
     floating = bool(window.get("floating"))
     mode = size_mode(
@@ -90,15 +93,32 @@ def main() -> int:
 
     dispatch("movewindow", direction)
 
-    if not floating or mode == "none":
-        return 0
-
-    client = find_client(address)
+    client = find_client(address, source_monitor)
     if not client:
         return 0
 
-    target_monitor = int(client.get("monitor", -1) or -1)
+    target_monitor = int(client.get("monitor", -1))
     if target_monitor == source_monitor:
+        return 0
+
+    if not floating:
+        target_workspace = (client.get("workspace") or {}).get("id")
+        for other in clients():
+            if (
+                target_workspace is not None
+                and other.get("address") != address
+                and other.get("mapped") is True
+                and other.get("hidden") is False
+                and other.get("floating") is True
+                and other.get("pinned") is not True
+                and (other.get("workspace") or {}).get("id") == target_workspace
+            ):
+                dispatch("settiled", f"address:{other['address']}")
+        dispatch("focuswindow", f"address:{address}")
+        dispatch("bringactivetotop")
+        return 0
+
+    if mode == "none":
         return 0
 
     target_monitor_width = int(client.get("monitorWidth", 0) or 0)

@@ -387,7 +387,10 @@ hl.bind(mod .. " + SHIFT + Tab", cycle_all_prev)
 -- compositor starts moving the window so cross-monitor drops stay deterministic.
 local function drag_window(mode)
   return function()
-    hl.exec_cmd("~/.config/archmeros/scripts/archmeros-drop-tile.py --arm " .. mode)
+    os.execute("~/.config/archmeros/scripts/archmeros-drop-tile.py --arm " .. mode)
+    if mode == "free" then
+      hl.dispatch(hl.dsp.window.float({ action = "enable" }))
+    end
     hl.dispatch(hl.dsp.window.drag())
   end
 end

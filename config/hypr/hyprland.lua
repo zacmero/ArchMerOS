@@ -179,7 +179,7 @@ hl.config({
     },
 
     binds = {
-        pass_mouse_when_bound = true,
+        pass_mouse_when_bound = false,
     },
 
     ecosystem = {
@@ -298,8 +298,8 @@ hl.bind(mod .. " + mouse_up",     hl.dsp.focus({ workspace = "m-1" }))
 hl.bind(mod .. " + mouse_down",   hl.dsp.focus({ workspace = "m+1" }))
 
 -- Mouse nav buttons for image viewer (bindr = repeating)
-hl.bind("mouse:275", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-imv-mouse-nav.sh prev"), { release = true })
-hl.bind("mouse:276", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-imv-mouse-nav.sh next"), { release = true })
+hl.bind("mouse:275", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-imv-mouse-nav.sh prev"), { release = true, non_consuming = true })
+hl.bind("mouse:276", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-imv-mouse-nav.sh next"), { release = true, non_consuming = true })
 
 -- Move window to workspace
 for workspace = 1, 9 do
@@ -395,12 +395,18 @@ local function drag_window(mode)
   end
 end
 
+local function resize_window()
+  -- Tiled clients need independent bounds before interactive resizing.
+  hl.dispatch(hl.dsp.window.float({ action = "enable" }))
+  hl.dispatch(hl.dsp.window.resize())
+end
+
 hl.bind("SHIFT + mouse:272",   drag_window("free"),     { mouse = true })
-hl.bind("SHIFT + mouse:273",   hl.dsp.window.resize(),  { mouse = true })
+hl.bind("SHIFT + mouse:273",   resize_window,            { mouse = true })
 hl.bind("ALT + mouse:272",     drag_window("free"),     { mouse = true })
-hl.bind("ALT + mouse:273",     hl.dsp.window.resize(),  { mouse = true })
+hl.bind("ALT + mouse:273",     resize_window,            { mouse = true })
 hl.bind(mod .. " + mouse:272", drag_window("tile"),     { mouse = true })
-hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(),  { mouse = true })
+hl.bind(mod .. " + mouse:273", resize_window,            { mouse = true })
 
 --------------------------------
 ---- WINDOW RULES ----

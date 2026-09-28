@@ -1,0 +1,60 @@
+{
+  "name": "beacon",
+  "layer": "top",
+  "position": "right",
+  "exclusive": true,
+  "width": 190,
+  "spacing": 4,
+  "margin": "8 8 8 0",
+  "reload_style_on_change": true,
+  "output": "DP-1",
+  "modules-left": ["custom/beacon"],
+  "modules-center": [
+    "custom/spectrum",
+    "custom/project",
+    "custom/fabric",
+    "custom/events"
+  ],
+  "modules-right": ["custom/fieldnote"],
+  "custom/beacon": {
+    "format": "λ",
+    "tooltip": true,
+    "tooltip-format": "ARCHMEROS AI HUB\nLeft click: terminal\nRight click: open docked AI HUD",
+    "on-click": "$HOME/.config/archmeros/scripts/archmeros-wezterm.sh terminal",
+    "on-click-right": "/home/zacmero/.config/archmeros/scripts/archmeros-ai-float.sh beacon"
+  },
+  "custom/spectrum": {
+    "format": "{text}",
+    "return-type": "json",
+    "exec-if": "command -v cava >/dev/null 2>&1",
+    "exec": "cava -p $HOME/.config/waybar/cava.conf | $HOME/.config/archmeros/scripts/archmeros-cava-waybar.py",
+    "restart-interval": 2,
+    "tooltip": false
+  },
+  "custom/project": {
+    "format": "{text}",
+    "return-type": "json",
+    "interval": 15,
+    "exec": "$HOME/.config/archmeros/scripts/archmeros-dp1-activity.py project",
+    "tooltip": true
+  },
+  "custom/fabric": {
+    "format": "{text}",
+    "return-type": "json",
+    "interval": 20,
+    "exec": "$HOME/.config/archmeros/scripts/archmeros-dp1-activity.py fabric",
+    "tooltip": true
+  },
+  "custom/events": {
+    "format": "{text}",
+    "return-type": "json",
+    "interval": 30,
+    "exec": "$HOME/.config/archmeros/scripts/archmeros-dp1-activity.py events",
+    "tooltip": true
+  },
+  "custom/fieldnote": {
+    "format": "✦",
+    "tooltip": true,
+    "tooltip-format": "FIELD NOTE 04\nThe screen is only a window. The system is the composition."
+  }
+}

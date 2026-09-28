@@ -7,10 +7,12 @@
 local theme = require("theme")
 local tp    = require("transparency")
 archmeros_scratchpad = require("scratchpad")
+archmeros_ai_hub = require("ai_hub")
 
 -- Tiled windows cannot be raised above floating cards. Promote a newly
 -- focused tiled window only when it would otherwise open beneath a card.
 hl.on("window.open", function(window)
+    if window.class == "archmeros-aichat-beacon" then return end
     if not window.active or window.floating or not window.workspace or not window.monitor then
         return
     end
@@ -363,6 +365,7 @@ hl.bind(mod .. " + SHIFT + H", hl.dsp.exec_cmd("~/.config/archmeros/scripts/arch
 hl.bind(mod .. " + SHIFT + 1", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-waybar.sh toggle1"))
 hl.bind(mod .. " + SHIFT + 2", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-waybar.sh toggle2"))
 hl.bind(mod .. " + SHIFT + 3", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-waybar.sh toggle3"))
+hl.bind(mod .. " + SHIFT + 4", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-waybar.sh toggle4"))
 hl.bind("CTRL + SHIFT + H",    hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-move-window.py l"))
 hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-move-window.py r"))
 
@@ -621,6 +624,13 @@ hl.window_rule({
     float   = true,
     center  = true,
     size    = "72% 76%",
+    opacity = tp.terminal_active_opacity .. " " .. tp.terminal_inactive_opacity,
+})
+
+hl.window_rule({
+    name  = "aichat-beacon",
+    match = { class = "^(archmeros-aichat-beacon)$" },
+    float   = true,
     opacity = tp.terminal_active_opacity .. " " .. tp.terminal_inactive_opacity,
 })
 

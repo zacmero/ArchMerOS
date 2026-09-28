@@ -17,6 +17,13 @@ launch_wezterm() {
   exec "$launch_wrapper" "$wezterm_cmd" start --always-new-process --class "$@"
 }
 
+launch_wezterm_native() {
+  local launch_class="$1"
+  shift
+  exec "$launch_wrapper" --native-spawn "$launch_class" \
+    "$wezterm_cmd" start --always-new-process --class "$launch_class" "$@"
+}
+
 case "$mode" in
   aichat)
     launch_class="archmeros-aichat-float"
@@ -25,7 +32,16 @@ case "$mode" in
       context_file="$("$context_helper" 2>/dev/null || true)"
     fi
 
-    ARCHMEROS_FORCE_POP_MODE=medium launch_wezterm "$launch_class" --cwd "$HOME" -- bash "$runner" "$context_file" "$archmeros_env"
+    ARCHMEROS_FORCE_POP_MODE=medium launch_wezterm_native "$launch_class" --cwd "$HOME" -- bash "$runner" "$context_file" "$archmeros_env"
+    ;;
+  beacon)
+    launch_class="archmeros-aichat-beacon"
+    context_file=""
+    if [[ -x "$context_helper" ]]; then
+      context_file="$("$context_helper" 2>/dev/null || true)"
+    fi
+
+    ARCHMEROS_FORCE_POP_MODE=none launch_wezterm_native "$launch_class" --cwd "$HOME" -- bash "$runner" "$context_file" "$archmeros_env"
     ;;
   fabric)
     launch_class="archmeros-fabric-browser"
@@ -36,7 +52,7 @@ case "$mode" in
     launch_wezterm "$launch_class" --cwd "$HOME" -- bash "$session_browser"
     ;;
   *)
-    printf 'Usage: %s [aichat|fabric|sessions]\n' "$0" >&2
+    printf 'Usage: %s [aichat|beacon|fabric|sessions]\n' "$0" >&2
     exit 1
     ;;
 esac

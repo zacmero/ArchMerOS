@@ -69,10 +69,15 @@ monitor_name_for_slot() {
     1) printf 'DP-3\n' ;;
     2) printf 'HDMI-A-1\n' ;;
     3) printf 'DP-2\n' ;;
+    4) printf 'DP-1\n' ;;
     *)
       return 1
       ;;
   esac
+}
+
+monitor_connected() {
+  hyprctl -j monitors | jq -e --arg monitor "$1" '.[] | select(.name == $monitor)' >/dev/null
 }
 
 hidden_monitors_json() {
@@ -91,7 +96,8 @@ monitor_visible() {
 start_bar() {
   local config="$1"
   local name="$2"
-  setsid waybar -c "$config" -s "$style_path" >"/tmp/archmeros-waybar-${name}.log" 2>&1 < /dev/null &
+  local bar_style="${3:-$style_path}"
+  setsid waybar -c "$config" -s "$bar_style" >"/tmp/archmeros-waybar-${name}.log" 2>&1 < /dev/null &
   sleep 0.35
 }
 
@@ -117,6 +123,10 @@ restart_waybar() {
 
   if monitor_visible "DP-2"; then
     start_bar "${HOME}/.config/waybar/right.jsonc" "right"
+  fi
+
+  if monitor_connected "DP-1" && monitor_visible "DP-1"; then
+    start_bar "${HOME}/.config/waybar/beacon.jsonc" "beacon" "${HOME}/.config/waybar/beacon.css"
   fi
 }
 
@@ -173,12 +183,12 @@ toggle_all() {
   current_json="$(hidden_monitors_json)"
   hidden_count="$(jq 'length' <<<"$current_json")"
 
-  if [[ "$hidden_count" -ge 3 ]]; then
+  if [[ "$hidden_count" -ge 4 ]]; then
     show_all
     return
   fi
 
-  jq -n '["DP-3","HDMI-A-1","DP-2"]' >"$hidden_file"
+  jq -n '["DP-3","HDMI-A-1","DP-2","DP-1"]' >"$hidden_file"
   restart_waybar
 }
 
@@ -198,7 +208,7 @@ case "${1:-start}" in
     setup_hypr_env
     toggle_all
     ;;
-  toggle1|toggle2|toggle3)
+  toggle1|toggle2|toggle3|toggle4)
     setup_hypr_env
     toggle_monitor_slot "${1#toggle}"
     ;;
@@ -218,7 +228,7 @@ case "${1:-start}" in
     hidden_monitors_json
     ;;
   *)
-    printf 'Usage: %s {start|restart|stop|toggle|toggleall|showall|output|hidden}\n' "$0" >&2
+    printf 'Usage: %s {start|restart|stop|toggle|toggleall|showall|output|hidden|toggle1|toggle2|toggle3|toggle4}\n' "$0" >&2
     exit 1
     ;;
 esac

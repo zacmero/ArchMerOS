@@ -1,0 +1,141 @@
+@import url("./colors.css");
+
+* {
+  font-family: CaskaydiaCove Nerd Font, CommitMono Nerd Font, JetBrainsMono Nerd Font, monospace;
+  font-size: 11pt;
+  letter-spacing: 0;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+}
+
+window#waybar.beacon {
+  background: @mantle;
+  color: @text;
+  border-top: 1px solid @text;
+  border-right: 2px solid @accent2;
+  border-bottom: 1px solid @text;
+  border-left: 2px solid @accent2;
+}
+
+window#waybar.beacon > box {
+  padding: 12px 8px;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+  background: transparent;
+}
+
+.modules-center > widget {
+  margin: 10px 0;
+  padding: 7px 2px;
+  border-bottom: 1px solid @surface1;
+}
+
+#custom-beacon {
+  color: @pink;
+  font-size: 29pt;
+  font-weight: 800;
+  padding: 8px 0 12px;
+  border-bottom: 1px solid @surface1;
+  transition: color 180ms ease-out;
+}
+
+#custom-beacon:hover {
+  color: @teal;
+}
+
+#custom-spectrum {
+  font-family: CaskaydiaCove Nerd Font, monospace;
+  font-size: 14pt;
+  font-weight: 700;
+  color: @subtext0;
+  padding: 9px 0;
+  transition: color 120ms ease-out;
+}
+
+#custom-spectrum.spark {
+  color: @teal;
+}
+
+#custom-spectrum.flow {
+  color: @pink;
+}
+
+#custom-spectrum.surge {
+  color: @yellow;
+}
+
+#custom-project {
+  color: @text;
+  font-size: 10pt;
+  font-weight: 700;
+  padding: 9px 3px;
+}
+
+#custom-project.clean {
+  color: @green;
+}
+
+#custom-project.dirty {
+  color: @peach;
+}
+
+#custom-project.idle,
+#custom-project.unknown {
+  color: @subtext0;
+  font-weight: 500;
+}
+
+#custom-fabric {
+  color: @subtext1;
+  font-size: 9pt;
+  font-weight: 700;
+  padding: 10px 3px;
+}
+
+#custom-fabric.online {
+  color: @teal;
+}
+
+#custom-fabric.partial {
+  color: @lavender;
+}
+
+#custom-events {
+  color: @subtext1;
+  font-size: 9pt;
+  font-weight: 700;
+  padding: 8px 3px;
+}
+
+#custom-events.success {
+  color: @green;
+}
+
+#custom-events.failure {
+  color: @red;
+}
+
+#custom-events.running {
+  color: @yellow;
+}
+
+#custom-events.idle {
+  color: @subtext0;
+  font-weight: 500;
+}
+
+#custom-fieldnote {
+  color: @lavender;
+  font-size: 21pt;
+  font-weight: 700;
+  padding: 10px 0 3px;
+  transition: color 160ms ease-out;
+}
+
+#custom-fieldnote:hover {
+  color: @pink;
+}

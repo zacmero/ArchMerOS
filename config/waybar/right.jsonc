@@ -42,7 +42,8 @@
     "show-special": false,
     "ignore-workspaces": [
       "10",
-      "11"
+      "11",
+      "12"
     ],
     "persistent-workspaces": {
       "*": [

@@ -171,8 +171,9 @@ focused in the destination workspace.
 - left monitor remains anchored to terminal-oriented work
 - center monitor cycles the main project workspaces
 - right monitor remains anchored to utility/media support
-- center workspaces `1-9` light up across every Waybar instance when created
+- center workspaces `1-9` light up across standard Waybar instances when created
 - hidden service workspace `10` stays on the left monitor and `11` stays on the right monitor
+- DP-1 uses workspace `12`; standard Waybars filter it out while the Beacon omits the workspace list
 
 This should be implemented with monitor-specific workspace assignment and selective movement bindings.
 

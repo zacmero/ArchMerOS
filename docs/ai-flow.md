@@ -27,7 +27,7 @@ The goal is to add a fast local AI HUD for this machine without mutating normal 
 
 ## Keybindings
 
-- `Super+A`: open the floating `aichat` HUD
+- `Super+A`: launch the original centered floating `aichat` HUD
 - `Super+Shift+A`: open the floating Fabric browser
 - `Super+Ctrl+A`: open the saved-session browser for `aichat`
 
@@ -50,17 +50,20 @@ The `aichat` overlay launches in its own floating WezTerm class:
 
 - `archmeros-aichat-float`
 
-Hyprland keeps it:
+`Super+A` opens this class directly at medium size on the active screen. The DP-1 Waybar opens a separate `archmeros-aichat-beacon` instance in the `archmeros-ai-hub` special workspace, sized as a near-full-height 820px work pane beside the bar:
 
 - floating
-- centered
-- large enough to act like an overlay scratchpad instead of a tiled split
+- separate from numbered project workspaces
+- the DP-1 Waybar `λ` right-click launches a separate `archmeros-aichat-beacon` instance; only this instance is placed beside the bar
+- both launch modes use the same context capture and OpenRouter configuration, but remain separate so the bar cannot reposition the normal `Super+A` window
+
+The launcher uses native spawn in both cases: forced medium placement for `Super+A`, and no generic placement for Beacon so its Lua hook remains authoritative.
 
 ### Context Injection
 
 Context injection is conservative on purpose.
 
-When `Super+A` is pressed:
+When `Super+A` is pressed or the DP-1 `λ` is right-clicked:
 
 1. ArchMerOS checks whether the currently focused Hyprland window is a WezTerm window.
 2. The wrapper maps the active Hyprland window PID back to the frontmost WezTerm client and pane.

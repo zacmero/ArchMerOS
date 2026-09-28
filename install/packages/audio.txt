@@ -1,4 +1,5 @@
 easyeffects
+cava
 lsp-plugins-lv2
 lsp-plugins-ladspa
 calf

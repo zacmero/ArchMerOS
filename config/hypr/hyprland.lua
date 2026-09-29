@@ -221,7 +221,8 @@ hl.bind(mod .. " + SHIFT + A",       hl.dsp.exec_cmd("~/.config/archmeros/script
 hl.bind(mod .. " + CTRL + A",        hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-ai-float.sh sessions"))
 
 -- Side monitor / audio
-hl.bind(mod .. " + S",               hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-side-standby.sh"))
+hl.bind(mod .. " + S",               hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cinema-mode.sh"))
+hl.bind(mod .. " + SHIFT + S",       hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cinema-mode.sh"))
 hl.bind(mod .. " + ALT + S",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-side-standby.sh"))
 hl.bind(mod .. " + ALT + SHIFT + S", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-audio.sh"))
 

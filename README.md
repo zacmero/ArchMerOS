@@ -500,7 +500,7 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+Return`: open WezTerm
 - `Super+Space`: launcher
 - `Super+E`: PARA hub / file access
-- `Super+S` or `Super+Alt+S`: side-screen standby toggle. The right side display uses DPMS, the left AOC display gets a black fullscreen cover because it does not expose DDC/CI power control, and `mero-monitor` is stopped/started with the same action.
+- `Super+S` or `Super+Shift+S`: cinema toggle. Keep the focused Hyprland monitor on and DPMS-off the other supported outputs; on the Bravia (`DP-1`), the HDMI screen turns off, and on HDMI the Bravia turns off. The AOC (`DP-3`) uses its existing black cover, not physical standby, because DPMS is unreliable there. The Turzx monitor service stops and resumes; the separate Foston WinCE/USB device remains unchanged. Press the binding again to restore only outputs cinema mode changed. `Super+Alt+S` retains the older side-screen toggle.
 - `Super+Print`: region screenshot
 - `Super+Shift+Print`: full screenshot
 - `Alt+1` to `Alt+9`: switch main workspaces
@@ -861,8 +861,8 @@ Active Keyboard Device:
 
 Current rule:
 
-- browser windows use Hyprland `fullscreenstate 2 0` so the monitor fullscreen does not force the browser client into presentation-mode-style fullscreen
-- non-browser windows keep the normal Hyprland fullscreen toggle
+- browsers and `archmeros-*` window classes use Hyprland `fullscreenstate 2 0` on entry, avoiding browser presentation mode; other classes use normal Hyprland fullscreen
+- pressing `Super+F` again explicitly clears fullscreen state in either path, including ArchMerOS WezTerm windows
 
 Current web-app placement rules:
 

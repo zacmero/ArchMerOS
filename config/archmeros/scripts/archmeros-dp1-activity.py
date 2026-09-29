@@ -208,19 +208,29 @@ def tailscale_peer() -> tuple[str, str]:
     return "unknown", f"Tailscale {backend or 'not running'}; Oracle A1 peer not present"
 
 
+def herdr_client_running() -> bool:
+    for entry in Path("/proc").iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            args = (entry / "cmdline").read_bytes().split(b"\0")
+        except OSError:
+            continue
+        if len(args) >= 2 and Path(os.fsdecode(args[0])).name == "herdr" and args[1] == b"":
+            return True
+    return False
+
+
 def render_fabric() -> None:
     oracle_state, oracle_detail = tailscale_peer()
-    if os.environ.get("HERDR_ENV") == "1":
-        herdr_state = "attached"
-    else:
-        herdr_state = "unattached" if HERDR_INSTALLED else "not installed"
+    herdr_state = "running" if herdr_client_running() else "stopped" if HERDR_INSTALLED else "not installed"
     oracle_icon = "●" if oracle_state == "online" else "○" if oracle_state == "offline" else "◇"
-    herdr_icon = "●" if herdr_state == "attached" else "○"
+    herdr_icon = "●" if herdr_state == "running" else "○"
     style = "online" if oracle_state == "online" else "partial"
     text = f"● LOCAL\n{oracle_icon} ORACLE A1\n{herdr_icon} HERDR"
     tooltip = (
         f"LOCAL · active session\nORACLE A1 · {oracle_detail}\n"
-        f"HERDR · {herdr_state}; agent counts unavailable without a Herdr-attached session"
+        f"HERDR · {herdr_state}; local client indicator, not agent counts"
     )
     output(text, style, tooltip)
 

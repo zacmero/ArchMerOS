@@ -3,7 +3,7 @@
   "layer": "top",
   "position": "right",
   "exclusive": true,
-  "width": 190,
+  "width": 202,
   "spacing": 4,
   "margin": "8 8 8 0",
   "reload_style_on_change": true,
@@ -20,7 +20,7 @@
     "format": "λ",
     "tooltip": true,
     "tooltip-format": "ARCHMEROS AI HUB\nLeft click: terminal\nRight click: open docked AI HUD",
-    "on-click": "$HOME/.config/archmeros/scripts/archmeros-wezterm.sh terminal",
+    "on-click": "env -u MERO_FASTFETCH_SHOWN $HOME/.config/archmeros/scripts/archmeros-wezterm.sh terminal",
     "on-click-right": "/home/zacmero/.config/archmeros/scripts/archmeros-ai-float.sh beacon"
   },
   "custom/spectrum": {
@@ -49,7 +49,7 @@
     "format": "{text}",
     "return-type": "json",
     "interval": 30,
-    "exec": "$HOME/.config/archmeros/scripts/archmeros-dp1-activity.py events",
+    "exec": "$HOME/.config/archmeros/scripts/archmeros-git-events.py",
     "tooltip": true
   },
   "custom/fieldnote": {

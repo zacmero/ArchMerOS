@@ -13,14 +13,16 @@ Waybar starts through the ArchMerOS wrapper so hidden-monitor state is respected
 
 ## DP-1 Beacon
 
-DP-1 has a 190px right-side Waybar dedicated to project and automation context, not machine telemetry. Its four-sided frame and shared ArchMerOS palette surround open space rather than a stack of cards.
+DP-1 has a 202px right-side Waybar dedicated to project and automation context, not machine telemetry. Its four-sided frame and shared ArchMerOS palette surround open space rather than a stack of cards.
 
-- `λ`: left-click opens the normal ArchMerOS WezTerm launcher; right-click launches the dedicated AI HUD beside the bar.
+- `λ`: left-click opens the normal ArchMerOS WezTerm launcher with Fastfetch, clearing an inherited `MERO_FASTFETCH_SHOWN` flag from Waybar; right-click opens the dedicated AI HUD beside the bar.
 - `Super+A` retains its original centered HUD. The right-click uses a separate `archmeros-aichat-beacon` window class, with the same context capture and OpenRouter configuration, so its DP-1 placement cannot move the normal HUD.
-- When CAVA is installed, it renders an 18-band audio-reactive spectrum at 30 fps. Waybar consumes CAVA raw output, so the custom Waybar build does not need its optional CAVA module. CAVA is in `install/packages/audio.txt`; install it on an existing machine with `sudo pacman -S cava`. The module stays hidden while the binary is absent.
+- When CAVA is installed, it renders a 20-band, 10-row audio-reactive spectrum at 30 fps. Waybar consumes CAVA raw output, so the custom Waybar build does not need its optional CAVA module. CAVA is in `install/packages/audio.txt`; install it on an existing machine with `sudo pacman -S cava`. The module stays hidden while the binary is absent.
+- The Waybar restart/stop script terminates only CAVA processes using Beacon's own config, preventing orphaned capture processes after toggles.
+- After five seconds below the sound threshold, the same 20-by-10 grid runs a white four-frames-per-second pulse. Detected audio restores the reactive display immediately.
 - Project context follows the focused terminal/editor when its working directory is a Git repository. It reports branch, dirty state, and local ahead/behind counts.
-- GitHub Actions status is cached for 75 seconds; the recent-event line falls back to the latest local commit when no run is available.
-- The execution readout is limited to local, Oracle A1 (`prod-attack` via Tailscale), and Herdr. It makes no SSH health probes. Herdr agent counts remain unavailable outside a Herdr-attached session.
+- The event feed scans Git reflogs in repositories directly or one level below `~/projects` for local commits and remote-tracking `update by push` entries, including those made by agents. It also caches authenticated GitHub push, PR, and release events for 90 seconds. It shows the three newest events with more detail on hover. Explicit-URL pushes may not update a local remote-tracking reflog; GitHub's activity API can cover those, but may omit private or delayed events. This is not a record of every Git command or uncommitted edit.
+- The execution readout is limited to local, Oracle A1, and Herdr. Local means this desktop session is active. Oracle A1 is `prod-attack`'s Tailscale online flag, not an SSH or job-health check. Herdr lights when a local interactive `herdr` client process exists; it does not report agent counts from Waybar.
 - The bottom `✦` reveals field note 04 on hover; `04` remains only the note identifier, not a visible counter.
 - CPU/GPU temperatures, memory, load, and other conventional hardware telemetry are intentionally absent.
 
@@ -31,6 +33,7 @@ Relevant files:
 - `config/waybar/cava.conf`
 - `config/archmeros/scripts/archmeros-cava-waybar.py`
 - `config/archmeros/scripts/archmeros-dp1-activity.py`
+- `config/archmeros/scripts/archmeros-git-events.py`
 - `config/hypr/ai_hub.lua`
 - `config/archmeros/scripts/archmeros-waybar.sh`
 

@@ -112,6 +112,7 @@ wait_for_waybar_stop() {
 restart_waybar() {
   pkill -x waybar >/dev/null 2>&1 || true
   wait_for_waybar_stop
+  pkill -u "$(id -u)" -f "^cava -p ${HOME}/.config/waybar/cava[.]conf$" >/dev/null 2>&1 || true
 
   if monitor_visible "DP-3"; then
     start_bar "${HOME}/.config/waybar/left.jsonc" "left"
@@ -199,6 +200,7 @@ case "${1:-start}" in
     ;;
   stop)
     pkill -x waybar >/dev/null 2>&1 || true
+    pkill -u "$(id -u)" -f "^cava -p ${HOME}/.config/waybar/cava[.]conf$" >/dev/null 2>&1 || true
     ;;
   toggle)
     setup_hypr_env

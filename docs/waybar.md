@@ -21,9 +21,10 @@ DP-1 has a 202px right-side Waybar dedicated to project and automation context, 
 - The Waybar restart/stop script terminates only CAVA processes using Beacon's own config, preventing orphaned capture processes after toggles.
 - After five seconds below the sound threshold, the same 20-by-10 grid runs a white four-frames-per-second pulse. Detected audio restores the reactive display immediately.
 - Project context follows the focused terminal/editor when its working directory is a Git repository. It reports branch, dirty state, and local ahead/behind counts.
-- The event feed scans Git reflogs in repositories directly or one level below `~/projects` for local commits and remote-tracking `update by push` entries, including those made by agents. It also caches authenticated GitHub push, PR, and release events for 90 seconds. It shows the three newest events with more detail on hover. Explicit-URL pushes may not update a local remote-tracking reflog; GitHub's activity API can cover those, but may omit private or delayed events. This is not a record of every Git command or uncommitted edit.
+- The event feed scans local Git reflogs and caches authenticated GitHub push, PR, and release events for 90 seconds. It shows the five newest events; left-click opens up to 60 in a `bat`-paged terminal (`less` fallback). Local commits and remote-tracking pushes made by agents can appear, but private or delayed GitHub activity may be absent. This does not record every Git command or uncommitted edit.
 - The execution readout is limited to local, Oracle A1, and Herdr. Local means this desktop session is active. Oracle A1 is `prod-attack`'s Tailscale online flag, not an SSH or job-health check. Herdr lights when a local interactive `herdr` client process exists; it does not report agent counts from Waybar.
-- The bottom `✦` reveals field note 04 on hover; `04` remains only the note identifier, not a visible counter.
+- Between the LOCAL/ORACLE/HERDR readout and Git events, Daemon Master animates observed local state. Hover for status; left-click to speak with the system's AI daemon persona using a read-only snapshot. Right-click requests one short OpenRouter free-model message as a notification. `Super+A` remains independent.
+- Bottom sigils rank services and context by measured activity. Hover for names and state. The order is not OS scheduling priority and does not imply Herdr agent counts.
 - CPU/GPU temperatures, memory, load, and other conventional hardware telemetry are intentionally absent.
 
 Relevant files:
@@ -34,6 +35,9 @@ Relevant files:
 - `config/archmeros/scripts/archmeros-cava-waybar.py`
 - `config/archmeros/scripts/archmeros-dp1-activity.py`
 - `config/archmeros/scripts/archmeros-git-events.py`
+- `config/archmeros/scripts/archmeros-git-history.sh`
+- `config/archmeros/scripts/archmeros-beacon-familiar.py`
+- `config/archmeros/scripts/archmeros-daemon-message.sh`
 - `config/hypr/ai_hub.lua`
 - `config/archmeros/scripts/archmeros-waybar.sh`
 

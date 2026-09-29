@@ -136,14 +136,30 @@ window#waybar.beacon > box {
   font-weight: 500;
 }
 
-#custom-fieldnote {
+#custom-daemon {
   color: @lavender;
-  font-size: 21pt;
+  font-family: CaskaydiaCove Nerd Font, monospace;
+  font-size: 12pt;
   font-weight: 700;
-  padding: 10px 0 3px;
-  transition: color 160ms ease-out;
+  padding: 12px 0;
+  min-height: 125px;
+  transition: color 180ms ease-out;
 }
 
-#custom-fieldnote:hover {
+#custom-daemon.idle { color: @lavender; }
+#custom-daemon.music { color: @teal; }
+#custom-daemon.awake { color: @pink; }
+#custom-daemon.working { color: @cyan; }
+#custom-daemon.flash { color: #ffffff; }
+#custom-daemon.failure { color: @red; }
+#custom-daemon.offline { color: @surface2; }
+#custom-daemon:hover {
   color: @pink;
+}
+
+#custom-sigils {
+  font-family: CaskaydiaCove Nerd Font, monospace;
+  font-size: 12pt;
+  font-weight: 700;
+  padding: 6px 0 8px;
 }

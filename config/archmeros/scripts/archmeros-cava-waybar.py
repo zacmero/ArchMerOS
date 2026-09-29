@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
+from pathlib import Path
 
 
 BAR_COUNT = 20
@@ -14,6 +16,17 @@ MAX_VALUE = 1000.0
 SOUND_THRESHOLD = 10.0
 IDLE_AFTER_SECONDS = 5.0
 PULSE_RADII = (0.20, 0.35, 0.50, 0.65, 0.80, 0.65, 0.50, 0.35)
+AUDIO_FILE = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")) / "archmeros" / "beacon-audio.json"
+
+
+def publish_peak(peak: float, now: float) -> None:
+    try:
+        AUDIO_FILE.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+        temporary = AUDIO_FILE.with_name(f"{AUDIO_FILE.name}.{os.getpid()}")
+        temporary.write_text(json.dumps({"time": now, "peak": peak}))
+        os.replace(temporary, AUDIO_FILE)
+    except OSError:
+        pass
 
 
 def idle_pattern(now: float) -> str:
@@ -62,11 +75,16 @@ def visual(values: list[float], last_sound: float, now: float) -> tuple[dict[str
 
 def main() -> int:
     last_sound = time.monotonic()
+    last_publish = 0.0
     previous = None
     for line in sys.stdin:
         values = frame_values(line)
         if values:
-            frame, last_sound = visual(values, last_sound, time.monotonic())
+            now = time.monotonic()
+            if now - last_publish >= 0.5:
+                publish_peak(max(values, default=0.0) / MAX_VALUE, now)
+                last_publish = now
+            frame, last_sound = visual(values, last_sound, now)
             if frame != previous:
                 print(json.dumps(frame, ensure_ascii=False), flush=True)
                 previous = frame

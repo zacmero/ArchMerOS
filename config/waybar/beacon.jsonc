@@ -3,7 +3,7 @@
   "layer": "top",
   "position": "right",
   "exclusive": true,
-  "width": 202,
+  "width": 204,
   "spacing": 4,
   "margin": "8 8 8 0",
   "reload_style_on_change": true,
@@ -13,9 +13,10 @@
     "custom/spectrum",
     "custom/project",
     "custom/fabric",
+    "custom/daemon",
     "custom/events"
   ],
-  "modules-right": ["custom/fieldnote"],
+  "modules-right": ["custom/sigils"],
   "custom/beacon": {
     "format": "λ",
     "tooltip": true,
@@ -50,11 +51,23 @@
     "return-type": "json",
     "interval": 30,
     "exec": "$HOME/.config/archmeros/scripts/archmeros-git-events.py",
+    "on-click": "$HOME/.config/archmeros/scripts/archmeros-git-history.sh",
     "tooltip": true
   },
-  "custom/fieldnote": {
-    "format": "✦",
-    "tooltip": true,
-    "tooltip-format": "FIELD NOTE 04\nThe screen is only a window. The system is the composition."
+  "custom/daemon": {
+    "format": "{text}",
+    "return-type": "json",
+    "exec": "$HOME/.config/archmeros/scripts/archmeros-beacon-familiar.py stream",
+    "restart-interval": 2,
+    "on-click": "$HOME/.config/archmeros/scripts/archmeros-ai-float.sh daemon",
+    "on-click-right": "$HOME/.config/archmeros/scripts/archmeros-daemon-message.sh",
+    "tooltip": true
+  },
+  "custom/sigils": {
+    "format": "{text}",
+    "return-type": "json",
+    "interval": 2,
+    "exec": "$HOME/.config/archmeros/scripts/archmeros-beacon-familiar.py sigils",
+    "tooltip": true
   }
 }

@@ -43,6 +43,12 @@ case "$mode" in
 
     ARCHMEROS_FORCE_POP_MODE=none launch_wezterm_native "$launch_class" --cwd "$HOME" -- bash "$runner" "$context_file" "$archmeros_env"
     ;;
+  daemon)
+    launch_class="archmeros-aichat-beacon"
+    context_file="$(mktemp "${XDG_RUNTIME_DIR:-/tmp}/archmeros-familiar.XXXXXX")"
+    "$HOME/.config/archmeros/scripts/archmeros-beacon-familiar.py" context > "$context_file"
+    ARCHMEROS_FORCE_POP_MODE=none launch_wezterm_native "$launch_class" --cwd "$HOME" -- bash "$runner" "$context_file" "$archmeros_env"
+    ;;
   fabric)
     launch_class="archmeros-fabric-browser"
     launch_wezterm "$launch_class" --cwd "$HOME" -- bash "$fabric_browser" "$@"
@@ -52,7 +58,7 @@ case "$mode" in
     launch_wezterm "$launch_class" --cwd "$HOME" -- bash "$session_browser"
     ;;
   *)
-    printf 'Usage: %s [aichat|beacon|fabric|sessions]\n' "$0" >&2
+    printf 'Usage: %s [aichat|beacon|daemon|fabric|sessions]\n' "$0" >&2
     exit 1
     ;;
 esac

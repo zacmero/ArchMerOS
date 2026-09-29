@@ -123,6 +123,10 @@ if [[ -n "$context_file" && -s "$context_file" ]]; then
       context_summary="pane ${pane_id:-?}"
       [[ -n "$captured_lines" ]] && context_summary="${context_summary} · ${captured_lines}"
       ;;
+    daemon)
+      context_source="Daemon Master"
+      context_summary="Read-only local activity snapshot"
+      ;;
   esac
 fi
 
@@ -130,6 +134,9 @@ print_header "$session_name" "$context_source" "$context_summary" "$(model_label
 
 if [[ -n "$context_file" && -s "$context_file" ]]; then
   preload_prompt="Use the attached source context as background context. Do not answer anything yet. Wait for my next question."
+  if [[ "$(sed -n 's/^Source: //p' "$context_file" | head -n 1)" == daemon ]]; then
+    preload_prompt="You are Daemon Master, the AI daemon persona of ArchMerOS. Use this read-only snapshot to answer later status questions as the system, with a distinct but concise voice. Never claim to have performed actions or repairs, and distinguish observations from inference. Wait for my next question."
+  fi
 
   if ! aichat "${model_args[@]}" --session "$session_name" --empty-session --save-session --file "$context_file" "$preload_prompt" >/tmp/archmeros-aichat-preload.log 2>&1; then
     printf '%bContext preload failed. Starting the interactive session anyway.%b\n\n' "$accent_green" "$reset" >&2

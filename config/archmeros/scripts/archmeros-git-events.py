@@ -3,11 +3,13 @@
 
 from __future__ import annotations
 
+import html
 import json
 import os
 import re
 import shutil
 import subprocess
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -128,7 +130,7 @@ def github_events() -> tuple[list[dict], bool]:
     return events, True
 
 
-def main() -> None:
+def collect_events() -> tuple[list[dict], bool]:
     remote, fresh = github_events()
     events = local_events() + remote
     pushed = {(event["repo"], event["head"]) for event in events if event["kind"] == "PUSH" and event["head"]}
@@ -137,13 +139,49 @@ def main() -> None:
     unique = {}
     for event in events:
         unique.setdefault((event["kind"], event["repo"], event["head"]), event)
-    events = list(unique.values())
+    return list(unique.values()), fresh
+
+
+def history(events: list[dict], fresh: bool) -> str:
+    lines = ["# ArchMerOS Git activity", "", "Local: ~/projects reflogs  |  Remote: authenticated GitHub activity", ""]
+    if not fresh:
+        lines.append("GitHub feed unavailable or stale; showing available events.\n")
+    if not events:
+        lines.append("No recent Git activity found.")
+    else:
+        lines.extend((
+            "| Time             | Event   | Repository               | Detail",
+            "|:-----------------|:--------|:-------------------------|:------",
+        ))
+    colors = {"COMMIT": "\033[38;2;182;168;239m", "PUSH": "\033[38;2;116;203;187m",
+              "PR": "\033[38;2;241;199;132m", "RELEASE": "\033[38;2;239;135;154m"}
+    for event in events[:60]:
+        when = datetime.fromtimestamp(event["time"]).strftime("%Y-%m-%d %H:%M")
+        detail = str(event.get("detail") or "").replace("\n", " ").replace("|", "/").strip()
+        detail = detail[:39] + "…" if len(detail) > 40 else detail
+        repo = str(event["repo"]).replace("|", "/")[:24]
+        kind = str(event["kind"])
+        event_cell = f"{colors.get(kind, '')}{kind:<7}\033[0m"
+        lines.append(f"| {when} | {event_cell} | {repo:<24} | {detail}")
+    return "\n".join(lines)
+
+
+def main() -> None:
+    events, fresh = collect_events()
+    if "--history" in sys.argv[1:]:
+        print(history(events, fresh))
+        return
     if not events:
         print(json.dumps({"text": "- NO GIT EVENTS", "class": "idle", "tooltip": "Local: ~/projects Git reflogs. Remote: authenticated GitHub activity."}))
         return
-    shown = events[:3]
-    text = "\n".join(f"{event['kind']} {event['repo'][:11]} {age(event['time'])}" for event in shown)
-    detail = "\n".join(f"{event['kind']} {event['repo']} {age(event['time'])}: {event['detail']}" for event in events[:6])
+    shown = events[:5]
+    colors = {"COMMIT": "#b6a8ef", "PUSH": "#74cbbb", "PR": "#f1c784", "RELEASE": "#ef879a"}
+    text = "\n".join(
+        f'<span foreground="{colors.get(event["kind"], "#b5bbd1")}">{html.escape(event["kind"])}</span> '
+        f'{html.escape(event["repo"][:11])} {html.escape(age(event["time"]))}'
+        for event in shown
+    )
+    detail = "\n".join(f"{event['kind']} {event['repo']} {age(event['time'])}: {event['detail']}" for event in events[:10])
     source = "Local ~/projects reflogs; GitHub activity API" + ("" if fresh else " (remote unavailable/stale)")
     print(json.dumps({"text": text, "class": "active" if time.time() - events[0]["time"] < 600 else "idle",
                       "tooltip": f"{detail}\n\n{source}"}, ensure_ascii=False))

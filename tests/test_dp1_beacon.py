@@ -2,9 +2,12 @@
 """Focused checks for Beacon's local Git feed and audio renderer."""
 
 import importlib.util
+import io
+import json
 import tempfile
 import time
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 
@@ -19,6 +22,51 @@ def load(name, path):
 
 
 class BeaconTests(unittest.TestCase):
+    def test_git_feed_shows_five_and_history_keeps_more(self):
+        events = load("git_events_history", ROOT / "config/archmeros/scripts/archmeros-git-events.py")
+        now = time.time()
+        sample = [
+            {"time": now - index, "kind": "PR" if index == 0 else "PUSH",
+             "repo": f"repo-{index}", "head": str(index), "detail": "opened"}
+            for index in range(7)
+        ]
+        events.collect_events = lambda: (sample, True)
+        output = io.StringIO()
+        with redirect_stdout(output):
+            events.main()
+        self.assertEqual(len(json.loads(output.getvalue())["text"].splitlines()), 5)
+        self.assertIn("repo-6", events.history(sample, True))
+        self.assertIn("\033[38;2;241;199;132m", events.history(sample, True))
+
+    def test_familiar_state_and_sigils(self):
+        familiar = load("beacon_familiar", ROOT / "config/archmeros/scripts/archmeros-beacon-familiar.py")
+        services = familiar.rank([
+            familiar.service("ssh", "idle"),
+            familiar.service("herdr", "busy", cpu=9.0, count=2),
+            familiar.service("oracle", "failed"),
+        ])
+        state = {
+            "services": services,
+            "network": "full",
+            "ci_failed": False,
+            "agent_flash": False,
+            "ai_active": False,
+            "audio_peak": 0.0,
+            "wall_time": time.time(),
+            "oracle_detail": "online",
+            "repo": "none",
+        }
+        self.assertEqual(services[-1]["key"], "oracle")
+        self.assertEqual(familiar.mode(state), "working")
+        self.assertEqual(familiar.art(state, 0)["class"], "working")
+        symbols = familiar.sigils(state)
+        self.assertNotIn("Herdr", symbols["text"])
+        self.assertIn("Herdr", symbols["tooltip"])
+        self.assertIn("#d0a4eb", symbols["text"])
+        self.assertIn("#ff6688", symbols["text"])
+        self.assertIn("read-only", familiar.context(state))
+        self.assertIn("Daemon Master", familiar.context(state))
+
     def test_local_commit_and_push_reflogs(self):
         events = load("git_events", ROOT / "config/archmeros/scripts/archmeros-git-events.py")
         stamp = int(time.time())

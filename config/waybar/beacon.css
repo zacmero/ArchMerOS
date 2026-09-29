@@ -12,10 +12,7 @@
 window#waybar.beacon {
   background: @mantle;
   color: @text;
-  border-top: 1px solid @text;
-  border-right: 2px solid @accent2;
-  border-bottom: 1px solid @text;
-  border-left: 2px solid @accent2;
+  border: 2px solid #ffffff;
 }
 
 window#waybar.beacon > box {
@@ -45,6 +42,26 @@ window#waybar.beacon > box {
 
 #custom-beacon:hover {
   color: @teal;
+}
+
+#custom-moon {
+  color: @subtext1;
+  font-family: CaskaydiaCove Nerd Font, monospace;
+  font-size: 11pt;
+  font-weight: 700;
+  padding: 10px 0 6px;
+}
+
+#custom-moon.rain { color: @cyan; }
+#custom-moon.cloud { color: @lavender; }
+#custom-moon.stars { color: @yellow; }
+
+#custom-whisper {
+  color: @subtext0;
+  font-size: 8pt;
+  font-style: italic;
+  padding: 5px 2px 9px;
+  border-bottom: 1px solid @surface1;
 }
 
 #custom-spectrum {
@@ -159,7 +176,7 @@ window#waybar.beacon > box {
 
 #custom-sigils {
   font-family: CaskaydiaCove Nerd Font, monospace;
-  font-size: 12pt;
+  font-size: 11pt;
   font-weight: 700;
-  padding: 6px 0 8px;
+  padding: 4px 0 6px;
 }

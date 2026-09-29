@@ -16,6 +16,8 @@ Waybar starts through the ArchMerOS wrapper so hidden-monitor state is respected
 DP-1 has a 202px right-side Waybar dedicated to project and automation context, not machine telemetry. Its four-sided frame and shared ArchMerOS palette surround open space rather than a stack of cards.
 
 - `λ`: left-click opens the normal ArchMerOS WezTerm launcher with Fastfetch, clearing an inherited `MERO_FASTFETCH_SHOWN` flag from Waybar; right-click opens the dedicated AI HUD beside the bar.
+- The moon art is always visible beneath `λ`, including daytime. Hover for its English phase name and Farroupilha's day, date, and time in Roman numerals; left-click shows the same details in an eight-second notification. Cached `wttr.in/Farroupilha,RS` conditions add moving rain or clouds to the twinkling field. The art updates once a second to allow the GTK tooltip to appear; weather refreshes at most every ten minutes. The locally calculated moon remains visible offline.
+- Daemon Master's whisper below the moon changes only with observed system state or once daily. It makes no AI call. A thin divider separates it from CAVA.
 - `Super+A` retains its original centered HUD. The right-click uses a separate `archmeros-aichat-beacon` window class, with the same context capture and OpenRouter configuration, so its DP-1 placement cannot move the normal HUD.
 - When CAVA is installed, it renders a 20-band, 10-row audio-reactive spectrum at 30 fps. Waybar consumes CAVA raw output, so the custom Waybar build does not need its optional CAVA module. CAVA is in `install/packages/audio.txt`; install it on an existing machine with `sudo pacman -S cava`. The module stays hidden while the binary is absent.
 - The Waybar restart/stop script terminates only CAVA processes using Beacon's own config, preventing orphaned capture processes after toggles.
@@ -24,7 +26,7 @@ DP-1 has a 202px right-side Waybar dedicated to project and automation context, 
 - The event feed scans local Git reflogs and caches authenticated GitHub push, PR, and release events for 90 seconds. It shows the five newest events; left-click opens up to 60 in a `bat`-paged terminal (`less` fallback). Local commits and remote-tracking pushes made by agents can appear, but private or delayed GitHub activity may be absent. This does not record every Git command or uncommitted edit.
 - The execution readout is limited to local, Oracle A1, and Herdr. Local means this desktop session is active. Oracle A1 is `prod-attack`'s Tailscale online flag, not an SSH or job-health check. Herdr lights when a local interactive `herdr` client process exists; it does not report agent counts from Waybar.
 - Between the LOCAL/ORACLE/HERDR readout and Git events, Daemon Master animates observed local state. Hover for status; left-click to speak with the system's AI daemon persona using a read-only snapshot. Right-click requests one short OpenRouter free-model message as a notification. `Super+A` remains independent.
-- Bottom sigils rank services and context by measured activity. Hover for names and state. The order is not OS scheduling priority and does not imply Herdr agent counts.
+- Bottom sigils show the five highest-ranked services and context signals, with failures retained. Hover for the full ranking. The order is not OS scheduling priority and does not imply Herdr agent counts.
 - CPU/GPU temperatures, memory, load, and other conventional hardware telemetry are intentionally absent.
 
 Relevant files:
@@ -37,9 +39,12 @@ Relevant files:
 - `config/archmeros/scripts/archmeros-git-events.py`
 - `config/archmeros/scripts/archmeros-git-history.sh`
 - `config/archmeros/scripts/archmeros-beacon-familiar.py`
+- `config/archmeros/scripts/archmeros-beacon-moon.py`
 - `config/archmeros/scripts/archmeros-daemon-message.sh`
 - `config/hypr/ai_hub.lua`
 - `config/archmeros/scripts/archmeros-waybar.sh`
+
+Beacon's `~/.config/archmeros/scripts/...` commands are tracked in this repository under `config/archmeros/scripts/`. Run `./install/link.sh` on a new installation to link both `config/archmeros` and `config/waybar` into `~/.config`; do not copy the JSONC alone. The same installer links `config/nvim/after/ftplugin/css.lua` into an existing Neovim config. This disables false web-CSS diagnostics only for Waybar GTK CSS files (`@define-color` and `@text` syntax), leaving other CSS linting unchanged.
 
 ## Workspace Cycling
 

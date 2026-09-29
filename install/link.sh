@@ -10,6 +10,8 @@ firefox_profiles_ini="${firefox_root}/profiles.ini"
 declare -A links=(
   ["${config_root}/hypr"]="${HOME}/.config/hypr"
   ["${config_root}/waybar"]="${HOME}/.config/waybar"
+
+  ["${config_root}/nvim/after/ftplugin/css.lua"]="${HOME}/.config/nvim/after/ftplugin/css.lua"
   ["${config_root}/rofi"]="${HOME}/.config/rofi"
   ["${config_root}/walker"]="${HOME}/.config/walker"
   ["${config_root}/mako"]="${HOME}/.config/mako"

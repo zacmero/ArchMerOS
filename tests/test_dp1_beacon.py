@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Focused checks for Beacon's local Git feed and audio renderer."""
 
+import ast
 import importlib.util
 import io
 import json
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 from contextlib import redirect_stdout
 from pathlib import Path
 
@@ -22,6 +24,38 @@ def load(name, path):
 
 
 class BeaconTests(unittest.TestCase):
+    def test_moon_stream_sleeps_inside_loop(self):
+        path = ROOT / "config/archmeros/scripts/archmeros-beacon-moon.py"
+        tree = ast.parse(path.read_text())
+        main = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "main")
+        loop = next(node for node in ast.walk(main) if isinstance(node, ast.While))
+        self.assertTrue(any(isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                            and node.func.attr == "sleep" for statement in loop.body
+                            for node in ast.walk(statement)))
+
+    def test_moon_phase_weather_and_roman_clock(self):
+        moon = load("beacon_moon", ROOT / "config/archmeros/scripts/archmeros-beacon-moon.py")
+        self.assertEqual(moon.roman(2026), "MMXXVI")
+        self.assertEqual(moon.roman(0), "N")
+        self.assertEqual(moon.phase(moon.NEW_MOON)[0], "New Moon")
+        self.assertEqual(moon.weather_mode({"cloud": 79, "rain": 0.1, "code": 176}), "rain")
+        self.assertEqual(moon.weather_mode({"cloud": 79, "rain": 0, "code": 119}), "cloud")
+        output = moon.moon_output(moon.NEW_MOON, {"cloud": 79, "rain": 0.1, "code": 176}, 1)
+        self.assertIn("VI / I / MM", output["tooltip"])
+        self.assertEqual(output["tooltip"], moon.moon_output(moon.NEW_MOON.replace(second=30), {"cloud": 79, "rain": 0.1, "code": 176}, 2)["tooltip"])
+        self.assertEqual(output["class"], "rain")
+        self.assertNotIn("New Moon", output["text"])
+        self.assertNotEqual(moon.moon_art(0.4, "rain", 0), moon.moon_art(0.4, "rain", 1))
+        self.assertNotEqual(moon.moon_art(0.4, "cloud", 0), moon.moon_art(0.4, "cloud", 1))
+        self.assertNotEqual(moon.moon_art(0.4, "stars", 0), moon.moon_art(0.4, "stars", 1))
+        self.assertTrue(all(len(row) == 15 for row in output["text"].splitlines()))
+        with patch.object(moon.subprocess, "run") as notify:
+            moon.show_moon(moon.NEW_MOON, {"cloud": 79, "rain": 0.1, "code": 176})
+        command = notify.call_args.args[0]
+        self.assertEqual(command[0], "notify-send")
+        self.assertEqual(command[-2], "New Moon")
+        self.assertIn("Farroupilha, RS", command[-1])
+
     def test_git_feed_shows_five_and_history_keeps_more(self):
         events = load("git_events_history", ROOT / "config/archmeros/scripts/archmeros-git-events.py")
         now = time.time()
@@ -60,12 +94,21 @@ class BeaconTests(unittest.TestCase):
         self.assertEqual(familiar.mode(state), "working")
         self.assertEqual(familiar.art(state, 0)["class"], "working")
         symbols = familiar.sigils(state)
+        self.assertEqual(len(symbols["text"].splitlines()), 3)
         self.assertNotIn("Herdr", symbols["text"])
         self.assertIn("Herdr", symbols["tooltip"])
         self.assertIn("#d0a4eb", symbols["text"])
         self.assertIn("#ff6688", symbols["text"])
         self.assertIn("read-only", familiar.context(state))
         self.assertIn("Daemon Master", familiar.context(state))
+        state["services"] = familiar.rank(services + [
+            familiar.service("syncthing", "running"),
+            familiar.service("pipewire", "running"),
+            familiar.service("ai", "idle"),
+            familiar.service("repo", "idle"),
+        ])
+        self.assertEqual(len(familiar.sigils(state)["text"].splitlines()), 5)
+        self.assertIn("#ff6688", familiar.sigils(state)["text"])
 
     def test_local_commit_and_push_reflogs(self):
         events = load("git_events", ROOT / "config/archmeros/scripts/archmeros-git-events.py")

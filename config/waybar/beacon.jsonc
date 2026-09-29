@@ -8,21 +8,30 @@
   "margin": "8 8 8 0",
   "reload_style_on_change": true,
   "output": "DP-1",
-  "modules-left": ["custom/beacon"],
-  "modules-center": [
-    "custom/spectrum",
-    "custom/project",
-    "custom/fabric",
-    "custom/daemon",
-    "custom/events"
-  ],
+  "modules-left": ["custom/beacon", "custom/moon", "custom/whisper"],
+  "modules-center": ["custom/spectrum", "custom/project", "custom/fabric", "custom/daemon", "custom/events"],
   "modules-right": ["custom/sigils"],
   "custom/beacon": {
     "format": "λ",
     "tooltip": true,
     "tooltip-format": "ARCHMEROS AI HUB\nLeft click: terminal\nRight click: open docked AI HUD",
     "on-click": "env -u MERO_FASTFETCH_SHOWN $HOME/.config/archmeros/scripts/archmeros-wezterm.sh terminal",
-    "on-click-right": "/home/zacmero/.config/archmeros/scripts/archmeros-ai-float.sh beacon"
+    "on-click-right": "$HOME/.config/archmeros/scripts/archmeros-ai-float.sh beacon"
+  },
+  "custom/moon": {
+    "format": "{text}",
+    "return-type": "json",
+    "exec": "$HOME/.config/archmeros/scripts/archmeros-beacon-moon.py stream",
+    "restart-interval": 2,
+    "tooltip": true,
+    "on-click": "$HOME/.config/archmeros/scripts/archmeros-beacon-moon.py show"
+  },
+  "custom/whisper": {
+    "format": "{text}",
+    "return-type": "json",
+    "interval": 15,
+    "exec": "$HOME/.config/archmeros/scripts/archmeros-beacon-moon.py whisper",
+    "tooltip": true
   },
   "custom/spectrum": {
     "format": "{text}",

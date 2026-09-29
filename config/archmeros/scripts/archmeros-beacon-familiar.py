@@ -194,7 +194,11 @@ def sigils(state: dict) -> dict:
     rows = []
     palette = {"herdr": "#d0a4eb", "oracle": "#8cbfe5", "syncthing": "#79cbb9",
                "pipewire": "#e5c590", "ssh": "#aab9d9", "ai": "#e9a1c6", "repo": "#b7d49a"}
-    for item in state["services"]:
+    visible = state["services"][:5]
+    failed = next((item for item in state["services"] if item["failed"]), None)
+    if failed and failed not in visible:
+        visible[-1] = failed
+    for item in visible:
         trend = "▼" if item["failed"] else "▲▲" if item["score"] >= 4 else "▲" if item["score"] >= 2 else "·"
         color = "#ff6688" if item["failed"] else palette.get(item["key"], "#d9dbe8")
         rows.append(f'<span foreground="{color}">{item["glyph"]}  {trend}</span>')

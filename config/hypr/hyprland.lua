@@ -350,14 +350,11 @@ hl.bind(mod .. " + 0",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/arch
 hl.bind(mod .. " + period",    hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-emoji.sh"))
 
 -- Focus movement (vim + arrows)
-hl.bind(mod .. " + J",     hl.dsp.focus({ direction = "down" }))
-hl.bind(mod .. " + K",     hl.dsp.focus({ direction = "up" }))
-hl.bind(mod .. " + H",     hl.dsp.focus({ direction = "left" }))
-hl.bind(mod .. " + L",     hl.dsp.focus({ direction = "right" }))
-hl.bind(mod .. " + Left",  hl.dsp.focus({ direction = "left" }))
-hl.bind(mod .. " + Right", hl.dsp.focus({ direction = "right" }))
-hl.bind(mod .. " + Up",    hl.dsp.focus({ direction = "up" }))
-hl.bind(mod .. " + Down",  hl.dsp.focus({ direction = "down" }))
+for key, direction in pairs({J = "down", K = "up", H = "left", L = "right",
+                            Left = "left", Right = "right", Up = "up", Down = "down"}) do
+    hl.bind(mod .. " + " .. key, hl.dsp.exec_cmd(
+        "python3 ~/.config/archmeros/scripts/archmeros-focus-window.py " .. direction))
+end
 
 -- Window move / waybar toggle
 hl.bind(mod .. " + SHIFT + J", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-move-window.py d"))

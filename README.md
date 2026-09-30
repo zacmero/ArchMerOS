@@ -684,6 +684,26 @@ Wayland as well.
 
 The linker attaches `user.js` and `userChrome.css` across all active Firefox profiles.
 
+## ChatGPT Desktop
+
+The package manifest includes `chatgpt-desktop` from the AUR for future installs.
+It repackages OpenAI's Linux desktop binary from `persistent.oaistatic.com`
+and supports both `x86_64` and `aarch64`. The Arch packaging is community-maintained:
+[AUR package](https://aur.archlinux.org/packages/chatgpt-desktop),
+[OpenAI Linux package index](https://persistent.oaistatic.com/codex-app-prod/linux/deb/dists/stable/main/binary-amd64/Packages).
+
+To add only this app to an existing installation, without a full OS update:
+
+```bash
+rtk yay -S --needed chatgpt-desktop
+```
+
+The existing ChatGPT webapp, its isolated browser profile, and `Super+Shift+C`
+remain available. Launch `ChatGPT Desktop` separately from the application menu.
+Its portable launcher uses `chatgpt` from `PATH` and a separate desktop entry,
+so the existing webapp does not hide the packaged desktop app. The launcher is
+hidden on systems where the desktop package is not installed.
+
 ## Web Apps
 
 Firefox remains the main browser. ArchMerOS still uses isolated Chromium-style web apps for some tools, but YouTube Music now uses a dedicated Firefox app shell because Chromium was a bad ad-blocking host.

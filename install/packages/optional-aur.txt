@@ -1,4 +1,6 @@
 # Optional packages not currently available in the official Arch repos used here
+# OpenAI's Linux desktop binary; AUR packaging supports x86_64 and aarch64.
+chatgpt-desktop
 wlogout
 walker-bin
 elephant

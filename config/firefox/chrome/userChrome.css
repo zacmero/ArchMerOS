@@ -25,4 +25,11 @@
 #TabsToolbar .tab-text,
 #TabsToolbar .tab-label-container {
   font-size: 18px !important;
-} /* 
+} */
+
+/* Hide optional context actions without disabling their features. */
+#context-ask-chat,
+#context-inspect-a11y,
+#context-openlinkinsplitview {
+  display: none !important;
+}

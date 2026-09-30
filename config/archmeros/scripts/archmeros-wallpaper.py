@@ -130,7 +130,8 @@ def ensure_monitors(state: dict) -> dict:
             current[monitor] = defaults.get(monitor, fallback)
 
     state["mode"] = state.get("mode", "fill")
-    state["monitors"] = {monitor: current[monitor] for monitor in monitors}
+    # TVs may connect after startup; never discard their saved selections.
+    state["monitors"] = current
     return state
 
 
@@ -207,6 +208,9 @@ def apply_state(state: dict) -> None:
 
     if shutil.which("swaybg"):
         command = ["swaybg"]
+        # Wildcard covers new outputs until an explicit selection is saved.
+        if mappings:
+            command.extend(["-o", "*", "-i", next(iter(mappings.values())), "-m", mode])
         for monitor, path in mappings.items():
             command.extend(["-o", monitor, "-i", path, "-m", mode])
         start_detached(command, LOG_FILE)

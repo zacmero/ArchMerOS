@@ -34,6 +34,7 @@ x-scheme-handler/magnet=qbittorrent.desktop
 application/vnd.openxmlformats-officedocument.wordprocessingml.document=libreoffice-writer.desktop
 application/vnd.oasis.opendocument.text=libreoffice-writer.desktop
 application/octet-stream=nvim.desktop
+x-scheme-handler/codex=chatgpt.desktop
 
 [Added Associations]
 image/jpeg=imv.desktop;org.xfce.ristretto.desktop;

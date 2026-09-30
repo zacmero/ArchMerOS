@@ -1,0 +1,10 @@
+/* Photopea's top-level app contains the editor followed by the ad sidebar. */
+body > .app > div:last-child:not(:first-child) {
+  display: none !important;
+}
+
+body > .app > div:first-child {
+  width: 100% !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}

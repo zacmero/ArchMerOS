@@ -35,6 +35,10 @@ case "$app_id" in
     name="Gemini"
     url="https://gemini.google.com/"
     ;;
+  photopea)
+    name="Photopea"
+    url="https://www.photopea.com/"
+    ;;
   plex)
     name="Plex"
     url="http://127.0.0.1:32400/web"
@@ -85,6 +89,13 @@ if command -v hyprctl >/dev/null 2>&1; then
 fi
 
 extra_args=()
+
+if [[ "$app_id" == "photopea" ]]; then
+  extension_dir="$HOME/.config/archmeros/extensions/photopea-clean"
+  if [[ -f "$extension_dir/manifest.json" ]]; then
+    extra_args+=(--load-extension="$extension_dir")
+  fi
+fi
 
 if [[ "$app_id" == "youtube-music" && -d /usr/lib/ublock-origin ]]; then
   extra_args+=(

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Photopea
+Comment=Photo editor with layers, levels, curves, and cropping
+Exec=sh -c "exec \\"\\$HOME/.config/archmeros/scripts/archmeros-webapp.sh\\" photopea"
+Icon=photopea
+Terminal=false
+StartupNotify=true
+Categories=Graphics;
+Keywords=photopea;photoshop;image;photo;editor;crop;levels;color;psd;
+StartupWMClass=archmeros-photopea

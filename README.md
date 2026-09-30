@@ -718,6 +718,7 @@ Tracked app entries:
 - [todoist.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/todoist.desktop)
 - [obsidian.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/obsidian.desktop)
 - [chatgpt.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/chatgpt.desktop)
+- [photopea.desktop](local/share/applications/photopea.desktop)
 - [youtube-music.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/youtube-music.desktop)
 - [com.termius.Termius.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/com.termius.Termius.desktop)
 - [archmeros-cleanup.desktop](/home/zacmero/projects/ArchMerOS/local/share/applications/archmeros-cleanup.desktop)
@@ -736,6 +737,23 @@ Current launch paths:
 Chromium-backed web apps launch in isolated profiles under:
 
 - `~/.local/share/archmeros/webapps/`
+
+`Photopea` opens [Photopea](https://www.photopea.com/) in a dedicated app window
+for quick image edits with a Photoshop-style interface. Its browser profile is
+`~/.local/share/archmeros/webapps/photopea/`. The launcher resolves the current
+user's home directory at launch and is included by `install/link.sh` for future
+installations. It uses the existing Chromium-style browser, with no additional
+editor package required.
+
+The Photopea launcher loads the small repo-owned `photopea-clean` Chromium
+extension. It hides Photopea's ad column and expands the editor to the full
+window width. A layout script also compensates for Photopea's internal ad-width
+reservation when resizing its canvas and panels. It applies only to
+`https://www.photopea.com/` and is included
+in future installations through the existing ArchMerOS config link. After a
+launcher change, close Photopea's dedicated Chromium instance and reopen it
+to load the extension. If Photopea changes its layout, update
+`config/archmeros/extensions/photopea-clean/workspace.css`.
 
 Current YouTube Music path:
 

@@ -170,6 +170,10 @@ preserving the upstream game name, urgency, body and returned notification ID.
 Mako routes this category to the center monitor (`HDMI-A-1`) on the overlay
 layer for 15 seconds, independent of keyboard focus. Other notifications keep
 their existing routing and timeout. Update this output name if monitors change.
+With the fourth screen connected and awake, the adapter instead selects
+`archmeros-achievement-bravia`, pinned to `DP-1` (Sony Bravia) with the same
+overlay and timeout. HDMI remains the fallback when DP-1 is absent or asleep.
+This is independent of the Sentinel window and current keyboard focus.
 The focus-dismiss helper exempts the dedicated `archmeros-achievement` category,
 so trophy notifications survive focus changes without exempting unrelated
 critical notifications.

@@ -501,6 +501,7 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+Space`: launcher
 - `Super+E`: PARA hub / file access
 - `Super+S` or `Super+Shift+S`: cinema toggle. Keep the focused Hyprland monitor on and DPMS-off the other supported outputs; on the Bravia (`DP-1`), the HDMI screen turns off, and on HDMI the Bravia turns off. The AOC (`DP-3`) uses its existing black cover, not physical standby, because DPMS is unreliable there. The Turzx monitor service stops and resumes; the separate Foston WinCE/USB device remains unchanged. Press the binding again to restore only outputs cinema mode changed. `Super+Alt+S` retains the older side-screen toggle.
+- `cinema --t --monitor DP-1`: cinema on the Bravia while keeping the Turzx temperature display active. Starts a five-second temperature/process CPU recorder; restoring cinema stops only the recorder/display services it started. `cinema restore` exits explicitly. Without `--monitor`, the focused monitor is retained. Logs are in `~/.local/state/archmeros/gaming-telemetry.jsonl`, rotated at 5 MB with one previous file. CPU percentages use one core as 100%; short-lived processes between samples may be missed. `cinema --t` works with the focused monitor. Plain `cinema` retains the original toggle behavior.
 - `Super+Print`: region screenshot
 - `Super+Shift+Print`: full screenshot
 - `Alt+1` to `Alt+9`: switch main workspaces

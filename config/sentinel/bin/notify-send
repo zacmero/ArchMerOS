@@ -2,4 +2,9 @@
 set -euo pipefail
 
 # Only Sentinel's service uses this PATH; keep game titles and notification IDs.
-exec /usr/bin/notify-send --category=archmeros-achievement "$@"
+category=archmeros-achievement
+# Prefer the Bravia while it is connected and awake, independent of focus.
+if hyprctl monitors -j 2>/dev/null | jq -e 'any(.[]; .name == "DP-1" and .dpmsStatus == true)' >/dev/null 2>&1; then
+  category=archmeros-achievement-bravia
+fi
+exec /usr/bin/notify-send --category="$category" "$@"

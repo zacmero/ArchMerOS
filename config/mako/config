@@ -22,3 +22,9 @@ output=HDMI-A-1
 layer=overlay
 default-timeout=15000
 ignore-timeout=1
+
+[category=archmeros-achievement-bravia]
+output=DP-1
+layer=overlay
+default-timeout=15000
+ignore-timeout=1

@@ -8,6 +8,7 @@ firefox_root="${HOME}/.mozilla/firefox"
 firefox_profiles_ini="${firefox_root}/profiles.ini"
 
 declare -A links=(
+  ["${config_root}/archmeros/scripts/archmeros-cinema-mode.sh"]="${HOME}/.local/bin/cinema"
   ["${config_root}/hypr"]="${HOME}/.config/hypr"
   ["${config_root}/waybar"]="${HOME}/.config/waybar"
 

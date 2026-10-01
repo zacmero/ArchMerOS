@@ -126,6 +126,14 @@ EOF
     --no-config \
     --no-audio \
     --no-osc \
+    --vo=gpu \
+    --gpu-context=wayland \
+    --scale=bilinear \
+    --dscale=bilinear \
+    --cscale=bilinear \
+    --deband=no \
+    --interpolation=no \
+    --video-sync=audio \
     --ontop \
     --force-window=yes \
     --title="ArchMerOS Screensaver" \
@@ -136,7 +144,7 @@ EOF
     --image-display-duration="$duration" \
     --loop-playlist=inf \
     --keep-open=no \
-    --msg-level=all=info \
+    --msg-level=all=warn \
     --log-file="$mpv_log_path" \
     --shuffle \
     --playlist="$playlist_path" >>"$log_path" 2>&1 &

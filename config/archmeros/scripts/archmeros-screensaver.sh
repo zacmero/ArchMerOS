@@ -49,10 +49,12 @@ set_side_screensaver_state() {
       set_monitor_service_state stop
       "$blackout_script" start >/dev/null 2>&1 || true
       "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" dpms off DP-2 >/dev/null 2>&1 || true
+      "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" dpms off DP-1 >/dev/null 2>&1 || true
       ;;
     on)
       "$blackout_script" stop >/dev/null 2>&1 || true
       "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" dpms on DP-2 >/dev/null 2>&1 || true
+      "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" dpms on DP-1 >/dev/null 2>&1 || true
       "$HOME/.config/archmeros/scripts/archmeros-hyprctl-dispatch.sh" dpms on DP-3 >/dev/null 2>&1 || true
       set_monitor_service_state start
       ;;

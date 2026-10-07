@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "enabledByDefault": false,
+  "enabledFor": ["mercadolivre.com.br"],
+  "disabledFor": [],
+  "automation": {"enabled": false, "mode": "", "behavior": "OnOff"}
+}

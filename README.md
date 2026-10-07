@@ -684,6 +684,23 @@ Wayland as well.
 
 The linker attaches `user.js` and `userChrome.css` across all active Firefox profiles.
 
+Dark Reader is restricted to `mercadolivre.com.br` and its subdomains. Global
+darkening and scheduled activation are disabled. The desired settings are in
+[config/firefox/darkreader.json](config/firefox/darkreader.json).
+
+To reproduce this on another installation, install Dark Reader in Firefox,
+open it once with settings sync enabled, then close Firefox and run:
+
+```bash
+rtk python install/firefox-darkreader.py /path/to/firefox/profile
+```
+
+Find the profile directory in `about:profiles`. The helper preserves other
+extensions and Dark Reader's theme settings, creates a profile-local backup,
+and enables the already-installed addon. Reopen Firefox afterward. Because
+Dark Reader settings sync is enabled, its site allowlist also syncs to other
+Firefox installations signed into the same account.
+
 ## ChatGPT Desktop
 
 The package manifest includes `chatgpt-desktop` from the AUR for future installs.

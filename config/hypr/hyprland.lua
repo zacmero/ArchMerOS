@@ -161,7 +161,7 @@ hl.config({
     input = {
         kb_layout  = "br,us",
         kb_variant = "abnt2,",
-        kb_options = "grp:alt_shift_toggle,lvl3:ralt_switch",
+        kb_options = "lvl3:ralt_switch",
         kb_file    = "~/.config/hypr/archmeros-keyboard.xkb",
         follow_mouse = 1,
         touchpad = {
@@ -311,6 +311,8 @@ end
 
 -- Window management
 hl.bind(mod .. " + W",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-close.sh"))
+hl.bind("ALT + W",             hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-close.sh"))
+hl.bind("ALT + E",             hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-thunar.sh"))
 hl.bind(mod .. " + Q",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-close.sh"))
 hl.bind(mod .. " + O",         hl.dsp.exec_cmd("python3 ~/.config/archmeros/scripts/archmeros-reopen-history.py reopen-folders"))
 hl.bind(mod .. " + SHIFT + O", hl.dsp.exec_cmd("python3 ~/.config/archmeros/scripts/archmeros-reopen-history.py reopen-general"))
@@ -332,12 +334,12 @@ for _, k in ipairs({"grave", "apostrophe", "dead_acute", "dead_grave", "acute"})
     hl.bind(mod .. " + " .. k, pop_full)
     hl.bind(mod .. " + SHIFT + " .. k, pop_shrink)
     hl.bind("ALT + " .. k, pop_full)
-    hl.bind("ALT + SHIFT + " .. k, pop_medium)
+    hl.bind("ALT + SHIFT + " .. k, pop_shrink)
 end
 hl.bind(mod .. " + SHIFT + quotedbl", pop_shrink)
-hl.bind("ALT + SHIFT + quotedbl", pop_medium)
+hl.bind("ALT + SHIFT + quotedbl", pop_shrink)
 hl.bind(mod .. " + SHIFT + asciitilde", pop_shrink)
-hl.bind("ALT + SHIFT + asciitilde", pop_medium)
+hl.bind("ALT + SHIFT + asciitilde", pop_shrink)
 
 -- Miscellaneous
 hl.bind(mod .. " + SHIFT + P", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-wdisplays.py"))

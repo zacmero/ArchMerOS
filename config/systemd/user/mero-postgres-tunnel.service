@@ -6,12 +6,13 @@ StartLimitIntervalSec=0
 
 [Service]
 Type=simple
-ExecStartPre=/usr/bin/test -S %t/mero-cloud-ssh-agent.sock
-ExecStart=/usr/bin/ssh -F %h/projects/mero-protocol/suzy-mero-steele/ops/suzy-cloud.ssh.conf -o IdentityAgent=%t/mero-cloud-ssh-agent.sock -o BatchMode=yes -o ControlMaster=no -o ControlPath=none -o ControlPersist=no -o ExitOnForwardFailure=yes -N -L 127.0.0.1:55432:127.0.0.1:5432 suzy-cloud-db-tunnel
+ExecStartPre=/usr/bin/test -r %h/.local/share/mero-protocol/tunnel/id_ed25519
+ExecStart=/usr/bin/ssh -F %h/projects/mero-protocol/suzy-mero-steele/ops/suzy-cloud.ssh.conf -o IdentityAgent=none -o BatchMode=yes -o ControlMaster=no -o ControlPath=none -o ControlPersist=no -o ExitOnForwardFailure=yes -N -L 127.0.0.1:55432:127.0.0.1:5432 suzy-cloud-db-tunnel
 Restart=always
 RestartSec=5
 NoNewPrivileges=yes
 PrivateTmp=yes
+UMask=0077
 
 [Install]
 WantedBy=default.target

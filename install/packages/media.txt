@@ -1,4 +1,5 @@
 mpv
+ffmpeg
 playerctl
 pavucontrol
 imagemagick

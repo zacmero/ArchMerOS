@@ -178,6 +178,8 @@ def escape_hyprpaper_path(path: str) -> str:
 
 
 def apply_state(state: dict) -> None:
+    subprocess.run([sys.executable, str(SCRIPT_PATH.with_name("archmeros-live-wallpaper.py")),
+                    "start"], check=False)
     mode = state.get("mode", "fill")
     mappings = state["monitors"]
     rotation_enabled = bool(state.get("rotation_enabled", False))

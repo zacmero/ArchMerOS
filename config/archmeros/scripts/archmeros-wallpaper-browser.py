@@ -7,12 +7,14 @@ import os
 import re
 import subprocess
 import sys
+import threading
 from pathlib import Path
 
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
 from PIL import Image, ImageOps, ImageTk
+from importlib.util import module_from_spec, spec_from_file_location
 
 
 SCRIPT_PATH = Path(__file__).resolve()
@@ -21,6 +23,10 @@ WALLPAPER_DIR = REPO_ROOT / "config" / "wallpapers"
 GENERATED_DIR = WALLPAPER_DIR / "generated"
 WALLPAPER_CONTROLLER = REPO_ROOT / "config" / "archmeros" / "scripts" / "archmeros-wallpaper.py"
 WALLPAPER_CROPPER = REPO_ROOT / "config" / "archmeros" / "scripts" / "archmeros-wallpaper-crop.py"
+LIVE_CONTROLLER = SCRIPT_PATH.with_name("archmeros-live-wallpaper.py")
+_live_spec = spec_from_file_location("archmeros_live_wallpaper", LIVE_CONTROLLER)
+live = module_from_spec(_live_spec)
+_live_spec.loader.exec_module(live)
 SCREENSAVER_DEFAULT_CONFIG = REPO_ROOT / "config" / "greetd" / "sysc-greet" / "share" / "ascii_configs" / "screensaver.conf"
 SCREENSAVER_OVERRIDE_DIR = Path.home() / ".config" / "archmeros" / "screensaver"
 SCREENSAVER_OVERRIDE_CONFIG = SCREENSAVER_OVERRIDE_DIR / "screensaver.conf"
@@ -254,6 +260,7 @@ def focused_monitor_name() -> str | None:
 
 
 def apply_wallpaper(target: str, wallpaper: Path) -> None:
+    subprocess.run([sys.executable, str(LIVE_CONTROLLER), "disable", target], check=True)
     subprocess.run(["python3", str(WALLPAPER_CONTROLLER), "--disable-rotation"], check=True)
     if target == "All monitors":
         subprocess.run(["python3", str(WALLPAPER_CONTROLLER), "--all", str(wallpaper)], check=True)
@@ -771,6 +778,9 @@ class WallpaperBrowser(tk.Tk):
 
         self.monitor_map = monitors()
         self.wallpaper_source = load_wallpaper_source()
+        self.static_source = self.wallpaper_source
+        self.live_mode = tk.BooleanVar(value=False)
+        self.live_playback_mode = tk.StringVar(value="original")
         self.generated_dir = generated_dir_for(self.wallpaper_source)
         self.wallpapers = wallpapers(self.wallpaper_source)
         self.source_var = tk.StringVar(value=str(self.wallpaper_source))
@@ -817,6 +827,15 @@ class WallpaperBrowser(tk.Tk):
         self.target.bind("<<ComboboxSelected>>", self._on_target)
 
         tk.Label(left, text="Source", bg="#171a24", fg="#7cb8ff").pack(anchor="w", pady=(0, 6))
+        ttk.Checkbutton(left, text="Live videos", variable=self.live_mode,
+                        command=self._toggle_live).pack(anchor="w", pady=(0, 6))
+        self.live_mode_buttons = []
+        for label, value in [("Original (no re-encoding)", "original"),
+                             ("Screen-optimized (24 FPS)", "optimized")]:
+            button = ttk.Radiobutton(left, text=label, variable=self.live_playback_mode,
+                                     value=value, state="disabled")
+            button.pack(anchor="w", pady=(0, 4))
+            self.live_mode_buttons.append(button)
         source_row = tk.Frame(left, bg="#171a24")
         source_row.pack(fill="x", pady=(0, 6))
         self.source_entry = ttk.Entry(source_row, textvariable=self.source_var, width=28)
@@ -943,6 +962,19 @@ class WallpaperBrowser(tk.Tk):
     def _selected_target(self) -> str:
         return self.target.get() or "All monitors"
 
+    def _toggle_live(self) -> None:
+        for button in self.live_mode_buttons:
+            button.configure(state="normal" if self.live_mode.get() else "disabled")
+        if self.live_mode.get():
+            self.static_source = self.wallpaper_source
+            live.SOURCE.mkdir(parents=True, exist_ok=True)
+            self._set_wallpaper_source(live.SOURCE)
+            if "DP-3" in self.monitor_map:
+                self.target.set("DP-3")
+                self._refresh_preview()
+        else:
+            self._set_wallpaper_source(self.static_source)
+
     def _set_wallpaper_source(self, source: str | Path) -> None:
         candidate = Path(source).expanduser()
         if not candidate.exists() or not candidate.is_dir():
@@ -950,9 +982,12 @@ class WallpaperBrowser(tk.Tk):
             return
         self.wallpaper_source = candidate.resolve()
         self.generated_dir = generated_dir_for(self.wallpaper_source)
-        save_wallpaper_source(self.wallpaper_source)
+        if not self.live_mode.get():
+            save_wallpaper_source(self.wallpaper_source)
         self.source_var.set(str(self.wallpaper_source))
-        self.wallpapers = wallpapers(self.wallpaper_source)
+        self.wallpapers = (sorted(p for p in self.wallpaper_source.iterdir()
+                                 if p.is_file() and p.suffix.lower() in live.VIDEO_SUFFIXES)
+                           if self.live_mode.get() else wallpapers(self.wallpaper_source))
         self._reload_wallpaper_list()
 
     def _choose_source(self) -> None:
@@ -1006,7 +1041,21 @@ class WallpaperBrowser(tk.Tk):
             self.preview_canvas.delete("all")
             self.info.configure(text="")
             return
-        self.original_image = Image.open(path).convert("RGBA")
+        if self.live_mode.get():
+            live.CACHE.mkdir(parents=True, exist_ok=True)
+            thumbnail = live.CACHE / (live.cache_key(path, 960, 540) + ".png")
+            try:
+                if not thumbnail.exists():
+                    subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-loglevel", "error",
+                                    "-i", str(path), "-frames:v", "1", "-vf", "scale=960:-1",
+                                    "-threads", "2", str(thumbnail)], check=True, timeout=15)
+                self.original_image = Image.open(thumbnail).convert("RGBA")
+            except (subprocess.SubprocessError, OSError) as exc:
+                self.preview_canvas.delete("all")
+                self.info.configure(text=f"Video preview unavailable: {exc}")
+                return
+        else:
+            self.original_image = Image.open(path).convert("RGBA")
         self.display_image = fit_image(self.original_image, PREVIEW_SIZE)
         self.preview_photo = ImageTk.PhotoImage(self.display_image)
         self.preview_canvas.delete("all")
@@ -1016,6 +1065,13 @@ class WallpaperBrowser(tk.Tk):
         self.scale_y = self.original_image.height / self.display_image.height
         self.preview_canvas.create_image(self.image_offset_x, self.image_offset_y, image=self.preview_photo, anchor="nw")
         info = f"{path.name}\n{self.original_image.width}x{self.original_image.height}"
+        if self.live_mode.get():
+            self._disable_crop()
+            self.primary_button.configure(text="Apply Live")
+            self.zoom_in_button.configure(state="disabled")
+            self.zoom_out_button.configure(state="disabled")
+            self.info.configure(text=f"{path.name}\nTarget: {self._selected_target()}")
+            return
         if self._selected_target() != "All monitors":
             mon_w, mon_h = self.monitor_map[self._selected_target()]
             info += f"\nTarget: {self._selected_target()} · {mon_w}x{mon_h}"
@@ -1162,6 +1218,9 @@ class WallpaperBrowser(tk.Tk):
         path = self._selected_path()
         if not path:
             return
+        if self.live_mode.get():
+            self._apply_live(path)
+            return
         try:
             apply_wallpaper(self._selected_target(), path)
         except subprocess.CalledProcessError as exc:
@@ -1196,10 +1255,40 @@ class WallpaperBrowser(tk.Tk):
         self.destroy()
 
     def _primary_action(self) -> None:
+        if self.live_mode.get():
+            self._apply_direct()
+            return
         if self._selected_target() == "All monitors":
             self._apply_direct()
             return
         self._crop()
+
+    def _apply_live(self, path: Path) -> None:
+        target = self._selected_target()
+        if target == "All monitors":
+            messagebox.showinfo("ArchMerOS Wallpaper", "Select one monitor for live playback.")
+            return
+        self.primary_button.configure(state="disabled", text="Preparing...")
+        result = {}
+        original = self.live_playback_mode.get() == "original"
+        def worker():
+            result["process"] = subprocess.run([sys.executable, str(LIVE_CONTROLLER),
+                                                "select", target, str(path),
+                                                *(["--original"] if original else [])],
+                                               capture_output=True, text=True)
+        thread = threading.Thread(target=worker, daemon=True)
+        thread.start()
+        def finished():
+            if thread.is_alive():
+                self.after(150, finished)
+                return
+            process = result["process"]
+            if process.returncode:
+                self.primary_button.configure(state="normal", text="Apply Live")
+                messagebox.showerror("ArchMerOS Wallpaper", process.stderr[-2000:])
+            else:
+                self.destroy()
+        self.after(150, finished)
 
 
 def main() -> int:

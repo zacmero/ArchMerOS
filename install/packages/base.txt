@@ -45,6 +45,7 @@ slurp
 imv
 hyprpaper
 chromium
+bubblewrap
 qbittorrent
 restic
 flatpak

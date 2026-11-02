@@ -89,11 +89,14 @@ if command -v hyprctl >/dev/null 2>&1; then
 fi
 
 extra_args=()
+browser_command=("$browser")
 
 if [[ "$app_id" == "photopea" ]]; then
+  browser_command=(python3 "$HOME/.config/archmeros/scripts/archmeros-photopea-browser.py" "$browser")
+  # Preserve the workspace layout extension, excluding all other extensions.
   extension_dir="$HOME/.config/archmeros/extensions/photopea-clean"
   if [[ -f "$extension_dir/manifest.json" ]]; then
-    extra_args+=(--load-extension="$extension_dir")
+    extra_args+=(--disable-extensions-except="$extension_dir" --load-extension="$extension_dir")
   fi
 fi
 
@@ -105,7 +108,7 @@ if [[ "$app_id" == "youtube-music" && -d /usr/lib/ublock-origin ]]; then
 fi
 
 if [[ -n "${target_workspace:-}" ]] && command -v hyprctl >/dev/null 2>&1; then
-  "$browser" \
+  "${browser_command[@]}" \
     --ozone-platform-hint=auto \
     --class="archmeros-${app_id}" \
     --name="$name" \
@@ -120,7 +123,7 @@ if [[ -n "${target_workspace:-}" ]] && command -v hyprctl >/dev/null 2>&1; then
   exit 0
 fi
 
-nohup "$browser" \
+nohup "${browser_command[@]}" \
   --ozone-platform-hint=auto \
   --class="archmeros-${app_id}" \
   --name="$name" \

@@ -1,6 +1,29 @@
 # Photopea
 
 Photopea launches as a Chromium web app with a separate persistent profile.
+Before a fresh launch, its wrapper enables `download.prompt_for_download` so
+exports ask for a destination instead of silently going to Downloads. Existing
+preferences are preserved and backed up with a timestamp before the first change.
+An already-running profile is never edited; fully close and reopen Photopea to
+activate this change. This does not alter editor or file-dialog dimensions.
+Its launcher excludes extensions other than the `photopea-clean` workspace
+extension in this dedicated profile. Ad-column hiding and editor layout remain
+enabled; other extensions, including ad blockers, are excluded. Outer window
+dimensions, fullscreen handling, and other web apps' extensions are unchanged.
+Cosmetic ad hiding may itself trigger Photopea's detection, so this is not a
+guarantee that the export prompt disappears. Save documents
+and fully close Photopea before relaunching to apply changed browser flags.
+This does not bypass Photopea's server-side export requirements or network DNS filters.
+
+The launcher also uses `archmeros-photopea-browser.py` and bubblewrap to give
+only Photopea's process tree a filtered `/etc/hosts` view. The global file stays
+untouched. Sinkhole entries (unspecified and loopback addresses for public names)
+are omitted; localhost, machine hostname, and real-address mappings are retained.
+The temporary file is private and removed when the browser exits. This is a
+hosts override, not an additional browser security sandbox; Chromium's sandbox
+remains enabled. Other applications keep system-wide ad blocking. Bubblewrap is
+included in the base installation packages. A real JPEG export was confirmed
+working by the user after this exception, with the workspace extension retained.
 On 2026-11-02 its GPU process was present in nvidia-smi on the GTX 1060.
 This confirms browser GPU activity, not acceleration of every editor operation.
 

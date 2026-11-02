@@ -404,12 +404,15 @@ local function resize_window()
   hl.dispatch(hl.dsp.window.resize())
 end
 
-hl.bind("SHIFT + mouse:272",   drag_window("free"),     { mouse = true })
-hl.bind("SHIFT + mouse:273",   resize_window,            { mouse = true })
-hl.bind("ALT + mouse:272",     drag_window("free"),     { mouse = true })
-hl.bind("ALT + mouse:273",     resize_window,            { mouse = true })
-hl.bind(mod .. " + mouse:272", drag_window("tile"),     { mouse = true })
-hl.bind(mod .. " + mouse:273", resize_window,            { mouse = true })
+local pointer_bindings = {
+    hl.bind("SHIFT + mouse:272",   drag_window("free"), { mouse = true }),
+    hl.bind("SHIFT + mouse:273",   resize_window,        { mouse = true }),
+    hl.bind("ALT + mouse:272",     drag_window("free"), { mouse = true }),
+    hl.bind("ALT + mouse:273",     resize_window,        { mouse = true }),
+    hl.bind(mod .. " + mouse:272", drag_window("tile"), { mouse = true }),
+    hl.bind(mod .. " + mouse:273", resize_window,        { mouse = true }),
+}
+require("photopea_input").attach(pointer_bindings)
 
 --------------------------------
 ---- WINDOW RULES ----

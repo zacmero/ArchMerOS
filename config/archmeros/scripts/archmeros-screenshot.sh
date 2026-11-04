@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+# One capture at a time, even if overlapping shortcuts launch together.
+exec 9>"${XDG_RUNTIME_DIR:?}/archmeros-screenshot.lock"
+flock -n 9 || exit 0
+
 mode="${1:-region}"
 target_dir="${XDG_PICTURES_DIR:-$HOME/Pictures}/Screenshots"
 log_file="${XDG_RUNTIME_DIR:-/tmp}/archmeros-screenshot.log"

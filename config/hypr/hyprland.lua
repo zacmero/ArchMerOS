@@ -229,8 +229,6 @@ hl.bind(mod .. " + ALT + SHIFT + S", hl.dsp.exec_cmd("~/.config/archmeros/script
 -- Screenshot (multiple key aliases for different keyboards)
 hl.bind(mod .. " + Print",           hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-screenshot.sh region"))
 hl.bind(mod .. " + SHIFT + Print",   hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-screenshot.sh full"))
-hl.bind(mod .. " + code:107",        hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-screenshot.sh region"))
-hl.bind(mod .. " + SHIFT + code:107", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-screenshot.sh full"))
 hl.bind(mod .. " + Sys_Req",         hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-screenshot.sh region"))
 hl.bind(mod .. " + SHIFT + Sys_Req", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-screenshot.sh full"))
 hl.bind(mod .. " + F12",             hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-screenshot.sh region"))

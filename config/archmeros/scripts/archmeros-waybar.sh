@@ -9,6 +9,11 @@ hidden_file="${state_dir}/waybar-hidden.json"
 
 mkdir -p "$state_dir"
 
+# Resume and screensaver cleanup can arrive together. Serialize all lifecycle
+# operations; children must not inherit this manager lock.
+exec 9>"${runtime_dir}/archmeros-waybar-manager.lock"
+flock 9
+
 latest_instance_dir() {
   find "${runtime_dir}/hypr" -maxdepth 1 -mindepth 1 -type d \
     -exec test -S '{}/.socket.sock' ';' -print \
@@ -97,7 +102,7 @@ start_bar() {
   local config="$1"
   local name="$2"
   local bar_style="${3:-$style_path}"
-  setsid waybar -c "$config" -s "$bar_style" >"/tmp/archmeros-waybar-${name}.log" 2>&1 < /dev/null &
+  setsid waybar -c "$config" -s "$bar_style" >"/tmp/archmeros-waybar-${name}.log" 2>&1 < /dev/null 9>&- &
   sleep 0.35
 }
 

@@ -6,6 +6,8 @@ lock_path="/tmp/archmeros-screensaver.pid"
 stamp_path="/tmp/archmeros-screensaver.started"
 log_path="/tmp/archmeros-screensaver.log"
 minimum_runtime_seconds=5
+force_stop=false
+[[ "${1:-}" != "--force" ]] || force_stop=true
 waybar_script="$HOME/.config/archmeros/scripts/archmeros-waybar.sh"
 blackout_script="$HOME/.config/archmeros/scripts/archmeros-side-blackout.sh"
 monitor_service="turzx-monitor.service"
@@ -24,7 +26,7 @@ set_monitor_service_state() {
 
 log "stop-invoke"
 
-if [[ -f "$stamp_path" ]]; then
+if [[ "$force_stop" == false && -f "$stamp_path" ]]; then
   started_at="$(cat "$stamp_path" 2>/dev/null || true)"
   now_ts="$(date +%s)"
   if [[ "$started_at" =~ ^[0-9]+$ ]] && (( now_ts - started_at < minimum_runtime_seconds )); then
@@ -38,7 +40,7 @@ if [[ -f "$lock_path" ]]; then
   if [[ "$lock_value" == launching:* ]]; then
     launch_ts="${lock_value#launching:}"
     now_ts="$(date +%s)"
-    if [[ "$launch_ts" =~ ^[0-9]+$ ]] && (( now_ts - launch_ts < 3 )); then
+    if [[ "$force_stop" == false && "$launch_ts" =~ ^[0-9]+$ ]] && (( now_ts - launch_ts < 3 )); then
       log "stop-skip launching lock=$lock_value"
       exit 0
     fi

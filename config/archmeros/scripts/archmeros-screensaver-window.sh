@@ -126,6 +126,7 @@ EOF
     --no-config \
     --no-audio \
     --no-osc \
+    --stop-screensaver=no \
     --vo=gpu \
     --gpu-context=wayland \
     --scale=bilinear \

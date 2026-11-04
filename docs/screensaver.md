@@ -1,5 +1,17 @@
 # Wallpaper Screensaver
 
+Emergency exit: **Super+Escape** stops the screensaver and restores all outputs,
+the side black cover, telemetry service, and bars. It bypasses the short startup
+guard, so it also works immediately after activation. It is independent of USB
+keyboard model. Slideshow mpv uses `--stop-screensaver=no` so the screensaver
+does not itself inhibit the idle monitor responsible for wake-on-activity.
+
+The Waybar manager serializes all lifecycle operations with a runtime lock.
+Screensaver cleanup and idle-resume callbacks can both request restoration;
+their requests must not interleave and spawn duplicate Beacon widgets or
+overwrite the visibility state concurrently. Bar processes do not inherit
+the manager lock. Concurrent-start testing must leave exactly one Beacon.
+
 The slideshow uses mpv to display static wallpaper images on HDMI-A-1.
 DP-2 and DP-1 (Bravia) receive DPMS off while it runs; DP-3 retains its
 existing black-cover behavior. Resume restores the outputs. The separate

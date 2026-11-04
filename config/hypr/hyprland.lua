@@ -560,6 +560,8 @@ hl.window_rule({
 })
 
 -- Screensaver
+-- Emergency wake bypasses startup guards and works with any seat keyboard.
+hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-screensaver-stop.sh --force"))
 hl.window_rule({
     name  = "screensaver",
     match = { class = "^(ArchMerOS-Screensaver)$" },

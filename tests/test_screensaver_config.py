@@ -6,6 +6,15 @@ SCRIPTS = Path(__file__).resolve().parents[1] / "config/archmeros/scripts"
 
 
 class ScreensaverConfigTest(unittest.TestCase):
+    def test_resume_and_waybar_guards(self):
+        stop = (SCRIPTS / "archmeros-screensaver-stop.sh").read_text()
+        self.assertIn('"--force"', stop)
+        waybar = (SCRIPTS / "archmeros-waybar.sh").read_text()
+        self.assertIn("flock 9", waybar)
+        self.assertIn("9>&- &", waybar)
+        window = (SCRIPTS / "archmeros-screensaver-window.sh").read_text()
+        self.assertIn("--stop-screensaver=no", window)
+
     def test_shell_syntax(self):
         subprocess.run(["bash", "-n", str(SCRIPTS / "archmeros-screensaver.sh"),
                         str(SCRIPTS / "archmeros-screensaver-window.sh")], check=True)

@@ -34,6 +34,8 @@ def select_window(before, monitors, clients, direction):
              if m.get("dpmsStatus", True) and not m.get("disabled", False)}
     source = by_id.get(before.get("monitor"))
     if not source:
+        source = next((m for m in by_id.values() if m.get("focused")), None)
+    if not source:
         return None
     windows = [c for c in clients if c.get("monitor") in by_id
                and c.get("address") != before.get("address")
@@ -44,7 +46,8 @@ def select_window(before, monitors, clients, direction):
     axis = 0 if direction in {"left", "right"} else 1
     sign = 1 if direction in {"right", "down"} else -1
     center = lambda c, a: c["at"][a] + c["size"][a] / 2
-    local = [c for c in windows if c["monitor"] == source["id"]
+    local = [c for c in windows if before.get("at") and before.get("size")
+             and c["monitor"] == source["id"]
              and sign * (center(c, axis) - center(before, axis)) > 1]
     if local:
         return min(local, key=lambda c: (
@@ -54,8 +57,7 @@ def select_window(before, monitors, clients, direction):
     cross = "y" if axis == 0 else "x"
     dimension = "height" if axis == 0 else "width"
     destinations = [m for m in by_id.values()
-                    if sign * (m[coordinate] - source[coordinate]) > 0
-                    and any(c["monitor"] == m["id"] for c in windows)]
+                    if sign * (m[coordinate] - source[coordinate]) > 0]
     if not destinations:
         return None
     def monitor_score(m):
@@ -64,7 +66,8 @@ def select_window(before, monitors, clients, direction):
         return (not overlap, abs(m[coordinate] - source[coordinate]))
     target = min(destinations, key=monitor_score)
     return min((c for c in windows if c["monitor"] == target["id"]),
-               key=lambda c: c.get("focusHistoryID", 999999))
+               key=lambda c: c.get("focusHistoryID", 999999),
+               default={"monitor": target["id"]})
 
 
 def main():
@@ -75,7 +78,10 @@ def main():
     monitors = query("monitors")
     window = select_window(before, monitors, query("clients"), direction)
     if window:
-        dispatch("{window = " + json.dumps("address:" + window["address"]) + "}")
+        if window.get("address"):
+            dispatch("{window = " + json.dumps("address:" + window["address"]) + "}")
+        else:
+            dispatch("{monitor = " + str(window["monitor"]) + "}")
     return 0
 
 

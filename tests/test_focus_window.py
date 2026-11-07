@@ -10,6 +10,40 @@ spec.loader.exec_module(focus)
 
 
 class FocusRoutingTest(unittest.TestCase):
+    def test_leave_empty_focused_monitor(self):
+        for monitor in self.monitors:
+            monitor["activeWorkspace"] = {"id": monitor["id"] + 1}
+        self.monitors[1]["focused"] = True
+        for direction, target_id in [("left", 0), ("right", 2)]:
+            target = dict(address="target", monitor=target_id, mapped=True,
+                          workspace={"id": target_id + 1})
+            self.assertEqual(focus.select_window({}, self.monitors,
+                [target], direction), target)
+
+    def test_empty_screen_does_not_select_hidden_workspace(self):
+        for monitor in self.monitors:
+            monitor["activeWorkspace"] = {"id": monitor["id"] + 1}
+        self.monitors[0]["focused"] = True
+        hidden = dict(address="hidden", monitor=1, mapped=True,
+                      workspace={"id": 99})
+        self.assertEqual(focus.select_window({}, self.monitors, [hidden], "right"),
+                         {"monitor": 1})
+
+    def test_enter_nearest_empty_monitor_in_both_directions(self):
+        for source_id, direction in [(0, "right"), (2, "left")]:
+            for monitor in self.monitors:
+                monitor["focused"] = monitor["id"] == source_id
+            self.assertEqual(focus.select_window({}, self.monitors, [], direction),
+                             {"monitor": 1})
+
+    def test_skip_standby_and_disabled_monitors(self):
+        self.monitors[0]["focused"] = True
+        self.monitors[1]["dpmsStatus"] = False
+        self.assertEqual(focus.select_window({}, self.monitors, [], "right"),
+                         {"monitor": 2})
+        self.monitors[2]["disabled"] = True
+        self.assertIsNone(focus.select_window({}, self.monitors, [], "right"))
+
     def setUp(self):
         self.monitors = [dict(id=i, x=i * 1000, y=0, width=1000,
                               height=800, scale=1, dpmsStatus=True)

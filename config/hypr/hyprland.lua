@@ -206,6 +206,7 @@ hl.bind(mod .. " + Return",          hl.dsp.exec_cmd(terminal))
 -- Keyboard layout
 hl.bind("CTRL + ALT + space",        hl.dsp.exec_cmd("hyprctl switchxkblayout current next"))
 hl.bind("SUPER + Insert",            hl.dsp.exec_cmd("/home/zacmero/.config/archmeros/scripts/archmeros-keyboard.sh toggle"))
+hl.bind("SUPER + ALT + Insert",      hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-foston-terminal.sh"))
 
 -- Wallpaper / Appearance
 -- Use one physical P binding; a second named binding can fire twice.

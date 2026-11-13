@@ -1,0 +1,15 @@
+[Unit]
+Description=Mero Sunshine CUDA 12.9 desktop streaming
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+Environment=APPDIR=/home/zacmero/.local/opt/mero-sunshine/v2025.924.154138/squashfs-root
+ExecStart=/home/zacmero/.local/opt/mero-sunshine/v2025.924.154138/squashfs-root/AppRun /home/zacmero/projects/mero-tv/.private/sunshine/sunshine.conf
+Restart=on-failure
+RestartSec=3
+UMask=0077
+
+[Install]
+WantedBy=graphical-session.target

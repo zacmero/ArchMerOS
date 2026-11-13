@@ -35,7 +35,7 @@ esac
 
 clipboard_note="saved"
 if command -v wl-copy >/dev/null 2>&1; then
-  if wl-copy < "$output_file" 2>>"$log_file"; then
+  if wl-copy 9>&- < "$output_file" 2>>"$log_file"; then
     clipboard_note="copied to clipboard"
   fi
 fi

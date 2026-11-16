@@ -14,15 +14,29 @@ from pathlib import Path
 EV_KEY = 1
 BTN_LEFT = 272
 INPUT_EVENT = struct.Struct("llHHi")
-MOUSE_DEVICE = Path(
-    os.environ.get(
-        "ARCHMEROS_DROP_TILE_MOUSE",
-        "/dev/input/by-id/usb-18f8_USB_OPTICAL_MOUSE-event-mouse",
-    )
-)
 DISPATCH_SHIM = Path.home() / ".config/archmeros/scripts/archmeros-hyprctl-dispatch.sh"
 ARM_PATH = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")) / "archmeros-drop-tile-arm.json"
 ARM_MAX_AGE = 30.0
+
+
+def mouse_devices() -> set[Path]:
+    override = os.environ.get("ARCHMEROS_DROP_TILE_MOUSE")
+    if override:
+        return {Path(override).resolve()} if Path(override).exists() else set()
+    devices = set()
+    for event in Path("/sys/class/input").glob("event*"):
+        try:
+            caps = event / "device/capabilities"
+            relative = int((caps / "rel").read_text().replace(" ", ""), 16)
+            words = (caps / "key").read_text().split()
+            word_bits = struct.calcsize("L") * 8
+            keys = sum(int(word, 16) << (i * word_bits)
+                       for i, word in enumerate(reversed(words)))
+            if relative & 3 == 3 and keys & (1 << BTN_LEFT):
+                devices.add(Path("/dev/input") / event.name)
+        except (OSError, ValueError):
+            continue
+    return devices
 
 
 def normalize_address(address: str) -> str:
@@ -212,19 +226,41 @@ def run() -> None:
     clients = hyprctl_json(env, "clients")
     state.seed(clients if isinstance(clients, list) else [])
 
-    mouse_fd = os.open(MOUSE_DEVICE, os.O_RDONLY | os.O_NONBLOCK)
     hypr = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     hypr.connect(str(socket_path))
 
     selector = selectors.DefaultSelector()
-    selector.register(mouse_fd, selectors.EVENT_READ, "mouse")
     selector.register(hypr, selectors.EVENT_READ, "hypr")
     hypr_buffer = ""
+    mouse_fds = {}
+    next_scan = 0.0
 
     while True:
-        for key, _ in selector.select():
+        if time.monotonic() >= next_scan:
+            next_scan = time.monotonic() + 2
+            for path in mouse_devices() - set(mouse_fds):
+                try:
+                    fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
+                except OSError:
+                    continue
+                mouse_fds[path] = fd
+                selector.register(fd, selectors.EVENT_READ, "mouse")
+                print(f"Watching mouse: {path}", flush=True)
+        for key, _ in selector.select(timeout=2):
             if key.data == "mouse":
-                data = os.read(mouse_fd, INPUT_EVENT.size * 64)
+                try:
+                    data = os.read(key.fd, INPUT_EVENT.size * 64)
+                except BlockingIOError:
+                    continue
+                except OSError:
+                    data = b""
+                if not data:
+                    selector.unregister(key.fd)
+                    os.close(key.fd)
+                    mouse_fds = {p: fd for p, fd in mouse_fds.items() if fd != key.fd}
+                    state.left_down = False
+                    state.pending = None
+                    continue
                 for offset in range(0, len(data) - INPUT_EVENT.size + 1, INPUT_EVENT.size):
                     _, _, event_type, code, value = INPUT_EVENT.unpack_from(data, offset)
                     if event_type == EV_KEY and code == BTN_LEFT:

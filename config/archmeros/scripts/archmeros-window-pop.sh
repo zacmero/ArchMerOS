@@ -70,6 +70,22 @@ case "$requested_mode" in
     ;;
 esac
 
+if [[ "$(printf '%s' "$active" | jq -r '.fullscreen // 0')" != 0 ]]; then
+  "$dispatch_cmd" fullscreenstate 0 0 >/dev/null
+fi
+
+# The final maximize step rejoins the workspace layout, including any cards
+# that would otherwise cover a tiled client. Scratchpads keep their assignment.
+if [[ "$mode" == max && "$(printf '%s' "$active" | jq -r '.workspace.name // ""')" != special:* ]]; then
+  workspace_id="$(printf '%s' "$active" | jq -r '.workspace.id')"
+  while read -r address; do
+    "$dispatch_cmd" settiled "address:$address" >/dev/null
+  done < <(hyprctl -j clients | jq -r --argjson ws "$workspace_id" \
+    '.[] | select(.workspace.id == $ws and .mapped == true and .hidden == false and .floating == true and .pinned == false) | .address')
+  "$dispatch_cmd" focuswindow "address:$(printf '%s' "$active" | jq -r '.address')" >/dev/null
+  exit 0
+fi
+
 if [[ "$floating" == "true" && "$current_mode" == "$mode" \
   && "$active_width" -le "$max_width" && "$active_height" -le "$max_height" ]]; then
   exit 0

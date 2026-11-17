@@ -248,3 +248,15 @@ Existing habits worth preserving at the beginning:
 - workspace switching remains fast and mnemonic
 
 These should be preserved first and refined later.
+# Maximize Recovery
+
+The window size-up command preserves the small, medium, and full floating
+steps. Its final max step returns ordinary windows and non-pinned floating
+peers on that workspace to tiling, avoiding a tiled window hidden under cards.
+Special-workspace scratchpads retain floating sizing and their assignment.
+Fullscreen is cleared before applying a size change so the compositor cannot
+silently override the resize.
+
+Live regression: a disposable Kitty window moved through medium and full,
+then tiled at max; shrink returned it to floating. Shrinking a fullscreen
+window also cleared fullscreen. The test window was closed afterward.

@@ -971,7 +971,7 @@ UR44 policy:
 - default source set to `Steinberg UR44 Mic (Input 4)`, a mono source mapped to the fourth input (`AUX3`)
 - PipeWire quantum raised to `2048` with `1024..4096` bounds for better click/pop resilience under activity
 - PipeWire default rate kept at `48000`, with `96000` allowed as an alternate rate
-- WirePlumber keeps the UR44 nodes awake with `session.suspend-timeout-seconds = 0` so playback start/stop transitions do not wake the interface from idle
+- WirePlumber configures playback and capture separately so the microphone can suspend while playback continues
 - the repo now carries the modern equivalent of the older `main.lua.d/50-alsa-config.lua` tuning: the UR44 nodes are forced to `api.alsa.period-size = 1024` and `api.alsa.headroom = 8192` through `wireplumber.conf.d`
 - HDA kernel power saving explicitly disabled with `power_save=0` and `power_save_controller=N`
 
@@ -1015,7 +1015,7 @@ sudo voxtype setup gpu --enable --backend vulkan
 systemctl --user restart voxtype.service
 ```
 
-In ChatGPT Voice and other apps with their own voice mode, allow microphone access and use the system default or select `Steinberg UR44 Mic (Input 4)`. If you restart PipeWire during a session, rerun `~/.config/archmeros/scripts/archmeros-audio-policy.sh` to recreate the mono source.
+Keep the microphone plugged into UR44 input 4 for dictation and voice calls. ChatGPT Voice and other apps that use the system default get that same microphone as `Steinberg UR44 Mic (Input 4)`. Allow microphone access when the app prompts you. PulseAudio Volume Control opens capture streams to show level meters while its window is open. If you restart PipeWire during a session, rerun `~/.config/archmeros/scripts/archmeros-audio-policy.sh` to recreate the mono source.
 
 ## Shell Themes
 

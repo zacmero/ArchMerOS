@@ -963,7 +963,7 @@ UR44 policy:
 - [install/system/etc/modprobe.d/archmeros-audio.conf](/home/zacmero/projects/ArchMerOS/install/system/etc/modprobe.d/archmeros-audio.conf)
 - [install/system/apply-audio-system.sh](/home/zacmero/projects/ArchMerOS/install/system/apply-audio-system.sh)
 - [docs/ur44-stability.md](/home/zacmero/projects/ArchMerOS/docs/ur44-stability.md)
-- Hyprland starts this on login to force the machine into the studio path:
+- The audio policy service runs at graphical login:
 - NVIDIA HDMI audio off
 - Intel onboard audio off
 - UR44 profile set to `pro-audio`
@@ -1015,7 +1015,7 @@ sudo voxtype setup gpu --enable --backend vulkan
 systemctl --user restart voxtype.service
 ```
 
-Keep the microphone plugged into UR44 input 4 for dictation and voice calls. ChatGPT Voice and other apps that use the system default get that same microphone as `Steinberg UR44 Mic (Input 4)`. Allow microphone access when the app prompts you. PulseAudio Volume Control opens capture streams to show level meters while its window is open. If you restart PipeWire during a session, rerun `~/.config/archmeros/scripts/archmeros-audio-policy.sh` to recreate the mono source.
+Keep the microphone plugged into UR44 input 4 for dictation and voice calls. ChatGPT Voice and other apps that use the system default get that same microphone as `Steinberg UR44 Mic (Input 4)`. Allow microphone access when the app prompts you. PulseAudio Volume Control opens capture streams to show level meters while its window is open. At login, `archmeros-audio-policy.service` creates the input 4 source before Voxtype starts.
 
 ## Shell Themes
 

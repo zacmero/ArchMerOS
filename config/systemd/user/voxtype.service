@@ -1,7 +1,8 @@
 [Unit]
 Description=Voxtype local dictation
 PartOf=graphical-session.target
-After=wayland-session-waitenv.service pipewire.service pipewire-pulse.service
+Requires=archmeros-audio-policy.service
+After=wayland-session-waitenv.service archmeros-audio-policy.service
 
 [Service]
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin

@@ -30,20 +30,28 @@ pactl set-card-profile alsa_card.pci-0000_00_03.0 off >/dev/null 2>&1 || true
 pactl set-card-profile alsa_card.pci-0000_00_1b.0 off >/dev/null 2>&1 || true
 pactl set-card-profile "$ur44_card" pro-audio >/dev/null 2>&1 || true
 
-sleep 0.4
+wait_for_source() {
+  local source="$1"
+  for _ in $(seq 1 40); do
+    if pactl get-source-mute "$source" >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 0.25
+  done
+  printf 'Audio source did not appear: %s\n' "$source" >&2
+  return 1
+}
 
+wait_for_source "$ur44_source"
 pactl set-default-sink "$default_sink" >/dev/null 2>&1 || true
-pactl get-source-mute "$ur44_source" >/dev/null 2>&1 || exit 0
 
 # The mic uses jack 4 (AUX3). Voice apps requesting mono or stereo otherwise
 # receive the first two channels from the multichannel Pro Audio source.
 if ! pactl get-source-mute "$mic_source" >/dev/null 2>&1; then
-  if ! pactl load-module module-remap-source master="$ur44_source" \
+  pactl load-module module-remap-source master="$ur44_source" \
     source_name="$mic_source" channels=1 master_channel_map=aux3 channel_map=mono remix=no \
-    "source_properties='device.description=\"Steinberg UR44 Mic (Input 4)\"'" >/dev/null; then
-    pactl set-default-source "$ur44_source"
-    exit
-  fi
+    "source_properties='device.description=\"Steinberg UR44 Mic (Input 4)\"'" >/dev/null
 fi
 
+wait_for_source "$mic_source"
 pactl set-default-source "$mic_source"

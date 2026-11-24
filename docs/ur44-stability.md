@@ -23,3 +23,9 @@ On Linux the Steinberg UR44 must run in **Class Compliant (CC)** mode for the ke
 After these steps the UR44 appears as `alsa_card.usb-Yamaha_Corporation_Steinberg_UR44-01`, and in `pavucontrol` you can safely set the **Pro Audio** profile for ultra-low latency multi-channel routing. If the device still crackles, try a different USB controller or cable before assuming the kernel cannot handle it.
 
 Use this guide when you switch machines or reinstall the system so the UR44 stays reliable on Linux.
+
+### Microphone audible during playback
+
+Check the UR44's internal monitor mixer if you hear input 4 through the speakers or headphones while Linux capture is stopped. `cat /proc/asound/UR44/pcm0c/sub0/status` reports `closed` when no USB capture stream is open. The front-panel input gain adjusts the signal available to both the USB capture and the hardware mixer. [UR44 Operation Manual](https://download.steinberg.net/downloads_hardware/UR44/UR44_documentation/UR44_OperationManual_en.pdf)
+
+Mute input 4 in both MIX 1 and MIX 2 in dspMixFx or Steinmixer and store the mixer settings on the UR44. This silences direct monitoring and keeps input 4 available to dictation and calls. [Steinmixer for the original UR44](https://github.com/polyrainbow/steinmixer)

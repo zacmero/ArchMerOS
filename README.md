@@ -501,6 +501,8 @@ These are the bindings that should be treated as current ArchMerOS behavior unle
 - `Super+Space`: launcher
 - `Super+Insert`: toggle the PC on-screen keyboard
 - `Super+Alt+Insert`: open the Foston terminal and toggle physical keyboard forwarding; press again to release. The Foston touch keyboard stays hidden until SHOW KB is selected. Requires the Foston bridge/repository and existing keyboard access setup; no PC window opens.
+- Hold `Pause/Break` to dictate. Release it to transcribe and type into the focused field.
+- Press `Super+Pause/Break` to record hands-free. Press it again to transcribe and type.
 - `Super+E`: PARA hub / file access
 - `Super+S` or `Super+Shift+S`: cinema toggle. Keep the focused Hyprland monitor on and DPMS-off the other supported outputs; on the Bravia (`DP-1`), the HDMI screen turns off, and on HDMI the Bravia turns off. The AOC (`DP-3`) uses its existing black cover, not physical standby, because DPMS is unreliable there. The Turzx monitor service stops and resumes; the separate Foston WinCE/USB device remains unchanged. Press the binding again to restore only outputs cinema mode changed. `Super+Alt+S` retains the older side-screen toggle.
 - `cinema --t --monitor DP-1`: cinema on the Bravia while keeping the Turzx temperature display active. Starts a five-second temperature/process CPU recorder; restoring cinema stops only the recorder/display services it started. `cinema restore` exits explicitly. Without `--monitor`, the focused monitor is retained. Logs are in `~/.local/state/archmeros/gaming-telemetry.jsonl`, rotated at 5 MB with one previous file. CPU percentages use one core as 100%; short-lived processes between samples may be missed. `cinema --t` works with the focused monitor. Plain `cinema` retains the original toggle behavior.
@@ -965,8 +967,8 @@ UR44 policy:
 - NVIDIA HDMI audio off
 - Intel onboard audio off
 - UR44 profile set to `pro-audio`
-- default sink set to `alsa_output.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-output-0`
-- default source set to `alsa_input.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-input-0`
+- default sink set to the UR44 Pro Audio output
+- default source set to `Steinberg UR44 Mic (Input 4)`, a mono source mapped to the fourth input (`AUX3`)
 - PipeWire quantum raised to `2048` with `1024..4096` bounds for better click/pop resilience under activity
 - PipeWire default rate kept at `48000`, with `96000` allowed as an alternate rate
 - WirePlumber keeps the UR44 nodes awake with `session.suspend-timeout-seconds = 0` so playback start/stop transitions do not wake the interface from idle
@@ -992,6 +994,28 @@ Bluetooth note after the March 22, 2026 check:
 - autosuspend is already disabled
 - intermittent keyboard disconnects no longer look like simple USB power saving
 - if the issue returns, the more likely culprit is the CSR controller/session state, not adapter idle power
+
+### Local dictation and voice calls
+
+Voxtype uses multilingual Whisper Small for local dictation with automatic language detection. Both shortcuts type into the focused field after recording, with a ten-minute limit per recording. Use the app's send action when the text is ready.
+
+After installing the package manifests and linking configs, download the weights and start the user service:
+
+```bash
+voxtype setup --download --model small
+systemctl --user daemon-reload
+systemctl --user start voxtype.service
+hyprctl reload
+```
+
+For Vulkan acceleration with the system-installed package on the GTX 1060:
+
+```bash
+sudo voxtype setup gpu --enable --backend vulkan
+systemctl --user restart voxtype.service
+```
+
+In ChatGPT Voice and other apps with their own voice mode, allow microphone access and use the system default or select `Steinberg UR44 Mic (Input 4)`. If you restart PipeWire during a session, rerun `~/.config/archmeros/scripts/archmeros-audio-policy.sh` to recreate the mono source.
 
 ## Shell Themes
 

@@ -4,3 +4,4 @@ lsp-plugins-lv2
 lsp-plugins-ladspa
 calf
 qpwgraph
+pipewire-alsa

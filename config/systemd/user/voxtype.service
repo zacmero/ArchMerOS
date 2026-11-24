@@ -1,0 +1,13 @@
+[Unit]
+Description=Voxtype local dictation
+PartOf=graphical-session.target
+After=pipewire.service pipewire-pulse.service
+
+[Service]
+ExecCondition=/usr/bin/env sh -c 'command -v voxtype >/dev/null'
+ExecStart=/usr/bin/env voxtype daemon
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

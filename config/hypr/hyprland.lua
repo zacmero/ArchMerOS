@@ -221,6 +221,14 @@ hl.bind(mod .. " + A",               hl.dsp.exec_cmd("~/.config/archmeros/script
 hl.bind(mod .. " + SHIFT + A",       hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-ai-float.sh fabric"))
 hl.bind(mod .. " + CTRL + A",        hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-ai-float.sh sessions"))
 
+-- Local dictation
+local dictation = "~/.config/archmeros/scripts/archmeros-dictation.sh"
+hl.bind("Pause", hl.dsp.exec_cmd(dictation .. " hold"))
+hl.bind("Pause", hl.dsp.exec_cmd(dictation .. " release"), {
+    release = true, ignore_mods = true, transparent = true, non_consuming = true,
+})
+hl.bind(mod .. " + Pause", hl.dsp.exec_cmd(dictation .. " toggle"))
+
 -- Side monitor / audio
 hl.bind(mod .. " + S",               hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cinema-mode.sh"))
 hl.bind(mod .. " + SHIFT + S",       hl.dsp.exec_cmd("~/.config/archmeros/scripts/archmeros-cinema-mode.sh"))

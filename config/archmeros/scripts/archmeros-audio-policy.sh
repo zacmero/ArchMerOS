@@ -2,9 +2,16 @@
 
 set -euo pipefail
 
-wait_for_audio() {
+exec 9>"${XDG_RUNTIME_DIR:?}/archmeros-audio-policy.lock"
+flock 9
+
+find_ur44_card() {
+  local card
   for _ in $(seq 1 40); do
-    if pactl info >/dev/null 2>&1; then
+    card="$(pactl list short cards 2>/dev/null |
+      awk '$2 ~ /^alsa_card\.usb-Yamaha_Corporation_Steinberg_UR44-[0-9]+$/ { print $2; exit }')" || true
+    if [[ -n "$card" ]]; then
+      printf '%s\n' "$card"
       return 0
     fi
     sleep 0.25
@@ -12,39 +19,31 @@ wait_for_audio() {
   return 1
 }
 
-wait_for_audio || exit 0
-
-default_sink="alsa_output.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-output-0"
-default_source="alsa_input.usb-Yamaha_Corporation_Steinberg_UR44-01.pro-input-0"
-
-find_wpctl_id() {
-  local section="$1"
-  wpctl status 2>/dev/null | awk -v target="$section" '
-    /├─ Sinks:/   { section = "sink"; next }
-    /├─ Sources:/ { section = "source"; next }
-    /├─ Filters:/ { section = ""; next }
-    /Steinberg UR44 Pro/ && section == target {
-      if (match($0, /[0-9]+\./)) {
-        id = substr($0, RSTART, RLENGTH - 1)
-        print id
-        exit
-      }
-    }
-  '
-}
+ur44_card="$(find_ur44_card)" || exit 0
+ur44_device="${ur44_card#alsa_card.}"
+default_sink="alsa_output.${ur44_device}.pro-output-0"
+ur44_source="alsa_input.${ur44_device}.pro-input-0"
+mic_source="archmeros_ur44_mic"
 
 pactl set-card-profile alsa_card.pci-0000_01_00.1 off >/dev/null 2>&1 || true
 pactl set-card-profile alsa_card.pci-0000_00_03.0 off >/dev/null 2>&1 || true
 pactl set-card-profile alsa_card.pci-0000_00_1b.0 off >/dev/null 2>&1 || true
-pactl set-card-profile alsa_card.usb-Yamaha_Corporation_Steinberg_UR44-01 pro-audio >/dev/null 2>&1 || true
+pactl set-card-profile "$ur44_card" pro-audio >/dev/null 2>&1 || true
 
 sleep 0.4
 
 pactl set-default-sink "$default_sink" >/dev/null 2>&1 || true
-pactl set-default-source "$default_source" >/dev/null 2>&1 || true
+pactl get-source-mute "$ur44_source" >/dev/null 2>&1 || exit 0
 
-source_id="$(find_wpctl_id source || true)"
-
-if [[ -n "${source_id}" ]]; then
-  wpctl set-default "${source_id}" >/dev/null 2>&1 || true
+# The mic uses jack 4 (AUX3). Voice apps requesting mono or stereo otherwise
+# receive the first two channels from the multichannel Pro Audio source.
+if ! pactl get-source-mute "$mic_source" >/dev/null 2>&1; then
+  if ! pactl load-module module-remap-source master="$ur44_source" \
+    source_name="$mic_source" channels=1 master_channel_map=aux3 channel_map=mono remix=no \
+    "source_properties='device.description=\"Steinberg UR44 Mic (Input 4)\"'" >/dev/null; then
+    pactl set-default-source "$ur44_source"
+    exit
+  fi
 fi
+
+pactl set-default-source "$mic_source"

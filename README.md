@@ -1015,7 +1015,7 @@ sudo voxtype setup gpu --enable --backend vulkan
 systemctl --user restart voxtype.service
 ```
 
-Keep the microphone plugged into UR44 input 4 for dictation and voice calls. ChatGPT Voice and other apps that use the system default get that same microphone as `Steinberg UR44 Mic (Input 4)`. Allow microphone access when the app prompts you. PulseAudio Volume Control opens capture streams to show level meters while its window is open. At login, `archmeros-audio-policy.service` creates the input 4 source before Voxtype starts.
+Keep the microphone plugged into UR44 input 4 for dictation and voice calls. ChatGPT Voice and other apps that use the system default get that same microphone as `Steinberg UR44 Mic (Input 4)`. Allow microphone access when the app prompts you. PulseAudio Volume Control opens capture streams to show level meters while its window is open. At login, `archmeros-audio-policy.service` creates the input 4 source before Voxtype starts. Voxtype targets that source explicitly and disables fallback to other sources.
 
 ## Shell Themes
 

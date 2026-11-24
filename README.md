@@ -997,7 +997,7 @@ Bluetooth note after the March 22, 2026 check:
 
 ### Local dictation and voice calls
 
-Voxtype uses multilingual Whisper Small for local dictation with automatic language detection. Both shortcuts type into the focused field after recording, with a ten-minute limit per recording. Use the app's send action when the text is ready.
+Voxtype uses multilingual Whisper Small for local dictation. It detects English or Portuguese on each recording with translation disabled. Whisper can still generate text in the wrong language when it misclassifies a short clip. Both shortcuts type into the focused field after recording, with a ten-minute limit per recording. Use the app's send action when the text is ready.
 
 After installing the package manifests and linking configs, download the weights and start the user service:
 

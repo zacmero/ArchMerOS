@@ -5,3 +5,4 @@ lsp-plugins-ladspa
 calf
 qpwgraph
 pipewire-alsa
+alsa-plugins

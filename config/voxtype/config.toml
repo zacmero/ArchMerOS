@@ -5,7 +5,7 @@ state_file = "auto"
 enabled = false
 
 [audio]
-device = "default"
+device = "pulse"
 max_duration_secs = 600
 
 [whisper]

@@ -6,7 +6,8 @@ After=wayland-session-waitenv.service archmeros-audio-policy.service
 
 [Service]
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin
-Environment="PIPEWIRE_ALSA=target.object=archmeros_ur44_mic node.dont-fallback=true node.dont-move=true"
+Environment=PULSE_SOURCE=archmeros_ur44_mic
+Environment="PULSE_PROP=node.dont-fallback=true node.dont-move=true"
 ExecCondition=/usr/bin/env sh -c 'command -v voxtype >/dev/null'
 ExecStart=/usr/bin/env voxtype daemon
 Restart=on-failure

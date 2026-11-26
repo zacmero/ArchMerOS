@@ -672,12 +672,6 @@ hl.window_rule({
     workspace = "11 silent",
 })
 
--- Todoist auto-workspace
-hl.window_rule({
-    name  = "todoist-ws5",
-    match = { class = "^(archmeros-todoist|com\\.todoist\\.Todoist|Todoist)$" },
-    workspace = "5 silent",
-})
 
 --------------------------
 ---- LAYER RULES ---------

@@ -41,19 +41,13 @@ __archmeros_register_gui_command() {
 }
 
 __archmeros_seed_gui_commands() {
-  local desktop_file exec_line terminal_flag token command_name
+  local exec_line token command_name
   local -a app_dirs=(
     "$HOME/.local/share/applications"
     "/usr/share/applications"
   )
 
-  while IFS= read -r desktop_file; do
-    [[ -f "$desktop_file" ]] || continue
-    exec_line="$(sed -n 's/^Exec=//p' "$desktop_file" | head -n 1)"
-    [[ -n "$exec_line" ]] || continue
-    terminal_flag="$(sed -n 's/^Terminal=//p' "$desktop_file" | head -n 1 | tr '[:upper:]' '[:lower:]')"
-    [[ "$terminal_flag" == "true" ]] && continue
-
+  while IFS= read -r exec_line; do
     for token in $exec_line; do
       case "$token" in
         %*|-[!-]*|--*)
@@ -82,7 +76,28 @@ __archmeros_seed_gui_commands() {
       __archmeros_register_gui_command "$command_name"
       break
     done
-  done < <(find "${app_dirs[@]}" -type f -name '*.desktop' 2>/dev/null)
+  done < <(
+    # Read the first Exec and Terminal fields in each file without per-file processes.
+    find "${app_dirs[@]}" -type f -name '*.desktop' -readable -exec awk '
+      function emit() {
+        if (exec_line != "" && tolower(terminal_flag) != "true") print exec_line
+      }
+      FNR == 1 {
+        emit()
+        exec_line = terminal_flag = ""
+        saw_exec = saw_terminal = 0
+      }
+      !saw_exec && /^Exec=/ {
+        exec_line = substr($0, 6)
+        saw_exec = 1
+      }
+      !saw_terminal && /^Terminal=/ {
+        terminal_flag = substr($0, 10)
+        saw_terminal = 1
+      }
+      END { emit() }
+    ' {} + 2>/dev/null
+  )
 
   local known_gui_commands=(
     firefox

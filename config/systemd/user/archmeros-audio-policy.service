@@ -2,9 +2,8 @@
 Description=Configure ArchMerOS UR44 audio routing
 Wants=pipewire-pulse.service
 After=pipewire-pulse.service wireplumber.service
-PartOf=graphical-session.target pipewire-pulse.service
+PartOf=graphical-session.target
 
 [Service]
 Type=oneshot
 ExecStart=%h/.config/archmeros/scripts/archmeros-audio-policy.sh
-RemainAfterExit=yes

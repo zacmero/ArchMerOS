@@ -7,6 +7,7 @@ enabled = false
 [audio]
 device = "pulse"
 max_duration_secs = 600
+keep_failed_recordings = false
 
 [whisper]
 mode = "local"

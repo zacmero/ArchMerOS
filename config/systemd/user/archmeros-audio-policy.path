@@ -1,0 +1,6 @@
+[Unit]
+Description=Watch for the UR44 USB audio interface
+PartOf=graphical-session.target
+
+[Path]
+PathChanged=/dev/snd/by-id

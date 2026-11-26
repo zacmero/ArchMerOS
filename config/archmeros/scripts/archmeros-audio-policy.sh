@@ -19,7 +19,10 @@ find_ur44_card() {
   return 1
 }
 
-ur44_card="$(find_ur44_card)" || exit 0
+if ! ur44_card="$(find_ur44_card)"; then
+  printf 'UR44 unavailable. The audio policy will run again when it connects.\n'
+  exit 0
+fi
 ur44_device="${ur44_card#alsa_card.}"
 default_sink="alsa_output.${ur44_device}.pro-output-0"
 ur44_source="alsa_input.${ur44_device}.pro-input-0"

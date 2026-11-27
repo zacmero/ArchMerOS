@@ -1,0 +1,58 @@
+window.mero-moji {
+  background: #121925;
+  color: #eaf1fc;
+}
+
+.mero-moji .picker {
+  padding: 16px;
+}
+
+.mero-moji .title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #eaf1fc;
+}
+
+.mero-moji entry,
+.mero-moji dropdown > button {
+  background: #1c283b;
+  color: #eaf1fc;
+  border: 1px solid #35455f;
+  border-radius: 8px;
+}
+
+.mero-moji entry:focus-within {
+  border-color: #90baff;
+}
+
+.mero-moji .emoji-grid {
+  background: #101622;
+  color: #eaf1fc;
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.mero-moji .emoji-grid > child {
+  border-radius: 8px;
+  margin: 2px;
+}
+
+.mero-moji .emoji-grid > child:hover {
+  background: #263650;
+}
+
+.mero-moji .emoji-grid > child:selected {
+  background: #304e80;
+  box-shadow: inset 0 0 0 1px #90baff;
+}
+
+.mero-moji .emoji {
+  font-family: "Noto Color Emoji", emoji;
+  font-size: 30px;
+  min-height: 50px;
+}
+
+.mero-moji .hint {
+  color: #b0bed2;
+  font-size: 12px;
+}

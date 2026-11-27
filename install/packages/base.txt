@@ -32,7 +32,10 @@ bat
 libnotify
 wl-clipboard
 wtype
-rofimoji
+xdotool
+gtk4
+python-gobject
+noto-fonts-emoji
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
 polkit-kde-agent

@@ -803,19 +803,15 @@ Current native messaging app:
 - `Super+G`: open Telegram
 - Telegram is bound directly to `/usr/bin/Telegram`, which is the real binary shipped by the Arch package on this machine
 
-Emoji picker:
+**Mero Moji** is the default emoji picker. Open it with `Super+.` or run
+`mero-moji`. Find the app and its bundled Unicode Emoji 17.0 catalog in
+[`mero-moji/`](mero-moji/).
 
-- active backend: `rofimoji` + `rofi` + `wtype`
-- reason: the Flatpak emoji pickers looked better but their copy/paste and focus behavior under this Hyprland setup was unstable
-- layout: compact dark emoji grid with transparent cyberpunk popup styling, using Rofi's icon render path instead of raw text glyph rendering
-- insertion model: ArchMerOS records the currently focused Hyprland window, gets the emoji from `rofimoji --action print`, copies it to the clipboard, explicitly refocuses that window, then types with `wtype`
-- launcher: [config/archmeros/scripts/archmeros-emoji.sh](/home/zacmero/projects/ArchMerOS/config/archmeros/scripts/archmeros-emoji.sh)
-- config: [config/rofimoji.rc](/home/zacmero/projects/ArchMerOS/config/rofimoji.rc)
-- theme: [config/rofi/launchers/emoji.rasi](/home/zacmero/projects/ArchMerOS/config/rofi/launchers/emoji.rasi)
-- bind: `Super+.`
-- `Enter` types the selected emoji into the focused app
-- `Alt+C` copies the selected emoji instead of typing it
-- `Alt+V` inserts via clipboard
+- With an empty search, use the arrow keys to browse immediately.
+- Type a search, then press `Enter` to browse its results. `Backspace` returns to the search field with your query intact.
+- Press `Enter` on an emoji to insert it at the original cursor. The picker restores the Hyprland window and types through Wayland or XWayland, keeping the current clipboard intact.
+- Press `Ctrl+Enter` or right-click an emoji to see its skin tones. The `Skin tones` button appears when the selected emoji has variants.
+- Press `Alt+C` to explicitly copy an emoji.
 
 ## Workspace Layout
 

@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=ArchMerOS Emoji
+Name=Mero Moji
 GenericName=Emoji Picker
-Comment=Pick and insert emoji
-Exec=/home/zacmero/.config/archmeros/scripts/archmeros-emoji.sh
+Comment=Find and insert emoji
+Exec=mero-moji
 Icon=face-smile
 Terminal=false
 Type=Application

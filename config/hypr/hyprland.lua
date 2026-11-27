@@ -461,6 +461,14 @@ hl.window_rule({
     opacity = tp.walker_active_opacity .. " " .. tp.walker_inactive_opacity,
 })
 
+-- Mero Moji opens over the window receiving the emoji.
+hl.window_rule({
+    name = "mero-moji-float",
+    match = { class = "^org\\.archmeros\\.MeroMoji$" },
+    float = true,
+    center = true,
+})
+
 -- Smile emoji picker
 hl.window_rule({
     name  = "smile-float",

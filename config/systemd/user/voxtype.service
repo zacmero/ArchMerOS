@@ -1,7 +1,7 @@
 [Unit]
 Description=Voxtype local dictation
 PartOf=graphical-session.target
-Requires=archmeros-audio-policy.service
+Wants=archmeros-audio-policy.service
 After=wayland-session-waitenv.service archmeros-audio-policy.service
 
 [Service]
@@ -9,6 +9,12 @@ Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin
 Environment=PULSE_SOURCE=archmeros_ur44_mic
 Environment="PULSE_PROP=node.dont-fallback=true node.dont-move=true"
 ExecCondition=/usr/bin/env sh -c 'command -v voxtype >/dev/null'
+ExecCondition=/usr/bin/pactl get-source-mute archmeros_ur44_mic
+# Give Waybar's tray host time to register before Voxtype publishes its icon.
+ExecStartPre=/usr/bin/bash -c 'for _ in {1..12}; do \
+  busctl --user --timeout=300ms get-property org.kde.StatusNotifierWatcher /StatusNotifierWatcher org.kde.StatusNotifierWatcher IsStatusNotifierHostRegistered 2>/dev/null | grep -qx "b true" && exit 0; \
+  sleep 0.25; \
+  done'
 ExecStart=/usr/bin/env voxtype daemon
 Restart=on-failure
 RestartSec=5

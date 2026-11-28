@@ -995,6 +995,8 @@ Bluetooth note after the March 22, 2026 check:
 
 Voxtype uses multilingual Whisper Small for local dictation. It detects English or Portuguese on each recording with translation disabled. Whisper can still generate text in the wrong language when it misclassifies a short clip. Both shortcuts type into the focused field after recording, with a ten-minute limit per recording. Use the app's send action when the text is ready.
 
+The Voxtype tray icon shows when dictation is ready, recording, transcribing, or has failed. Start recording with either shortcut and wait for the icon to show Recording before speaking.
+
 After installing the package manifests and linking configs, download the weights and start the user service:
 
 ```bash
@@ -1011,7 +1013,7 @@ sudo voxtype setup gpu --enable --backend vulkan
 systemctl --user restart voxtype.service
 ```
 
-Keep the microphone plugged into UR44 input 4 for dictation and voice calls. ChatGPT Voice and other apps that use the system default get that same microphone as `Steinberg UR44 Mic (Input 4)`. Allow microphone access when the app prompts you. PulseAudio Volume Control opens capture streams to show level meters while its window is open. The audio policy creates the input 4 source at login, when the UR44 connects later, and when PipeWire PulseAudio starts. Voxtype targets that source explicitly and disables fallback to other sources. Dictation history and failed-recording retention are disabled.
+Keep the microphone plugged into UR44 input 4 for dictation and voice calls. ChatGPT Voice and other apps that use the system default get that same microphone as `Steinberg UR44 Mic (Input 4)`. Allow microphone access when the app prompts you. PulseAudio Volume Control opens capture streams to show level meters while its window is open. The audio policy watches for the UR44 from PipeWire PulseAudio startup and creates the input 4 source as soon as Linux sees the interface. It starts Voxtype once input 4 is available in the graphical session. Dictation history and failed-recording retention are disabled.
 
 ## Shell Themes
 

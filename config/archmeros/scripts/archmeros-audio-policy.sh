@@ -5,6 +5,24 @@ set -euo pipefail
 exec 9>"${XDG_RUNTIME_DIR:?}/archmeros-audio-policy.lock"
 flock 9
 
+mic_source="archmeros_ur44_mic"
+
+remove_mic_remaps() {
+  local keep_master="$1" module
+  while read -r module; do
+    pactl unload-module "$module"
+  done < <(pactl list short modules | awk -v source="$mic_source" -v master="$keep_master" '
+    $2 == "module-remap-source" {
+      for (i = 3; i <= NF; i++) {
+        if ($i == "source_name=" source) found = 1
+        if ($i == "master=" master) keep = 1
+      }
+      if (found && !keep) print $1
+      found = keep = 0
+    }
+  ')
+}
+
 find_ur44_card() {
   local card
   for _ in $(seq 1 40); do
@@ -20,13 +38,13 @@ find_ur44_card() {
 }
 
 if ! ur44_card="$(find_ur44_card)"; then
+  remove_mic_remaps ""
   printf 'UR44 unavailable. The audio policy will run again when it connects.\n'
   exit 0
 fi
 ur44_device="${ur44_card#alsa_card.}"
 default_sink="alsa_output.${ur44_device}.pro-output-0"
 ur44_source="alsa_input.${ur44_device}.pro-input-0"
-mic_source="archmeros_ur44_mic"
 
 pactl set-card-profile alsa_card.pci-0000_01_00.1 off >/dev/null 2>&1 || true
 pactl set-card-profile alsa_card.pci-0000_00_03.0 off >/dev/null 2>&1 || true
@@ -50,6 +68,7 @@ pactl set-default-sink "$default_sink" >/dev/null 2>&1 || true
 
 # The mic uses jack 4 (AUX3). Voice apps requesting mono or stereo otherwise
 # receive the first two channels from the multichannel Pro Audio source.
+remove_mic_remaps "$ur44_source"
 if ! pactl get-source-mute "$mic_source" >/dev/null 2>&1; then
   pactl load-module module-remap-source master="$ur44_source" \
     source_name="$mic_source" channels=1 master_channel_map=aux3 channel_map=mono remix=no \
@@ -58,3 +77,9 @@ fi
 
 wait_for_source "$mic_source"
 pactl set-default-source "$mic_source"
+
+# A hotplug can provide the route after Voxtype skipped its login start.
+if systemctl --user is-active --quiet graphical-session.target &&
+  systemctl --user is-enabled --quiet voxtype.service; then
+  systemctl --user --no-block start voxtype.service
+fi

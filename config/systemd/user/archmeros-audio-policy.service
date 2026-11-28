@@ -7,3 +7,5 @@ PartOf=graphical-session.target
 [Service]
 Type=oneshot
 ExecStart=%h/.config/archmeros/scripts/archmeros-audio-policy.sh
+Restart=on-failure
+RestartSec=2s
